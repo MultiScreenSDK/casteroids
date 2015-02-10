@@ -1,5 +1,5 @@
-game/bin/*
-game/gen/*
+game-android/bin/*
+game-android/gen/*
 
 
 # Built application files
