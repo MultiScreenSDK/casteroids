@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppBaseTheme" parent="android:Theme.Material">
+        <!--
+            On Lollipop, choose the Material Theme
+        -->
+    </style>
+
+</resources>
