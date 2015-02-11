@@ -61,57 +61,79 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
     private void handleDown(int id) {
 
-        switch (id) {
-            case R.id.left_button:
-                turningLeft = true;
-                break;
-            case R.id.right_button:
-                turningRight = true;
-                break;
-            case R.id.up_button:
-                goingUp = true;
-                break;
-            case R.id.down_button:
-                goingDown = true;
-                break;
-            case R.id.thrust_button:
-                thrusting = true;
-                break;
-            case R.id.fire_button:
-                firing = true;
-                break;
-            default:
-                break;
-        }
+        handleEvent(id, /** Down */ true);
         Log.v(TAG, toString());
     }
 
     private void handleUp(int id) {
 
-        switch (id) {
+        handleEvent(id, /** Down */ false);
+        Log.v(TAG, toString());
+    }
+
+    private void handleEvent(int viewId, boolean value) {
+        switch (viewId) {
             case R.id.left_button:
-                turningLeft = false;
+                setTurningLeft(value);
                 break;
             case R.id.right_button:
-                turningRight = false;
+                setTurningRight(value);
                 break;
             case R.id.up_button:
-                goingUp = false;
+                setGoingUp(value);
                 break;
             case R.id.down_button:
-                goingDown = false;
+                setGoingDown(value);
                 break;
             case R.id.thrust_button:
-                thrusting = false;
+                setThrusting(value);
                 break;
             case R.id.fire_button:
-                firing = false;
+                setFiring(value);
                 break;
             default:
                 break;
         }
         Log.v(TAG, toString());
     }
+
+    private void setGoingUp(boolean value){
+        goingUp = value;
+
+        //TODO: send message
+    }
+
+    private void setGoingDown(boolean value){
+        goingDown = value;
+
+        //TODO: send message
+    }
+
+    private void setTurningLeft(boolean value){
+        turningLeft = value;
+
+        //TODO: send message
+    }
+
+    private void setTurningRight(boolean value){
+        turningRight = value;
+
+        //TODO: send message
+    }
+
+    private void setThrusting(boolean value){
+        thrusting = value;
+
+        //TODO: send message
+    }
+
+    private void setFiring(boolean value){
+        firing = value;
+
+        //TODO: send message
+    }
+
+
 
     @Override
     public String toString() {
