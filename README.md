@@ -1,1 +1,1 @@
-Android Client and Webapp Client for Samsung Multiscreen sdk.
+Android Client and Webapp Client for Samsung Multiscreen SDK.
