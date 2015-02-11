@@ -3,7 +3,7 @@ $(function(){
     "use strict";
 
     var ui = {
-        direction : $('#direction'),
+        rotate : $('#rotate'),
         thrust : $('#thrust'),
         fire : $('#fire'),
         client : $('#client')
@@ -17,8 +17,8 @@ $(function(){
             if(err) return console.error(err);
         });
 
-        channel.on('direction', function(msg, from){
-            ui.direction.text(msg);
+        channel.on('rotate', function(msg, from){
+            ui.rotate.text(msg);
             ui.client.text((from.attributes.name || 'Unknown'));
         });
 
@@ -33,28 +33,28 @@ $(function(){
         });
 
         channel.on('clientConnect', function(client){
-            ui.direction.text('--');
+            ui.rotate.text('--');
             ui.thrust.text('--');
             ui.fire.text('--');
             ui.client.text('clientConnect');
         });
 
         channel.on('clientDisconnect', function(client){
-            ui.direction.text('N/A');
+            ui.rotate.text('N/A');
             ui.thrust.text('N/A');
             ui.fire.text('N/A');
             ui.client.text('clientDisconnect');
         });
 
         channel.on('connect', function(client){
-            ui.direction.text('-');
+            ui.rotate.text('-');
             ui.thrust.text('-');
             ui.fire.text('-');
             ui.client.text('connect');
         });
 
         channel.on('disconnect', function(client){
-            ui.direction.text('N/A');
+            ui.rotate.text('N/A');
             ui.thrust.text('N/A');
             ui.fire.text('N/A');
             ui.client.text('disconnect');

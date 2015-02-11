@@ -99,10 +99,10 @@ $(function () {
                     app.publish('thrust', 'ON');
                     break;
                 case 37: // left
-                    app.publish('direction', 'LEFT');
+                    app.publish('rotate', 'LEFT');
                     break;
                 case 39: // right
-                    app.publish('direction', 'RIGHT');
+                    app.publish('rotate', 'RIGHT');
                 default:
                     break
             }
@@ -118,10 +118,10 @@ $(function () {
                     app.publish('thrust', 'OFF');
                     break;
                 case 37: // left
-                    app.publish('direction', 'NONE');
+                    app.publish('rotate', 'NONE');
                     break;
                 case 39: // right
-                    app.publish('direction', 'NONE');
+                    app.publish('rotate', 'NONE');
                 default:
                     break
             }
