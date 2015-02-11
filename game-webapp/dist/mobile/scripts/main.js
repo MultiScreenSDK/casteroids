@@ -93,16 +93,16 @@ $(function () {
             // console.log(event.keyCode);
             switch(evt.keyCode) {
                 case 32: // space
-                    app.publish('fire', 'ON');
+                    app.publish('fire', 'on');
                     break;
                 case 38: // up
-                    app.publish('thrust', 'ON');
+                    app.publish('thrust', 'on');
                     break;
                 case 37: // left
-                    app.publish('rotate', 'LEFT');
+                    app.publish('rotate', 'left');
                     break;
                 case 39: // right
-                    app.publish('rotate', 'RIGHT');
+                    app.publish('rotate', 'right');
                 default:
                     break
             }
@@ -112,16 +112,16 @@ $(function () {
             // console.log(event.keyCode);
             switch(evt.keyCode) {
                 case 32: // space
-                    app.publish('fire', 'OFF');
+                    app.publish('fire', 'off');
                     break;
                 case 38: // up
-                    app.publish('thrust', 'OFF');
+                    app.publish('thrust', 'off');
                     break;
                 case 37: // left
-                    app.publish('rotate', 'NONE');
+                    app.publish('rotate', 'none');
                     break;
                 case 39: // right
-                    app.publish('rotate', 'NONE');
+                    app.publish('rotate', 'none');
                 default:
                     break
             }
