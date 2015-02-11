@@ -19,14 +19,15 @@
         android:text="Dn"
         android:id="@+id/down_button"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
 
     <Button
         android:layout_width="100dp"
         android:layout_height="60dp"
         android:text="LT"
         android:id="@+id/left_button"
-        android:layout_below="@+id/up_button"
+        android:layout_below="@+id/thrust_button"
         android:layout_toLeftOf="@+id/down_button"
         android:layout_toStartOf="@+id/down_button" />
 
@@ -44,24 +45,17 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="100dp"
         android:layout_height="60dp"
-        android:text="Up"
-        android:id="@+id/up_button"
-        android:layout_above="@+id/down_button"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="THRUST"
         android:id="@+id/thrust_button"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_above="@+id/down_button"
+        android:layout_alignLeft="@+id/down_button"
+        android:layout_alignStart="@+id/down_button"
+        android:layout_alignRight="@+id/down_button"
+        android:layout_alignEnd="@+id/down_button" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:text="fire"
         android:id="@+id/fire_button"
         android:layout_alignParentBottom="true"

@@ -13,7 +13,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
     private static final String TAG = GameActivity.class.getSimpleName();
 
-    private boolean turningLeft, turningRight, goingUp, goingDown, thrusting, firing;
+    private boolean turningLeft, turningRight,thrusting, firing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
     private void setOnTouchListners() {
 
-        int[] buttons = new int[]{R.id.up_button, R.id.down_button, R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button};
+        int[] buttons = new int[]{R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button};
 
         for(int i = 0; i < buttons.length; i++) {
             int buttonId = buttons[i];
@@ -79,12 +79,6 @@ public class GameActivity extends Activity implements View.OnTouchListener {
             case R.id.right_button:
                 setTurningRight(value);
                 break;
-            case R.id.up_button:
-                setGoingUp(value);
-                break;
-            case R.id.down_button:
-                setGoingDown(value);
-                break;
             case R.id.thrust_button:
                 setThrusting(value);
                 break;
@@ -95,18 +89,6 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                 break;
         }
         Log.v(TAG, toString());
-    }
-
-    private void setGoingUp(boolean value){
-        goingUp = value;
-
-        //TODO: send message
-    }
-
-    private void setGoingDown(boolean value){
-        goingDown = value;
-
-        //TODO: send message
     }
 
     private void setTurningLeft(boolean value){
@@ -133,15 +115,11 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         //TODO: send message
     }
 
-
-
     @Override
     public String toString() {
         return "GameActivity{" +
                 "turningLeft=" + turningLeft +
                 ", turningRight=" + turningRight +
-                ", goingUp=" + goingUp +
-                ", goingDown=" + goingDown +
                 ", thrusting=" + thrusting +
                 ", firing=" + firing +
                 '}';
