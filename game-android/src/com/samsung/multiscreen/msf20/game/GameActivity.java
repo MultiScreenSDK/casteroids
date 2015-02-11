@@ -124,4 +124,15 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                 ", firing=" + firing +
                 '}';
     }
+
+    @Override
+    public void onBackPressed() {
+        pauseGame(null);
+    }
+
+    public void pauseGame(View view) {
+        //TODO send message
+
+        finish();
+    }
 }
