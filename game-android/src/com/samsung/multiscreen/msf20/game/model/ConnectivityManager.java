@@ -24,7 +24,8 @@ import com.samsung.multiscreen.Service;
 import com.samsung.multiscreen.msf20.game.BuildConfig;
 
 /**
- * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs.
+ * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs. This class was does not
+ * contain any app specific logic.
  * 
  * @author Dan McCafferty
  * 
@@ -32,28 +33,26 @@ import com.samsung.multiscreen.msf20.game.BuildConfig;
 public class ConnectivityManager implements OnConnectListener, OnMessageListener, OnServiceFoundListener,
         OnServiceLostListener, Result<Client> {
     // Used to identify the source of a log message.
-    private static final String TAG = ConnectivityManager.class.getSimpleName();
+    protected final String TAG;
 
-    // The URL that the TV application runs at
-    // TODO: Pass in.
-    private static final String url = "http://192.168.1.105:8080/dist/tv/";
+    // The default time that service discovery can run. Set to 0 for no limit.
+    protected static final long DEFAULT_DISCOVERY_TIMEOUT_MILLIS = (1000 * 60); // 1 minute
 
-    // The Channel ID for the TV application
-    // TODO: Pass in.
-    private static final String channelId = "com.samsung.multiscreen.game";
-
-    // The maximum time that service discovery can run. Set to 0 for no limit.
-    // TODO: Pass in.
-    private static final int MAX_SERVICE_DISCOVERY_TIME_MILLIS = (1000 * 60); // 1 minute
+    // Reference to the context.
+    protected final Context context;
 
     // The URI that the TV application runs at
-    private static final Uri uri = Uri.parse(url);
+    // TODO: Allow this to be set and changed
+    private final Uri uri;
+
+    // The Channel ID for the TV application
+    private final String channelId;
+
+    // The maximum time that service discovery can run. Set to 0 for no limit.
+    private final long discoveryTimeoutMillis;
 
     // An singleton instance of this class
     private static ConnectivityManager instance = null;
-
-    // Reference to the context.
-    private final Context context;
 
     // The current Search object used during service discovery or null.
     private Search search = null;
@@ -67,29 +66,54 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
     // A map of service name to Service object.
     private Map<String, Service> serviceMap = new HashMap<String, Service>();
 
-    // A lock used to synchronize access to the service map
-    private static final Object lock = new Object();
+    // A lock used to synchronize creation of this object and access to the service map
+    protected static final Object lock = new Object();
 
     /**
      * Constructor.
      * 
      * @param context
+     * @param url
+     * @param channelId
+     * @param discoveryTimeoutMillis
      */
-    private ConnectivityManager(Context context) {
+    protected ConnectivityManager(Context context, String url, String channelId, long discoveryTimeoutMillis) {
+        this.TAG = this.getClass().getSimpleName();
+
         this.context = context.getApplicationContext();
+
+        this.uri = Uri.parse(url);
+        this.channelId = channelId;
+        this.discoveryTimeoutMillis = discoveryTimeoutMillis;
+    }
+
+    /**
+     * Returns the instance with the default discovery timeout.
+     * 
+     * @param context
+     * @param url
+     * @param channelId
+     * @return
+     */
+    public static ConnectivityManager getInstance(Context context, String url, String channelId) {
+        return getInstance(context, url, channelId, DEFAULT_DISCOVERY_TIMEOUT_MILLIS);
     }
 
     /**
      * Returns the instance.
      * 
      * @param context
+     * @param url
+     * @param channelId
+     * @param discoveryTimeoutMillis
      * @return
      */
-    public static ConnectivityManager getInstance(Context context) {
+    public static ConnectivityManager getInstance(Context context, String url, String channelId,
+            long discoveryTimeoutMillis) {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
-                    instance = new ConnectivityManager(context);
+                    instance = new ConnectivityManager(context, url, channelId, discoveryTimeoutMillis);
                 }
             }
         }
@@ -149,7 +173,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         search.start();
 
         // Start the discovery timer to limit the discovery time.
-        startDiscoveryTimer(MAX_SERVICE_DISCOVERY_TIME_MILLIS);
+        startDiscoveryTimer(discoveryTimeoutMillis);
     }
 
     /**
@@ -274,7 +298,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         disconnect();
 
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Attempting to connect to application at '" + serviceName + "'. url=" + url + ", channelId="
+            Log.d(TAG, "Attempting to connect to application at '" + serviceName + "'. url=" + uri + ", channelId="
                     + channelId);
         }
 
@@ -382,7 +406,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      */
 
     /**
-     * Send a message to the TV application.
+     * Sends a message to the TV application.
      * 
      * @param event
      * @param data
@@ -392,7 +416,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
     }
 
     /**
-     * Send a message to the given target.
+     * Sends a message to the given target.
      * 
      * @param event
      * @param data

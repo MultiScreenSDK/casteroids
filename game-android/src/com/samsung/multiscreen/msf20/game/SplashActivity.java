@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.samsung.multiscreen.msf20.game.model.ConnectivityManager;
+import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.game.utils.ThreadUtils;
 
 /**
@@ -17,7 +17,7 @@ import com.samsung.multiscreen.msf20.game.utils.ThreadUtils;
  */
 public class SplashActivity extends Activity {
 
-    private ConnectivityManager connectivityManager = null;
+    private GameConnectivityManager connectivityManager = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         // Create the ConnectivtyManager and start discovery of compatible Samsung SmartTVs.
-        connectivityManager = ConnectivityManager.getInstance(getApplicationContext());
+        connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         connectivityManager.startDiscovery();
         
         // temporary
