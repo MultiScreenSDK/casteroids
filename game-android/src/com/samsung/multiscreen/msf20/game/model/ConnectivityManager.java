@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.samsung.multiscreen.Application;
 import com.samsung.multiscreen.Channel.OnConnectListener;
+import com.samsung.multiscreen.Channel.OnDisconnectListener;
 import com.samsung.multiscreen.Channel.OnMessageListener;
 import com.samsung.multiscreen.Client;
 import com.samsung.multiscreen.Error;
@@ -31,8 +32,8 @@ import com.samsung.multiscreen.msf20.game.BuildConfig;
  * @author Dan McCafferty
  * 
  */
-public class ConnectivityManager implements OnConnectListener, OnMessageListener, OnServiceFoundListener,
-        OnServiceLostListener, Result<Client> {
+public class ConnectivityManager implements OnConnectListener, OnDisconnectListener, OnMessageListener,
+        OnServiceFoundListener, OnServiceLostListener, Result<Client> {
 
     // Used to identify the source of a log message.
     protected final String TAG;
@@ -64,8 +65,8 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
     // The current Application object or null.
     private Application application = null;
 
-    // The current Client object or null;
-    private Client client = null;
+    // This clients current Client object or null;
+    protected Client client = null;
 
     // A map of service name to Service object.
     private Map<String, Service> serviceMap = new HashMap<String, Service>();
@@ -77,9 +78,13 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Constructor.
      * 
      * @param context
+     *            The Android application context.
      * @param url
+     *            The URL where the TV application lives.
      * @param channelId
+     *            The Channel ID for the TV application.
      * @param discoveryTimeoutMillis
+     *            The time that service discovery can run. Set to 0 for no limit.
      */
     protected ConnectivityManager(Context context, String url, String channelId, long discoveryTimeoutMillis) {
         this.TAG = this.getClass().getSimpleName();
@@ -96,8 +101,11 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Returns the instance with the default discovery timeout.
      * 
      * @param context
+     *            The Android application context.
      * @param url
+     *            The URL where the TV application lives.
      * @param channelId
+     *            The Channel ID for the TV application.
      * @return
      */
     public static ConnectivityManager getInstance(Context context, String url, String channelId) {
@@ -108,9 +116,13 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Returns the instance.
      * 
      * @param context
+     *            The Android application context.
      * @param url
+     *            The URL where the TV application lives.
      * @param channelId
+     *            The Channel ID for the TV application.
      * @param discoveryTimeoutMillis
+     *            The time that service discovery can run. Set to 0 for no limit.
      * @return
      */
     public static ConnectivityManager getInstance(Context context, String url, String channelId,
@@ -294,6 +306,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Connects to an application associated to the given service name.
      * 
      * @param serviceName
+     *            The name of the service to connect to.
+     *            
+     * @see getDiscoveredServiceNames
      */
     public void connect(String serviceName) {
         // Stop discovering services.
@@ -317,12 +332,11 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         // Get an instance of Application.
         application = service.createApplication(uri, channelId);
 
-        // Listen for the connect event
+        // Listen for the connect/disconnect events
         application.setOnConnectListener(this);
+        application.setOnDisconnectListener(this);
 
-        // TODO: Determine which other listeners we need
-        // application.setOnConnectListener(this);
-        // application.setOnDisconnectListener(this);
+        // NOTE: There are other listeners that we could register for but are not needed for this application
         // application.setOnClientConnectListener(this);
         // application.setOnClientDisconnectListener(this);
         // application.setOnErrorListener(this);
@@ -335,6 +349,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Connects to an application associated to the given service.
      * 
      * @param service
+     *            The Service object to connect to.
+     *            
+     * @see getDiscoveredServices
      */
     public void connect(Service service) {
         // By connecting by name we will make sure the service is still
@@ -374,21 +391,36 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
     @Override
     public void onConnect(Client client) {
+        // We are connected! :)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Application.onConnect() client: " + client.toString());
         }
-        // Ignore since this application does not require client to client communication
+
+        // Do nothing here since we handle the connection in the onSuccess() callback.
+    }
+
+    @Override
+    public void onDisconnect(Client client) {
+        // We are disconnected! :(
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Application.onDisconnect() client: " + client.toString());
+        }
+
+        // Notify listeners that we are no longer connected.
+        // TODO: Implement
     }
 
     @Override
     public void onSuccess(Client client) {
+        // The application is launched, and is ready to accept messages. :)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Application connect onSuccess() client: " + client.toString());
         }
 
-        // The application is launched, and is ready to accept messages.
+        // Store off our client just in case we need it.
         this.client = client;
 
+        // Notifiy listeners that we are connected.
         // TODO: Implement
 
         // FIXME: Remove
@@ -397,12 +429,13 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
     @Override
     public void onError(Error error) {
+        // Ohhhh snap! An error!
         if (BuildConfig.DEBUG) {
             String errorMsg = (error != null) ? error.toString() : "The service is not available.";
             Log.w(TAG, "Application connect onError() error: " + errorMsg);
         }
 
-        // Uh oh. Handle the error.
+        // Notifiy listeners of the error.
         // TODO: Implement
     }
 
@@ -414,7 +447,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Sends a message to the TV application.
      * 
      * @param event
+     *            The application defined event name.
      * @param data
+     *            The application defined data structure for the event.
      */
     public void sendMessage(String event, String data) {
         sendMessage(event, data, Message.TARGET_HOST);
@@ -424,7 +459,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Sends a message to the given target.
      * 
      * @param event
+     *            The application defined event name.
      * @param data
+     *            The application defined data structure for the event.
      * @param target
      *            The target of the message. Can be the TV application (Message.TARGET_HOST), to all connected clients
      *            EXCEPT self (Message.TARGET_BROADCAST), to all clients INCLUDING self (Message.TARGET_ALL).
@@ -439,7 +476,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         }
 
         if (BuildConfig.DEBUG) {
-            Log.w(TAG, "Sending message. event=" + event + ", data=" + data + ", target=" + target);
+            Log.d(TAG, "Sending message. event=" + event + ", data=" + data + ", target=" + target);
         }
 
         // Send a message to the target
@@ -492,7 +529,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
     }
 
     /**
-     * Returns the Channel ID for the TV application
+     * Returns the Channel ID for the TV application.
      * 
      * @return
      */
