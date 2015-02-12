@@ -10,7 +10,8 @@
     <TextView android:text="@string/start_flying" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -72,5 +73,12 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:onClick="pauseGame"/>
+
+    <view
+        class="com.samsung.multiscreen.msf20.game.views.CompassView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:id="@+id/compass_view"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>
