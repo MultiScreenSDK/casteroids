@@ -31,7 +31,7 @@ public class SplashActivity extends Activity {
 
         setContentView(R.layout.activity_splash);
 
-        // Create the ConnectivtyManager and start discovery of compatible Samsung SmartTVs.
+        // Get an instance of the ConnectivtyManager and start discovery of compatible Samsung SmartTVs.
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         connectivityManager.startDiscovery();
         

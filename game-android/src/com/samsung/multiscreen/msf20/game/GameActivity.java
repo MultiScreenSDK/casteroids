@@ -12,21 +12,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.samsung.multiscreen.msf20.game.model.ConnectivityListener;
 import com.samsung.multiscreen.msf20.game.model.Fire;
 import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.game.model.Rotate;
 import com.samsung.multiscreen.msf20.game.model.Thrust;
 import com.samsung.multiscreen.msf20.game.views.CompassView;
 
-
-public class GameActivity extends Activity implements View.OnTouchListener {
+public class GameActivity extends Activity implements View.OnTouchListener, ConnectivityListener {
 
     /** Debugging */
     private static final String TAG = GameActivity.class.getSimpleName();
 
     /** Keep track of state */
-    private boolean turningLeft, turningRight,thrusting, firing;
+    private boolean turningLeft, turningRight, thrusting, firing;
 
     /** GameConnectivityManager enables sending messages to the TV */
     private GameConnectivityManager gameConnectivityManager;
@@ -76,9 +77,33 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
         //button touches
         setOnTouchListeners();
+    }
 
-        //Game Connectivity Manager for communication with the TV
-        gameConnectivityManager = GameConnectivityManager.getInstance(this);
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Get an instance of the ConnectivtyManager and register for connectivity updates.
+        gameConnectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+        gameConnectivityManager.registerConnectivityListener(this);
+
+        // If we are not connected return to the main screen.
+        if (!gameConnectivityManager.isConnected()) {
+            // TODO: Notify the user that we are not connected.
+            Toast.makeText(this, "No connection.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Unregister self as a listener
+        gameConnectivityManager.unregisterConnectivityListener(this);
+
+        //stop the sensor listeners as it can drain the battery if you don't
+        sensorManager.unregisterListener(sensorEventListener);
     }
 
     /**
@@ -110,20 +135,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         }
     }
 
-    @Override
-    protected void onPause()
-    {
-        //stop the sensor listeners as it can drain the battery if you don't
-        sensorManager.unregisterListener(sensorEventListener);
-
-        super.onStop();
-    }
 
     private void setOnTouchListeners() {
 
-        int[] buttons = new int[]{R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button};
+        int[] buttons = new int[] { R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button };
 
-        for(int i = 0; i < buttons.length; i++) {
+        for (int i = 0; i < buttons.length; i++) {
             int buttonId = buttons[i];
 
             View button = findViewById(buttonId);
@@ -131,12 +148,10 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         }
     }
 
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
         int id = v.getId();
-
 
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
             handleDown(id);
@@ -144,20 +159,20 @@ public class GameActivity extends Activity implements View.OnTouchListener {
             handleUp(id);
         }
 
-
         return false;
     }
 
-
     private void handleDown(int id) {
 
-        handleEvent(id, /** Down */ true);
+        handleEvent(id, /** Down */
+        true);
         Log.v(TAG, toString());
     }
 
     private void handleUp(int id) {
 
-        handleEvent(id, /** Down */ false);
+        handleEvent(id, /** Down */
+        false);
         Log.v(TAG, toString());
     }
 
@@ -181,40 +196,40 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         Log.v(TAG, toString());
     }
 
-    private void setTurningLeft(boolean value){
+    private void setTurningLeft(boolean value) {
         turningLeft = value;
 
-        if(value) {
+        if (value) {
             gameConnectivityManager.sendRotateMessage(Rotate.LEFT);
         } else {
             gameConnectivityManager.sendRotateMessage(Rotate.NONE);
         }
     }
 
-    private void setTurningRight(boolean value){
+    private void setTurningRight(boolean value) {
         turningRight = value;
 
-        if(value) {
+        if (value) {
             gameConnectivityManager.sendRotateMessage(Rotate.RIGHT);
         } else {
             gameConnectivityManager.sendRotateMessage(Rotate.NONE);
         }
     }
 
-    private void setThrusting(boolean value){
+    private void setThrusting(boolean value) {
         thrusting = value;
 
-        if(value) {
+        if (value) {
             gameConnectivityManager.sendThrustMessage(Thrust.ON);
         } else {
             gameConnectivityManager.sendThrustMessage(Thrust.OFF);
         }
     }
 
-    private void setFiring(boolean value){
+    private void setFiring(boolean value) {
         firing = value;
 
-        if(value) {
+        if (value) {
             gameConnectivityManager.sendFireMessage(Fire.ON);
         } else {
             gameConnectivityManager.sendFireMessage(Fire.OFF);
@@ -223,12 +238,8 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
     @Override
     public String toString() {
-        return "GameActivity{" +
-                "turningLeft=" + turningLeft +
-                ", turningRight=" + turningRight +
-                ", thrusting=" + thrusting +
-                ", firing=" + firing +
-                '}';
+        return "GameActivity{" + "turningLeft=" + turningLeft + ", turningRight=" + turningRight + ", thrusting="
+                + thrusting + ", firing=" + firing + '}';
     }
 
     @Override
@@ -237,11 +248,28 @@ public class GameActivity extends Activity implements View.OnTouchListener {
     }
 
     public void pauseGame(View view) {
-        //TODO send message
-
+        // TODO send message
         finish();
     }
 
+    @Override
+    public void onConnectivityUpdate(int eventId) {
+        switch (eventId) {
+            case DISCOVERY_STOPPED:
+            case DISCOVERY_FOUND_SERVICE:
+            case DISCOVERY_LOST_SERVICE:
+            case APPLICATION_CONNECTED:
+                // Ignore
+                break;
+            case APPLICATION_DISCONNECTED:
+            case APPLICATION_CONNECT_FAILED:
+                // TODO: Notify the user that the connection was lost.
+                Toast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
+                // We lost connect, return to the main activity.
+                finish();
+                break;
+        }
+    }
 
     //-----------------------------------------
     //Inner Classes
@@ -280,4 +308,5 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
         }
     };
+
 }
