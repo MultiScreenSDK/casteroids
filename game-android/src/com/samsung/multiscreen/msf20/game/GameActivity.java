@@ -8,6 +8,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.samsung.multiscreen.msf20.game.model.Fire;
+import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.game.model.Rotate;
+import com.samsung.multiscreen.msf20.game.model.Thrust;
+
 
 public class GameActivity extends Activity implements View.OnTouchListener {
 
@@ -15,8 +20,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
 
     private boolean turningLeft, turningRight,thrusting, firing;
 
+    /** GameConnectivityManager enables sending messages to the TV */
+    private GameConnectivityManager gameConnectivityManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         // Remove title bar
@@ -26,10 +35,13 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_game);
-        setOnTouchListners();
+        setOnTouchListeners();
+
+        //Get a reference to the Game Connectivity Manager
+        gameConnectivityManager = GameConnectivityManager.getInstance(this);
     }
 
-    private void setOnTouchListners() {
+    private void setOnTouchListeners() {
 
         int[] buttons = new int[]{R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button};
 
@@ -94,25 +106,41 @@ public class GameActivity extends Activity implements View.OnTouchListener {
     private void setTurningLeft(boolean value){
         turningLeft = value;
 
-        //TODO: send message
+        if(value) {
+            gameConnectivityManager.sendRotateMessage(Rotate.LEFT);
+        } else {
+            gameConnectivityManager.sendRotateMessage(Rotate.NONE);
+        }
     }
 
     private void setTurningRight(boolean value){
         turningRight = value;
 
-        //TODO: send message
+        if(value) {
+            gameConnectivityManager.sendRotateMessage(Rotate.RIGHT);
+        } else {
+            gameConnectivityManager.sendRotateMessage(Rotate.NONE);
+        }
     }
 
     private void setThrusting(boolean value){
         thrusting = value;
 
-        //TODO: send message
+        if(value) {
+            gameConnectivityManager.sendThrustMessage(Thrust.ON);
+        } else {
+            gameConnectivityManager.sendThrustMessage(Thrust.OFF);
+        }
     }
 
     private void setFiring(boolean value){
         firing = value;
 
-        //TODO: send message
+        if(value) {
+            gameConnectivityManager.sendFireMessage(Fire.ON);
+        } else {
+            gameConnectivityManager.sendFireMessage(Fire.OFF);
+        }
     }
 
     @Override
