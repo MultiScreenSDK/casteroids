@@ -437,7 +437,13 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             Log.d(TAG, "Application.onConnect() client: " + client.toString());
         }
 
-        // Do nothing here since we handle the connection in the onSuccess() callback.
+        synchronized (lock) {
+            // Store off our client just in case we need it.
+            this.client = client;
+        }
+
+        // Notify listeners that we are connected.
+        notifyConnectivityListeners(ConnectivityListener.APPLICATION_CONNECTED);
     }
 
     @Override
@@ -465,14 +471,6 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Application connect onSuccess() client: " + client.toString());
         }
-
-        synchronized (lock) {
-            // Store off our client just in case we need it.
-            this.client = client;
-        }
-
-        // Notifiy listeners that we are connected.
-        notifyConnectivityListeners(ConnectivityListener.APPLICATION_CONNECTED);
     }
 
     @Override
