@@ -4,7 +4,10 @@ package com.samsung.multiscreen.msf20.game.model;
  * This interface is implemented by components that want to receive connectivity updates.<br>
  * <br>
  * This interface tries to normalize the data so that it can be used to receive connectivity updates from the
- * Multiscreen SDK and other SDKs that your application integrates with.
+ * Multiscreen SDK and other SDKs that your application integrates with. <br>
+ * <br>
+ * Callbacks will not be on the UI thread. If the callback results in the UI being updated you need to run that change
+ * ont he UI thread.
  * 
  * @author Dan McCafferty
  * 
@@ -22,6 +25,7 @@ public interface ConnectivityListener {
 
     /**
      * Called any time a connectivity event occurs. <br>
+     * <br>
      * NOTE: This callback will not be on the UI thread. If the callback results in the UI being updated you need to run
      * that change ont he UI thread.
      * 

@@ -1,7 +1,6 @@
 package com.samsung.multiscreen.msf20.game.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -242,21 +241,31 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     }
 
     /**
-     * Returns the set of discovered service names.
+     * Returns a flag indicating whether or not at least one service has been discovered.
      * 
      * @return
      */
-    public Set<String> getDiscoveredServiceNames() {
-        return serviceMap.keySet();
+    public boolean hasDiscoveredService() {
+        return (serviceMap.size() > 0);
+    }
+    
+    /**
+     * Returns a String array of discovered service names.
+     * 
+     * @return
+     */
+    public String[] getDiscoveredServiceNames() {
+        Set<String> servicesNameSet = serviceMap.keySet();
+        return servicesNameSet.toArray(new String[servicesNameSet.size()]);
     }
 
     /**
-     * Returns the set of discovered Service objects.
+     * Returns a List of discovered Service objects.
      * 
      * @return
      */
-    public Collection<Service> getDiscoveredServices() {
-        return serviceMap.values();
+    public List<Service> getDiscoveredServices() {
+        return new ArrayList<Service>(serviceMap.values());
     }
 
     @Override
@@ -272,9 +281,6 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
         // Notify listeners of the found service.
         notifyConnectivityListeners(ConnectivityListener.DISCOVERY_FOUND_SERVICE);
-
-        // FIXME: Remove
-        connect(service);
     }
 
     @Override
@@ -441,6 +447,14 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             Log.d(TAG, "Application.onDisconnect() client: " + client.toString());
         }
 
+        synchronized (lock) {
+            // Null out the application object
+            application = null;
+
+            // Clear other data associated to the application
+            client = null;
+        }
+        
         // Notify listeners that we are no longer connected.
         notifyConnectivityListeners(ConnectivityListener.APPLICATION_DISCONNECTED);
     }
@@ -459,9 +473,6 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
         // Notifiy listeners that we are connected.
         notifyConnectivityListeners(ConnectivityListener.APPLICATION_CONNECTED);
-
-        // FIXME: Remove
-        this.sendMessage(Event.ROTATE.getName(), Rotate.LEFT.getName());
     }
 
     @Override
