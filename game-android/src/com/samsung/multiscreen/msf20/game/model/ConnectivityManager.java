@@ -24,14 +24,16 @@ import com.samsung.multiscreen.Service;
 import com.samsung.multiscreen.msf20.game.BuildConfig;
 
 /**
- * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs. This class was does not
- * contain any app specific logic.
+ * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs.<br>
+ * <br>
+ * This class does not contain any application specific logic.
  * 
  * @author Dan McCafferty
  * 
  */
 public class ConnectivityManager implements OnConnectListener, OnMessageListener, OnServiceFoundListener,
         OnServiceLostListener, Result<Client> {
+
     // Used to identify the source of a log message.
     protected final String TAG;
 
@@ -41,12 +43,14 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
     // Reference to the context.
     protected final Context context;
 
-    // The URI that the TV application runs at
-    // TODO: Allow this to be set and changed
-    private final Uri uri;
+    // The URL where the TV application lives
+    private String url;
+
+    // The URI where the TV application lives
+    private Uri uri;
 
     // The Channel ID for the TV application
-    private final String channelId;
+    private String channelId;
 
     // The maximum time that service discovery can run. Set to 0 for no limit.
     private final long discoveryTimeoutMillis;
@@ -82,6 +86,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
         this.context = context.getApplicationContext();
 
+        this.url = url;
         this.uri = Uri.parse(url);
         this.channelId = channelId;
         this.discoveryTimeoutMillis = discoveryTimeoutMillis;
@@ -457,5 +462,53 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         // TODO: add/remove listener based on when components register/unregister for event update
         // application.addOnMessageListener(event, this);
         // application.removeOnMessageListener(event, onMessageListener);
+    }
+
+    /******************************************************************************************************************
+     * Getter and Setter methods
+     */
+
+    /**
+     * Returns the URL where the TV application lives.
+     * 
+     * @return
+     */
+    public String getApplicationUrl() {
+        return this.url;
+    }
+
+    /**
+     * Sets the URL where the TV application lives.<br>
+     * <br>
+     * As a part of this method, a connected application will be disconnected.
+     * 
+     * @param url
+     */
+    public void setApplicationUrl(String url) {
+        disconnect();
+
+        this.url = url;
+        this.uri = Uri.parse(url);
+    }
+
+    /**
+     * Returns the Channel ID for the TV application
+     * 
+     * @return
+     */
+    public String getApplicationChannelId() {
+        return channelId;
+    }
+
+    /**
+     * Sets the Channel ID for the TV application.<br>
+     * <br>
+     * As a part of this method, a connected application will be disconnected.
+     * 
+     * @param channelId
+     */
+    public void setApplicationChanneId(String channelId) {
+        disconnect();
+        this.channelId = channelId;
     }
 }

@@ -13,7 +13,7 @@ public class GameConnectivityManager extends ConnectivityManager {
     // An singleton instance of this class
     private static GameConnectivityManager instance = null;
         
-    // The URL that the TV application runs at
+    // The URL where the TV application lives
     private static final String TV_APP_URL = "http://192.168.1.105:8080/dist/tv/";
 
     // The Channel ID for the TV application
