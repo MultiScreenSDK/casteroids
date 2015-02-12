@@ -1,7 +1,9 @@
 package com.samsung.multiscreen.msf20.game.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,6 +75,12 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
     // A lock used to synchronize creation of this object and access to the service map
     protected static final Object lock = new Object();
+
+    // A map that stores the registered connectivity listeners
+    private List<ConnectivityListener> connectivityListenerList = new ArrayList<ConnectivityListener>();
+
+    // A map that stores the registered message listeners
+    private Map<String, List<MessageListener>> messageListenerMap = new HashMap<String, List<MessageListener>>();
 
     /**
      * Constructor.
@@ -147,14 +155,16 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             Log.d(TAG, "Destroying ConnectivityManager.");
         }
 
-        // Stop any discovery actions
-        stopDiscovery();
+        synchronized (lock) {
+            // Stop any discovery actions
+            stopDiscovery();
 
-        // Disconnect from any applications
-        disconnect();
+            // Disconnect from any applications
+            disconnect();
 
-        // Clear the service map to release Service objects
-        serviceMap.clear();
+            // Clear the service map to release Service objects
+            serviceMap.clear();
+        }
     }
 
     /******************************************************************************************************************
@@ -170,27 +180,32 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             return;
         }
 
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Starting discovery.");
+        synchronized (lock) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Starting discovery.");
+            }
+
+            // Clear previous service mappings
+            serviceMap.clear();
+
+            // Get an instance of Search
+            search = Service.search(context);
+
+            // Add a listener for the service found event
+            search.setOnServiceFoundListener(this);
+
+            // Add a listener for the service lost event
+            search.setOnServiceLostListener(this);
+
+            // Start the discovery process
+            search.start();
         }
-
-        // Clear previous service mappings
-        serviceMap.clear();
-
-        // Get an instance of Search
-        search = Service.search(context);
-
-        // Add a listener for the service found event
-        search.setOnServiceFoundListener(this);
-
-        // Add a listener for the service lost event
-        search.setOnServiceLostListener(this);
-
-        // Start the discovery process
-        search.start();
 
         // Start the discovery timer to limit the discovery time.
         startDiscoveryTimer(discoveryTimeoutMillis);
+
+        // Notify listeners that discovery started.
+        notifyConnectivityListeners(ConnectivityListener.DISCOVERY_STARTED);
     }
 
     /**
@@ -202,14 +217,19 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             return;
         }
 
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Stopping discovery.");
+        synchronized (lock) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Stopping discovery.");
+            }
+
+            // Stop the discovery process after some amount of time, preferably once the user has selected a service to
+            // work with.
+            search.stop();
+            search = null;
         }
 
-        // Stop the discovery process after some amount of time, preferably once the user has selected a service to work
-        // with.
-        search.stop();
-        search = null;
+        // Notify listeners that discovery stopped.
+        notifyConnectivityListeners(ConnectivityListener.DISCOVERY_STOPPED);
     }
 
     /**
@@ -248,10 +268,13 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
             // Add service to a service map.
             serviceMap.put(service.getName(), service);
-
-            // FIXME: Remove
-            connect(service);
         }
+
+        // Notify listeners of the found service.
+        notifyConnectivityListeners(ConnectivityListener.DISCOVERY_FOUND_SERVICE);
+
+        // FIXME: Remove
+        connect(service);
     }
 
     @Override
@@ -264,6 +287,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             // Remove this service from the service map.
             serviceMap.remove(service.getName());
         }
+
+        // Notify listeners of the lost service.
+        notifyConnectivityListeners(ConnectivityListener.DISCOVERY_LOST_SERVICE);
     }
 
     /**
@@ -307,42 +333,49 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
      * 
      * @param serviceName
      *            The name of the service to connect to.
-     *            
+     * 
      * @see getDiscoveredServiceNames
      */
     public void connect(String serviceName) {
-        // Stop discovering services.
-        stopDiscovery();
+        synchronized (lock) {
+            // Stop discovering services.
+            stopDiscovery();
 
-        // Disconnect from any other applications.
-        disconnect();
+            // Disconnect from any other applications.
+            disconnect();
 
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Attempting to connect to application at '" + serviceName + "'. url=" + uri + ", channelId="
-                    + channelId);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Attempting to connect to application at '" + serviceName + "'. url=" + uri + ", channelId="
+                        + channelId);
+            }
+
+            // Get the Service object from the service map
+            Service service = serviceMap.get(serviceName);
+
+            if (service == null) {
+                onError(null);
+            }
+
+            // Get an instance of Application.
+            application = service.createApplication(uri, channelId);
+
+            // Listen for the connect/disconnect events
+            application.setOnConnectListener(this);
+            application.setOnDisconnectListener(this);
+
+            // NOTE: There are other listeners that we could register for but are not needed for this application
+            // application.setOnClientConnectListener(this);
+            // application.setOnClientDisconnectListener(this);
+            // application.setOnErrorListener(this);
+
+            // Add message listeners for all registered events
+            for (String event : messageListenerMap.keySet()) {
+                application.addOnMessageListener(event, this);
+            }
+
+            // Connect and launch the application.
+            application.connect(this);
         }
-
-        // Get the Service object from the service map
-        Service service = serviceMap.get(serviceName);
-
-        if (service == null) {
-            onError(null);
-        }
-
-        // Get an instance of Application.
-        application = service.createApplication(uri, channelId);
-
-        // Listen for the connect/disconnect events
-        application.setOnConnectListener(this);
-        application.setOnDisconnectListener(this);
-
-        // NOTE: There are other listeners that we could register for but are not needed for this application
-        // application.setOnClientConnectListener(this);
-        // application.setOnClientDisconnectListener(this);
-        // application.setOnErrorListener(this);
-
-        // Connect and launch the application.
-        application.connect(this);
     }
 
     /**
@@ -350,7 +383,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
      * 
      * @param service
      *            The Service object to connect to.
-     *            
+     * 
      * @see getDiscoveredServices
      */
     public void connect(Service service) {
@@ -368,16 +401,18 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             return;
         }
 
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Attempting to disconnect from application '" + application.getId() + "'");
+        synchronized (lock) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Attempting to disconnect from application '" + application.getId() + "'");
+            }
+
+            // Disconnect from the application
+            application.disconnect();
+            application = null;
+
+            // Clear other data associated to the application
+            client = null;
         }
-
-        // Disconnect from the application
-        application.disconnect();
-        application = null;
-
-        // Clear other data associated to the application
-        client = null;
     }
 
     /**
@@ -407,7 +442,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
         }
 
         // Notify listeners that we are no longer connected.
-        // TODO: Implement
+        notifyConnectivityListeners(ConnectivityListener.APPLICATION_DISCONNECTED);
     }
 
     @Override
@@ -417,11 +452,13 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             Log.d(TAG, "Application connect onSuccess() client: " + client.toString());
         }
 
-        // Store off our client just in case we need it.
-        this.client = client;
+        synchronized (lock) {
+            // Store off our client just in case we need it.
+            this.client = client;
+        }
 
         // Notifiy listeners that we are connected.
-        // TODO: Implement
+        notifyConnectivityListeners(ConnectivityListener.APPLICATION_CONNECTED);
 
         // FIXME: Remove
         this.sendMessage(Event.ROTATE.getName(), Rotate.LEFT.getName());
@@ -435,8 +472,8 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             Log.w(TAG, "Application connect onError() error: " + errorMsg);
         }
 
-        // Notifiy listeners of the error.
-        // TODO: Implement
+        // Notify listeners of the error.
+        notifyConnectivityListeners(ConnectivityListener.APPLICATION_CONNECT_FAILED);
     }
 
     /******************************************************************************************************************
@@ -493,12 +530,28 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Application.onMessage() message: " + message.toString());
         }
-        // Process the message.
-        // TODO: Implement.
 
-        // TODO: add/remove listener based on when components register/unregister for event update
-        // application.addOnMessageListener(event, this);
-        // application.removeOnMessageListener(event, onMessageListener);
+        // Notify the registered listeners.
+        synchronized (lock) {
+            List<MessageListener> listeners = messageListenerMap.get(message.getEvent());
+            if (listeners != null) {
+                // Extract data
+                String event = message.getEvent();
+                String data = (String) message.getData();
+                byte[] payload = message.getPayload();
+
+                // Send to the listeners
+                for (MessageListener listener : listeners) {
+                    try {
+                        listener.onMessage(event, data, payload);
+                    } catch (Exception e) {
+                        String simpleName = listener.getClass().getSimpleName();
+                        Log.e(TAG, "Failed to send " + simpleName + " a '" + event + "' message updates. data=" + data,
+                                e);
+                    }
+                }
+            }
+        }
     }
 
     /******************************************************************************************************************
@@ -547,5 +600,198 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     public void setApplicationChanneId(String channelId) {
         disconnect();
         this.channelId = channelId;
+    }
+
+    /******************************************************************************************************************
+     * Listener Registration related methods
+     */
+
+    /**
+     * Registers the given listener for connectivity updates.
+     * 
+     * @param listener
+     */
+    public void registerConnectivityListener(ConnectivityListener listener) {
+        if (listener == null) {
+            return;
+        }
+
+        synchronized (lock) {
+            // Add the listener to the list if its not already in there.
+            if (!connectivityListenerList.contains(listener)) {
+                connectivityListenerList.add(listener);
+
+                if (BuildConfig.DEBUG) {
+                    String simpleName = listener.getClass().getSimpleName();
+                    int count = connectivityListenerList.size();
+                    Log.v(TAG, "Registering " + simpleName + " for connectivity updates. count=" + count);
+                }
+            }
+        }
+    }
+
+    /**
+     * Unregisters the given listener from connectivity updates.
+     * 
+     * @param listener
+     */
+    public void unregisterConnectivityListener(ConnectivityListener listener) {
+        if (listener == null) {
+            return;
+        }
+
+        synchronized (lock) {
+            // If the list is not null, then attempt to remove the listener.
+            boolean removed = connectivityListenerList.remove(listener);
+
+            if (BuildConfig.DEBUG) {
+                String msg = removed ? "Unregistering " : "Could not unregister ";
+                String simpleName = listener.getClass().getSimpleName();
+                int count = connectivityListenerList.size();
+                Log.v(TAG, msg + simpleName + " from connectivity updates. count=" + count);
+            }
+        }
+    }
+
+    /**
+     * Sends a connectivity update to all registered listeners.
+     * 
+     * @param eventId
+     */
+    private void notifyConnectivityListeners(int eventId) {
+        synchronized (lock) {
+            if (BuildConfig.DEBUG) {
+                int count = connectivityListenerList.size();
+                Log.d(TAG, "Sending a connectivity update. eventId=" + eventId + ", count=" + count);
+            }
+            for (ConnectivityListener listener : connectivityListenerList) {
+                try {
+                    if (BuildConfig.DEBUG) {
+                        String simpleName = listener.getClass().getSimpleName();
+                        Log.d(TAG, "Sending " + simpleName + " a connectivity update. eventId=" + eventId);
+                    }
+                    listener.onConnectivityUpdate(eventId);
+                } catch (Exception e) {
+                    String simpleName = listener.getClass().getSimpleName();
+                    Log.e(TAG, "Failed to send " + simpleName + " a connectivity update. eventId=" + eventId, e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers the given listener for message updates.
+     * 
+     * @param listener
+     * @param events
+     */
+    public void registerMessageListener(MessageListener listener, String... events) {
+        if ((listener == null) || (events == null)) {
+            return;
+        }
+
+        for (String event : events) {
+            registerMessageListener(listener, event);
+        }
+    }
+
+    /**
+     * Registers the given listener for message updates.
+     * 
+     * @param listener
+     * @param event
+     */
+    public void registerMessageListener(MessageListener listener, String event) {
+        if ((listener == null) || (event == null)) {
+            return;
+        }
+
+        synchronized (lock) {
+            // Get the list of registered listeners.
+            List<MessageListener> listeners = messageListenerMap.get(event);
+
+            // If the list is null, then create it.
+            if (listeners == null) {
+                listeners = new ArrayList<MessageListener>();
+                messageListenerMap.put(event, listeners);
+            }
+
+            // Store the original size of the list
+            int originalSize = listeners.size();
+
+            // Add the listener to the list if its not already in there.
+            if (!listeners.contains(listener)) {
+                listeners.add(listener);
+
+                if (BuildConfig.DEBUG) {
+                    String simpleName = listener.getClass().getSimpleName();
+                    int count = listeners.size();
+                    Log.v(TAG, "Registering " + simpleName + " for '" + event + "' changed updates. count=" + count);
+                }
+            }
+
+            // If this is the first listener registering for this event, register with the application for the event.
+            if ((originalSize != 1) && (listeners.size() == 1) && isConnected()) {
+                application.addOnMessageListener(event, this);
+            }
+        }
+    }
+
+    /**
+     * Unregisters the given listener for message updates.
+     * 
+     * @param listener
+     * @param events
+     */
+    public void unregisterMessageListener(MessageListener listener, String... events) {
+        if ((listener == null) || (events == null)) {
+            return;
+        }
+
+        for (String event : events) {
+            unregisterMessageListener(listener, event);
+        }
+    }
+
+    /**
+     * Unregisters the given listener for message updates.
+     * 
+     * @param listener
+     * @param event
+     */
+    public void unregisterMessageListener(MessageListener listener, String event) {
+        if ((listener == null) || (event == null)) {
+            return;
+        }
+
+        synchronized (lock) {
+            // Get the list of registered listeners.
+            List<MessageListener> listeners = messageListenerMap.get(event);
+
+            // Store the original size of the list map
+            int originalSize = listeners.size();
+
+            // If the list is not null, then attempt to remove the listener.
+            if (listeners != null) {
+                boolean removed = listeners.remove(listener);
+
+                if (BuildConfig.DEBUG) {
+                    String msg = removed ? "Unregistering " : "Could not unregister ";
+                    String simpleName = listener.getClass().getSimpleName();
+                    int count = listeners.size();
+                    Log.v(TAG, msg + simpleName + " from '" + event + "' changed updates. count=" + count);
+                }
+
+                // If the list size is zero remove it.
+                if (listeners.size() == 0) {
+                    messageListenerMap.remove(event);
+                }
+            }
+
+            // If the size of the list map just changed to 0, then unregister with the application for the event.
+            if ((originalSize != 0) && (listeners.size() == 0) && isConnected()) {
+                application.removeOnMessageListener(event, this);
+            }
+        }
     }
 }
