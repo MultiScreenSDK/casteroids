@@ -21,6 +21,11 @@ import com.samsung.multiscreen.msf20.game.model.Rotate;
 import com.samsung.multiscreen.msf20.game.model.Thrust;
 import com.samsung.multiscreen.msf20.game.views.CompassView;
 
+/**
+ * The spaceship game happens here.
+ *
+ * @author Nik Bhattacharya
+ */
 public class GameActivity extends Activity implements View.OnTouchListener, ConnectivityListener {
 
     /** Debugging */

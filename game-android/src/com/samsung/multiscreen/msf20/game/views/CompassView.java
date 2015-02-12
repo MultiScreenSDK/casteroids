@@ -10,6 +10,12 @@ import android.view.View;
 
 import com.samsung.multiscreen.msf20.game.R;
 
+/**
+ * Visual representation of the orientation of the device while held in landscape mode.
+ *
+ * @author Nik Bhattacharya
+ */
+
 public class CompassView extends View {
 
     float pitch;
@@ -18,44 +24,34 @@ public class CompassView extends View {
     private Paint textPaint;
     private Paint circlePaint;
 
-
-    private int textHeight;
-
     /**
-     * Get the current pitch
-     */
-    public float getPitch() {
-        return pitch;
-    }
-
-    /**
-     * Set the current pitch
-     */
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
-    }
-
-    /**
-     * Set whether the pitch value is shown or not.
+     * Constructor.
      *
-     * @param show
+     * @param context
      */
-    public void setShowNumber(boolean show){
-        this.showNumber = show;
-    }
-
-
-
     public CompassView(Context context) {
         super(context);
         initCompassView();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param context
+     * @param attrs
+     */
     public CompassView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initCompassView();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param context
+     * @param attrs
+     * @param defaultStyle
+     */
     public CompassView(Context context, AttributeSet attrs, int defaultStyle) {
         super(context, attrs, defaultStyle);
         initCompassView();
@@ -74,8 +70,6 @@ public class CompassView extends View {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(r.getColor(R.color.grey_100));
         textPaint.setTextSize(45);
-
-        textHeight = (int) textPaint.measureText("yY");
 
         markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         markerPaint.setColor(r.getColor(R.color.green_800));
@@ -138,9 +132,32 @@ public class CompassView extends View {
         markerPaint.setStyle(Paint.Style.STROKE);
         canvas.restore();
 
-        if(showNumber) {
+        if (showNumber) {
             canvas.drawText(String.format("%.0f", pitch), centerX, centerY, textPaint);
         }
 
+    }
+
+    /**
+     * Get the current pitch
+     */
+    public float getPitch() {
+        return pitch;
+    }
+
+    /**
+     * Set the current pitch
+     */
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    /**
+     * Set whether the pitch value is shown or not.
+     *
+     * @param show
+     */
+    public void setShowNumber(boolean show) {
+        this.showNumber = show;
     }
 }

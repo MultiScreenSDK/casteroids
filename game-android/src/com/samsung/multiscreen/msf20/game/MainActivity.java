@@ -10,6 +10,12 @@ import android.widget.Toast;
 import com.samsung.multiscreen.msf20.game.model.ConnectivityListener;
 import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
 
+/**
+ * Entry point into the Game.
+ *
+ * @author Nik Bhattacharya
+ *
+ */
 public class MainActivity extends Activity implements ConnectivityListener {
 
     private GameConnectivityManager connectivityManager = null;
