@@ -268,7 +268,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
         // Listen for the connect event
         application.setOnConnectListener(this);
-
+        
         // Connect and launch the application.
         application.connect(this);
     }
@@ -395,5 +395,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         }
         // Process the message.
         // TODO: Implement.
+
+        // TODO: add/remove listener based on when components register/unregister for event update
+        //application.addOnMessageListener(event, this);
+        //application.removeOnMessageListener(event, onMessageListener);        
     }
 }
