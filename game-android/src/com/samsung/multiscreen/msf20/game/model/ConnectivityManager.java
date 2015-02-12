@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 import android.util.Log;
 
-import com.koushikdutta.async.BuildConfig;
 import com.samsung.multiscreen.Application;
 import com.samsung.multiscreen.Channel.OnConnectListener;
 import com.samsung.multiscreen.Channel.OnMessageListener;
@@ -22,10 +21,10 @@ import com.samsung.multiscreen.Search;
 import com.samsung.multiscreen.Search.OnServiceFoundListener;
 import com.samsung.multiscreen.Search.OnServiceLostListener;
 import com.samsung.multiscreen.Service;
+import com.samsung.multiscreen.msf20.game.BuildConfig;
 
 /**
- * Encapsulates the logic to Discover, Connect, and Communicate to compatible
- * Samsung SmartTVs.
+ * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs.
  * 
  * @author Dan McCafferty
  * 
@@ -37,16 +36,16 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
     // The URL that the TV application runs at
     // TODO: Pass in.
-    private static final String url = "http://dev-multiscreen-examples.s3-website-us-west-1.amazonaws.com/examples/helloworld/tv/";
-    
+    private static final String url = "http://192.168.1.105:8080/dist/tv/";
+
     // The Channel ID for the TV application
     // TODO: Pass in.
     private static final String channelId = "com.samsung.multiscreen.game";
-    
+
     // The maximum time that service discovery can run. Set to 0 for no limit.
     // TODO: Pass in.
     private static final int MAX_SERVICE_DISCOVERY_TIME_MILLIS = (1000 * 60); // 1 minute
-    
+
     // The URI that the TV application runs at
     private static final Uri uri = Uri.parse(url);
 
@@ -95,6 +94,26 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
             }
         }
         return instance;
+    }
+
+    /**
+     * Call this method to notify this object that it is no longer used and is being removed. The object will clean up
+     * any resources it holds (threads, registered receivers, etc) at this point. Upon return, there should be no more
+     * calls in to this module object and it is effectively dead.
+     */
+    public void onDestroy() {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Destroying ConnectivityManager.");
+        }
+
+        // Stop any discovery actions
+        stopDiscovery();
+
+        // Disconnect from any applications
+        disconnect();
+
+        // Clear the service map to release Service objects
+        serviceMap.clear();
     }
 
     /******************************************************************************************************************
@@ -146,8 +165,8 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
             Log.d(TAG, "Stopping discovery.");
         }
 
-        // Stop the discovery process after some amount of time, preferably
-        // once the user has selected a service to work with.
+        // Stop the discovery process after some amount of time, preferably once the user has selected a service to work
+        // with.
         search.stop();
         search = null;
     }
@@ -188,6 +207,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
             // Add service to a service map.
             serviceMap.put(service.getName(), service);
+            
+            // FIXME: Remove
+            connect(service);
         }
     }
 
@@ -268,7 +290,14 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
         // Listen for the connect event
         application.setOnConnectListener(this);
-        
+
+        // TODO: Determine which other listeners we need
+        // application.setOnConnectListener(this);
+        // application.setOnDisconnectListener(this);
+        // application.setOnClientConnectListener(this);
+        // application.setOnClientDisconnectListener(this);
+        // application.setOnErrorListener(this);
+
         // Connect and launch the application.
         application.connect(this);
     }
@@ -306,8 +335,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
     }
 
     /**
-     * Returns a flag indicating whether or not there is a connected
-     * application.
+     * Returns a flag indicating whether or not there is a connected application.
      * 
      * @return
      */
@@ -320,8 +348,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Application.onConnect() client: " + client.toString());
         }
-        // Ignore since this application does not require client to client
-        // communication
+        // Ignore since this application does not require client to client communication
     }
 
     @Override
@@ -332,7 +359,11 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
         // The application is launched, and is ready to accept messages.
         this.client = client;
+        
         // TODO: Implement
+        
+        // FIXME: Remove
+        this.sendMessage(Event.ROTATE.getName(), Rotate.LEFT.getName());
     }
 
     @Override
@@ -366,10 +397,8 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * @param event
      * @param messageData
      * @param target
-     *            The target of the message. Can be the TV application
-     *            (Message.TARGET_HOST), to all connected clients EXCEPT self
-     *            (Message.TARGET_BROADCAST), to all clients INCLUDING self
-     *            (Message.TARGET_ALL).
+     *            The target of the message. Can be the TV application (Message.TARGET_HOST), to all connected clients
+     *            EXCEPT self (Message.TARGET_BROADCAST), to all clients INCLUDING self (Message.TARGET_ALL).
      */
     public void sendMessage(String event, String messageData, String target) {
         if (!isConnected()) {
@@ -397,7 +426,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
         // TODO: Implement.
 
         // TODO: add/remove listener based on when components register/unregister for event update
-        //application.addOnMessageListener(event, this);
-        //application.removeOnMessageListener(event, onMessageListener);        
+        // application.addOnMessageListener(event, this);
+        // application.removeOnMessageListener(event, onMessageListener);
     }
 }
