@@ -207,7 +207,7 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
             // Add service to a service map.
             serviceMap.put(service.getName(), service);
-            
+
             // FIXME: Remove
             connect(service);
         }
@@ -359,9 +359,9 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
 
         // The application is launched, and is ready to accept messages.
         this.client = client;
-        
+
         // TODO: Implement
-        
+
         // FIXME: Remove
         this.sendMessage(Event.ROTATE.getName(), Rotate.LEFT.getName());
     }
@@ -385,31 +385,36 @@ public class ConnectivityManager implements OnConnectListener, OnMessageListener
      * Send a message to the TV application.
      * 
      * @param event
-     * @param messageData
+     * @param data
      */
-    public void sendMessage(String event, String messageData) {
-        sendMessage(event, messageData, Message.TARGET_HOST);
+    public void sendMessage(String event, String data) {
+        sendMessage(event, data, Message.TARGET_HOST);
     }
 
     /**
      * Send a message to the given target.
      * 
      * @param event
-     * @param messageData
+     * @param data
      * @param target
      *            The target of the message. Can be the TV application (Message.TARGET_HOST), to all connected clients
      *            EXCEPT self (Message.TARGET_BROADCAST), to all clients INCLUDING self (Message.TARGET_ALL).
      */
-    public void sendMessage(String event, String messageData, String target) {
+    public void sendMessage(String event, String data, String target) {
         if (!isConnected()) {
             if (BuildConfig.DEBUG) {
-                Log.w(TAG, "Cannot send message. Not connected. event=" + event + ", data=" + messageData);
+                Log.w(TAG, "Cannot send message. Not connected. event=" + event + ", data=" + data + ", target="
+                        + target);
             }
             return;
         }
 
+        if (BuildConfig.DEBUG) {
+            Log.w(TAG, "Sending message. event=" + event + ", data=" + data + ", target=" + target);
+        }
+
         // Send a message to the target
-        application.publish(event, messageData, target);
+        application.publish(event, data, target);
     }
 
     /**
