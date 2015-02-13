@@ -45,4 +45,4 @@ AndroidUnusedResources1.6.2.jar
 
 ## App specific
 # Dont check in a modified DevUrl class
-#game-android/src/com/samsung/multiscreen/msf20/game/model/DevUrl.java
+game-android/src/com/samsung/multiscreen/msf20/game/model/DevUrl.java
