@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.samsung.multiscreen.msf20.game.SplashActivity">
+    tools:context="com.samsung.multiscreen.msf20.game.SplashActivity"
+    android:background="@drawable/deepspace">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -10,7 +11,8 @@
     <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
         android:textStyle="bold" android:gravity="center"
-        android:text="@string/app_name" />
+        android:text="@string/app_name"
+        android:textSize="50sp"/>
 
 
 

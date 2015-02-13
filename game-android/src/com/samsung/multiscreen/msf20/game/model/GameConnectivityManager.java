@@ -20,7 +20,7 @@ public class GameConnectivityManager extends ConnectivityManager {
 
     // The URL where the TV application lives
     private static final String TV_APP_URL = "http://192.168.1.105:8080/dist/tv/";
-    // private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
+    //private static final String TV_APP_URL = "http://127.0.0.1:63343/game-webapp/dist/tv/index.html";
 
     // The Channel ID for the TV application
     private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.game";
