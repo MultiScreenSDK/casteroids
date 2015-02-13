@@ -12,7 +12,7 @@ public enum Event {
      */
 
     // Event sent to start/stop/pause the game.
-    GAME_OPTION("game", true),
+    GAME_OPTION("game_option", true),
     
     // Event sent to start/stop rotation of the spacecraft
     ROTATE("rotate", true),

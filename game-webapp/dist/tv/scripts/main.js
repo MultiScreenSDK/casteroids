@@ -17,6 +17,10 @@ $(function(){
             if(err) return console.error(err);
         });
 
+        channel.on('game_option', function(msg, from){
+            channel.publish('game_state', 'start');
+        });
+
         channel.on('rotate', function(msg, from){
             ui.rotate.text(msg);
             ui.client.text((from.attributes.name || 'Unknown'));
