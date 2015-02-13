@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.samsung.multiscreen.msf20.game.model.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
 
 /**

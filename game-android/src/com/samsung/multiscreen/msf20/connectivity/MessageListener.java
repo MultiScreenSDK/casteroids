@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game.model;
+package com.samsung.multiscreen.msf20.connectivity;
 
 /**
  * This interface is implemented by components that want to receive messsage updates.<br>

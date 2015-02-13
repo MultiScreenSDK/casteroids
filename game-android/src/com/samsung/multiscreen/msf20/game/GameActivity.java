@@ -14,7 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.samsung.multiscreen.msf20.game.model.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.game.model.Fire;
 import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.game.model.Rotate;

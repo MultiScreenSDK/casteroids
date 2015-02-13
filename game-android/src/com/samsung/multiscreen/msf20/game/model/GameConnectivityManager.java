@@ -1,5 +1,7 @@
 package com.samsung.multiscreen.msf20.game.model;
 
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
+
 import android.content.Context;
 
 /**

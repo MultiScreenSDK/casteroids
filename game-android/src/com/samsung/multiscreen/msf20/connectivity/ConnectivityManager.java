@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game.model;
+package com.samsung.multiscreen.msf20.connectivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
