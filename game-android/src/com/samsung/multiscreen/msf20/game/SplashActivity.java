@@ -34,8 +34,8 @@ public class SplashActivity extends Activity {
         // Get an instance of the ConnectivtyManager and start discovery of compatible Samsung SmartTVs.
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         connectivityManager.startDiscovery();
-        
-        // temporary
+
+        //Give the connectivity manager a bit of time to find the TV
         ThreadUtils.postOnUiThreadDelayed(new Runnable() {
             @Override
             public void run() {
@@ -46,17 +46,9 @@ public class SplashActivity extends Activity {
     }
 
     private void launchActivity() {
-        boolean isConnected = true; // FIXME
-        if (isConnected) {
-            Intent mainActivityIntent = new Intent();
-            mainActivityIntent.setClass(this, MainActivity.class);
-            startActivity(mainActivityIntent);
-        } else {
-            Intent connectActivityIntent = new Intent();
-            connectActivityIntent.setClass(this, MainActivity.class); // FIXME
-            
-            startActivity(connectActivityIntent);
-        }
+        Intent mainActivityIntent = new Intent();
+        mainActivityIntent.setClass(this, MainActivity.class);
+        startActivity(mainActivityIntent);
     }
 
 }

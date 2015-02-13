@@ -145,12 +145,17 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
             compassView.invalidate();
         }
 
-        if(pitch > -10 && pitch < 10) {
-            setTurningRight(false);
-            setTurningLeft(false);
-        } else if (pitch <= -10 && !turningRight) {
+        int threshold = 10;
+        if(pitch > -threshold && pitch < threshold) {
+            if(turningRight) {
+                setTurningRight(false);
+            }
+            if(turningLeft) {
+                setTurningLeft(false);
+            }
+        } else if (pitch <= -threshold && !turningRight) {
             setTurningRight(true);
-        } else if(pitch >= 10 && !turningLeft) {
+        } else if(pitch >= threshold && !turningLeft) {
             setTurningLeft(true);
         }
     }
