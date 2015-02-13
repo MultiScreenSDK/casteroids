@@ -345,8 +345,12 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
      */
     public boolean connect(String serviceName) {
         synchronized (lock) {
-            // Disconnect from any other applications.
+            // If we just initiated a disconnected from an application, we cannot attempt to connect to it until we get
+            // the onDisconnect callback.
             if (disconnect()) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Cannot attempt connect. Waiting for disconnect attempt to complete.");
+                }
                 return false;
             }
 
@@ -385,7 +389,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             // Connect and launch the application.
             application.connect(this);
         }
-        
+
         return true;
     }
 
@@ -420,12 +424,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
                 Log.d(TAG, "Attempting to disconnect from application '" + application.getId() + "'");
             }
 
-            // Disconnect from the application
+            // Initiate the disconnect from the application. The disconnect will be confirmed by the onDisconnect()
+            // callback.
             application.disconnect();
-            application = null;
-
-            // Clear other data associated to the application
-            client = null;
         }
 
         return true;
@@ -464,10 +465,10 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
         }
 
         synchronized (lock) {
-            // Null out the application object
+            // Reset the application object
             application = null;
-
-            // Clear other data associated to the application
+            
+            // Reset other data associated to the application connection.
             client = null;
         }
 
