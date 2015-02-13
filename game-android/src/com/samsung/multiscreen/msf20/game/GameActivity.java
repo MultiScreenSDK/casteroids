@@ -77,7 +77,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        updateOrientation(0);
+
         compassView.setShowNumber(true);
 
         //button touches
@@ -85,8 +85,8 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
         // Get an instance of the ConnectivtyManager and register for connectivity updates.
         gameConnectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
@@ -97,6 +97,14 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
             // TODO: Notify the user that we are not connected.
             Toast.makeText(this, "No connection.", Toast.LENGTH_SHORT).show();
             finish();
+        }
+
+        //start the sensor listeners
+        if(accelerometer != null) {
+            sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+        }
+        if(magneticField != null) {
+            sensorManager.registerListener(sensorEventListener, magneticField, SensorManager.SENSOR_DELAY_GAME);
         }
     }
 
@@ -124,21 +132,18 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
             compassView.setPitch(pitch);
             compassView.invalidate();
         }
-    }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-
-        //start the sensor listeners
-        if(accelerometer != null) {
-            sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
-        }
-        if(magneticField != null) {
-            sensorManager.registerListener(sensorEventListener, magneticField, SensorManager.SENSOR_DELAY_GAME);
+        if(pitch > -10 && pitch < 10) {
+            setTurningRight(false);
+            setTurningLeft(false);
+        } else if (pitch <= -10 && !turningRight) {
+            setTurningRight(true);
+        } else if(pitch >= 10 && !turningLeft) {
+            setTurningLeft(true);
         }
     }
+
+
 
 
     private void setOnTouchListeners() {
