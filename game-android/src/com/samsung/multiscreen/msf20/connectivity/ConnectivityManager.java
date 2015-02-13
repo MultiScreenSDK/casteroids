@@ -383,6 +383,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
             // Add message listeners for all registered events
             for (String event : messageListenerMap.keySet()) {
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Adding message listener for '" + event + "'");
+                }
                 application.addOnMessageListener(event, this);
             }
 
@@ -467,7 +470,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
         synchronized (lock) {
             // Reset the application object
             application = null;
-            
+
             // Reset other data associated to the application connection.
             client = null;
         }
@@ -563,10 +566,14 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
                 // Send to the listeners
                 for (MessageListener listener : listeners) {
                     try {
+                        if (BuildConfig.DEBUG) {
+                            String simpleName = listener.getClass().getSimpleName();
+                            Log.d(TAG, "Sending " + simpleName + " a '" + event + "' message update. data=" + data);
+                        }
                         listener.onMessage(event, data, payload);
                     } catch (Exception e) {
                         String simpleName = listener.getClass().getSimpleName();
-                        Log.e(TAG, "Failed to send " + simpleName + " a '" + event + "' message updates. data=" + data,
+                        Log.e(TAG, "Failed to send " + simpleName + " a '" + event + "' message update. data=" + data,
                                 e);
                     }
                 }
@@ -752,6 +759,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
             // If this is the first listener registering for this event, register with the application for the event.
             if ((originalSize != 1) && (listeners.size() == 1) && isConnected()) {
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Adding message listener for '" + event + "'");
+                }
                 application.addOnMessageListener(event, this);
             }
         }
@@ -810,6 +820,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
             // If the size of the list map just changed to 0, then unregister with the application for the event.
             if ((originalSize != 0) && (listeners.size() == 0) && isConnected()) {
+                if (BuildConfig.DEBUG) {
+                    Log.v(TAG, "Removing message listener from '" + event + "'");
+                }
                 application.removeOnMessageListener(event, this);
             }
         }

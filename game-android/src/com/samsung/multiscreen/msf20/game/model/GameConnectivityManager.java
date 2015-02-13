@@ -56,6 +56,15 @@ public class GameConnectivityManager extends ConnectivityManager {
     }
 
     /**
+     * Sends a GAME_OPTION message to the TV application.
+     * 
+     * @param rotate
+     */
+    public void sendGameOptionMessage(GameOption option) {
+        sendMessage(Event.GAME_OPTION.getName(), option.getName());
+    }
+        
+    /**
      * Sends a ROTATE message to the TV application.
      * 
      * @param rotate
