@@ -39,6 +39,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     // Used to identify the source of a log message.
     protected final String TAG;
 
+    // An singleton instance of this class
+    private static ConnectivityManager instance = null;
+
     // The default time that service discovery can run. Set to 0 for no limit.
     protected static final long DEFAULT_DISCOVERY_TIMEOUT_MILLIS = (1000 * 60); // 1 minute
 
@@ -56,9 +59,6 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
     // The maximum time that service discovery can run. Set to 0 for no limit.
     private final long discoveryTimeoutMillis;
-
-    // An singleton instance of this class
-    private static ConnectivityManager instance = null;
 
     // The current Search object used during service discovery or null.
     private Search search = null;
@@ -264,7 +264,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
      * 
      * @return
      */
-    public List<Service> getDiscoveredServices() {
+    protected List<Service> getDiscoveredServices() {
         return new ArrayList<Service>(serviceMap.values());
     }
 

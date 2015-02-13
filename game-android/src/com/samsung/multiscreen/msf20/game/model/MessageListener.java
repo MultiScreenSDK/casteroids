@@ -4,7 +4,7 @@ package com.samsung.multiscreen.msf20.game.model;
  * This interface is implemented by components that want to receive messsage updates.<br>
  * <br>
  * This interface tries to normalize the data so that it can be used to receive messages from the Multiscreen SDK and
- * other SDKs that your application integrates with. * <br>
+ * other SDKs that your application integrates with.<br>
  * <br>
  * Callbacks will not be on the UI thread. If the callback results in the UI being updated you need to run that change
  * ont he UI thread.
