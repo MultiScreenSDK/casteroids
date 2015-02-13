@@ -248,7 +248,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     public boolean hasDiscoveredService() {
         return (serviceMap.size() > 0);
     }
-    
+
     /**
      * Returns a String array of discovered service names.
      * 
@@ -339,16 +339,19 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
      * 
      * @param serviceName
      *            The name of the service to connect to.
+     * @return Returns true if attempted to connect to an application otherwise false.
      * 
      * @see getDiscoveredServiceNames
      */
-    public void connect(String serviceName) {
+    public boolean connect(String serviceName) {
         synchronized (lock) {
+            // Disconnect from any other applications.
+            if (disconnect()) {
+                return false;
+            }
+
             // Stop discovering services.
             stopDiscovery();
-
-            // Disconnect from any other applications.
-            disconnect();
 
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Attempting to connect to application at '" + serviceName + "'. url=" + uri + ", channelId="
@@ -382,6 +385,8 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             // Connect and launch the application.
             application.connect(this);
         }
+        
+        return true;
     }
 
     /**
@@ -389,22 +394,25 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
      * 
      * @param service
      *            The Service object to connect to.
+     * @return Returns true if attempted to connect to an application otherwise false.
      * 
      * @see getDiscoveredServices
      */
-    public void connect(Service service) {
+    protected boolean connect(Service service) {
         // By connecting by name we will make sure the service is still
         // available before attempting to connect.
-        connect(service.getName());
+        return connect(service.getName());
     }
 
     /**
      * Disconnects from the current application.
+     * 
+     * @return Returns true if attempted to disconnect from an application otherwise false.
      */
-    public void disconnect() {
+    public boolean disconnect() {
         // If we are not connected, return.
         if (!isConnected()) {
-            return;
+            return false;
         }
 
         synchronized (lock) {
@@ -419,6 +427,8 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             // Clear other data associated to the application
             client = null;
         }
+
+        return true;
     }
 
     /**
@@ -460,7 +470,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
             // Clear other data associated to the application
             client = null;
         }
-        
+
         // Notify listeners that we are no longer connected.
         notifyConnectivityListeners(ConnectivityListener.APPLICATION_DISCONNECTED);
     }
