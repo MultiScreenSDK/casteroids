@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +37,9 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
     /** GameConnectivityManager enables sending messages to the TV */
     private GameConnectivityManager gameConnectivityManager;
+
+    /** Vibration service */
+    private Vibrator vibrator;
 
     /** Device orientation */
     float pitch = 0;
@@ -77,8 +81,10 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
         compassView.setShowNumber(true);
+
+        //to control the vibration on button press
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         //button touches
         setOnTouchListeners();
@@ -241,6 +247,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
         if (value) {
             gameConnectivityManager.sendFireMessage(Fire.ON);
+            vibrator.vibrate(10);
         } else {
             gameConnectivityManager.sendFireMessage(Fire.OFF);
         }
