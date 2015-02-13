@@ -2,8 +2,6 @@ package com.samsung.multiscreen.msf20.game.model;
 
 import android.content.Context;
 
-import com.samsung.multiscreen.msf20.game.BuildConfig;
-
 /**
  * Extends the ConnectivityManager with app specific logic.<br>
  * <br>
@@ -47,8 +45,7 @@ public class GameConnectivityManager extends ConnectivityManager {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
-                    String tvAppUrl = (BuildConfig.DEBUG && DevUrl.hasUrl()) ? DevUrl.url : TV_APP_URL;
-                    instance = new GameConnectivityManager(context, tvAppUrl, TV_APP_CHANNEL_ID,
+                    instance = new GameConnectivityManager(context, TV_APP_URL, TV_APP_CHANNEL_ID,
                             DEFAULT_DISCOVERY_TIMEOUT_MILLIS);
                 }
             }
