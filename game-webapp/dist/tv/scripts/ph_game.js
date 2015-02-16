@@ -30,7 +30,7 @@ BasicGame.Game.prototype = {
          minutes = '0' + minutes;*/
 
           this.frame++;
-          if(this.frame == 60 ) {    // assuming 60 fps
+          if(this.frame == this.game.time.fps ) {
               this.frame = 0;
               this.secondsLeft--;
               
