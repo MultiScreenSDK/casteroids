@@ -7,12 +7,25 @@
     <title>Game (SmartTV)</title>
 
     <link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
+    <!-- hard style reset  -->
+    <style>
+        body {
+          margin: 0 0 0px 0;
+          background: #333;
+        }
+    </style>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.js"></script>
     <script src="../vendor/less.min.js" type="text/javascript"></script>
-    
     <script src="../vendor/jquery.min.js"></script>
     <script src="../vendor/msf.min.js"></script>
+    <script src="../vendor/phaser-arcade-physics.min.js"></script>
     <script src="scripts/main.js"></script>
-
+    <script src="scripts/ph_boot.js"></script>
+    <script src="scripts/ph_preloader.js"></script>
+    <script src="scripts/ph_menu.js"></script>
+    <script src="scripts/ph_game.js"></script>
+    <script src="scripts/ph_game_over.js"></script>
+    
 </head>
 <body>
 
@@ -22,6 +35,7 @@
         <h2>Fire: <span id="fire"></span></h2>
         <h2>Client: <span id="client"></span></h2>
     </section>
-
+    
+    <div id="gameContainer"></div>
 </body>
 </html>
