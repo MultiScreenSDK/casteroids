@@ -1,7 +1,6 @@
 
 BasicGame.Game = function (game) {
     this.secondsLeft = 180;
-    this.frame = 0;
 };
 
 BasicGame.Game.prototype = {
@@ -12,15 +11,11 @@ BasicGame.Game.prototype = {
   },
 
   update: function () {
-    //  Main Game Loop
-      this.frame++;
-      if(this.frame == 60) {    // Assuming 60 fps
-          this.updateTimer();
-      }
+      //  Main Game Loop
+      this.game.time.events.add(1000, this.updateTimer, this);
   },
 
   updateTimer: function updateTimer() {
-      this.frame = 0;
       this.secondsLeft--;
       var minutes = Math.floor(this.secondsLeft/60);
       var seconds = this.secondsLeft - minutes * 60;
@@ -30,6 +25,7 @@ BasicGame.Game.prototype = {
               
       this.timerLabel.setText(minutes+":"+seconds);
       if(this.secondsLeft == 0) {
+          this.secondsLeft = 180;
           this.quitGame();
       }
   },
