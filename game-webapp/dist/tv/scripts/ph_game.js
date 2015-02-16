@@ -13,38 +13,26 @@ BasicGame.Game.prototype = {
 
   update: function () {
     //  Main Game Loop
-      this.updateTimer();
+      this.frame++;
+      if(this.frame == this.game.time.fps ) {
+          this.updateTimer();
+      }
   },
-    
-    
-      updateTimer: function updateTimer() {
-      // This code displays the current system time minutes and seconds
-      /*minutes = Math.floor(this.game.time.time / 60000) % 60;
-      seconds = Math.floor(this.game.time.time / 1000) % 60;
 
-      //If any of the digits becomes a single digit number, pad it with a zero  
-      if (seconds < 10)
-         seconds = '0' + seconds;
-
-      if (minutes < 10)
-         minutes = '0' + minutes;*/
-
-          this.frame++;
-          if(this.frame == this.game.time.fps ) {
-              this.frame = 0;
-              this.secondsLeft--;
+  updateTimer: function updateTimer() {
+      this.frame = 0;
+      this.secondsLeft--;
+      
+      var minutes = Math.floor(this.secondsLeft/60);
+      var seconds = this.secondsLeft - minutes * 60;
+      if(seconds < 10) {
+          seconds = '0'+seconds;
+      }
               
-              var minutes = Math.floor(this.secondsLeft/60);
-              var seconds = this.secondsLeft - minutes * 60;
-              if(seconds < 10) {
-                  seconds = '0'+seconds;
-              }
-              
-              this.timerLabel.setText(minutes+":"+seconds);
-              if(this.secondsLeft == 0) {
-                  this.quitGame();
-              }
-          }
+      this.timerLabel.setText(minutes+":"+seconds);
+      if(this.secondsLeft == 0) {
+          this.quitGame();
+      }
   },
 
   quitGame: function (pointer) {
