@@ -8,11 +8,12 @@ BasicGame.Game.prototype = {
   create: function () {
       var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
       this.timerLabel = this.add.text(20, 20, "03:00", style);
+      
+      this.game.time.events.loop(1000, this.updateTimer, this);
   },
 
   update: function () {
       //  Main Game Loop
-      this.game.time.events.add(1000, this.updateTimer, this);
   },
 
   updateTimer: function updateTimer() {
