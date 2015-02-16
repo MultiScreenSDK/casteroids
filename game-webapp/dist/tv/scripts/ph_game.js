@@ -8,13 +8,13 @@ BasicGame.Game.prototype = {
 
   create: function () {
       var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
-      this.timerLabel = this.add.text(20, 20, this.timerLabel, style);
+      this.timerLabel = this.add.text(20, 20, "03:00", style);
   },
 
   update: function () {
     //  Main Game Loop
       this.frame++;
-      if(this.frame == this.game.time.fps ) {
+      if(this.frame == 60) {    // Assuming 60 fps
           this.updateTimer();
       }
   },
@@ -22,7 +22,6 @@ BasicGame.Game.prototype = {
   updateTimer: function updateTimer() {
       this.frame = 0;
       this.secondsLeft--;
-      
       var minutes = Math.floor(this.secondsLeft/60);
       var seconds = this.secondsLeft - minutes * 60;
       if(seconds < 10) {
