@@ -20,4 +20,7 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <!-- Pre-Lollipop devices will have Holo themed Dialogs -->
+    <style name="AppDialog" parent="android:Theme.Holo.Dialog"/>
+
 </resources>

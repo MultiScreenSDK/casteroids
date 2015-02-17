@@ -7,5 +7,8 @@
     <string name="how_to_play">How to Play</string>
     <string name="select_tv">Select TV</string>
     <string name="no_tv_discovered">No TV Discovered</string>
+    <string name="title_activity_select_device">Select a TV</string>
+    <string name="action_settings">Settings</string>
+    <string name="casteroids">Casteroids</string>
 
 </resources>

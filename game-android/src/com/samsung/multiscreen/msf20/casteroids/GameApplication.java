@@ -4,6 +4,7 @@ import android.app.Application;
 import android.graphics.Typeface;
 import android.util.Log;
 
+import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
 
 /**
@@ -14,7 +15,11 @@ import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
  */
 public class GameApplication extends Application {
 
+    /** Debug tag */
     private static final String TAG = GameApplication.class.getSimpleName();
+
+    /** Reference to the connectivity manager */
+    private GameConnectivityManager connectivityManager = null;
 
     /** Custom typeface used in the application */
     private Typeface customTypeface;
@@ -30,6 +35,9 @@ public class GameApplication extends Application {
         if(!ThreadUtils.runningOnUiThread()) {
             throw new RuntimeException("The Application needs to be running on the UI Thread");
         }
+
+        // Get an instance of the ConnectivtyManager
+        connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
 
         createCustomTypefaces();
     }
