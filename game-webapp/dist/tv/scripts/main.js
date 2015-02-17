@@ -17,8 +17,8 @@ $(function(){
             if(err) return console.error(err);
         });
 
-        channel.on('game_option', function(msg, from){
-            channel.publish('game_state', 'start');
+        channel.on('join', function(msg, from){
+            channel.publish('game_start', '5');
         });
 
         channel.on('rotate', function(msg, from){
