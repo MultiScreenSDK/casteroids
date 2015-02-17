@@ -15,10 +15,6 @@
         android:textSize="50sp"
         android:textColor="#fff"
         android:fontFamily="sans-serif-light"
-        android:shadowColor="@color/grey_500"
-        android:shadowDx="8"
-        android:shadowDy="8"
-        android:shadowRadius="1.2"
         />
 
 

@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
 /**
  * Entry point into the Game.
@@ -23,17 +24,29 @@ public class MainActivity extends Activity implements ConnectivityListener {
     private GameConnectivityManager connectivityManager = null;
 
     /** References to buttons on the screen */
-    private Button playButton, howToPlayButton;
+    private Button playButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //remove title bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //make full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         //content view
         setContentView(R.layout.activity_main);
+
+        // Initialize the how to play button
+        howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
+        howToPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHowToPlay();
+            }
+        });
 
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
@@ -45,14 +58,26 @@ public class MainActivity extends Activity implements ConnectivityListener {
             }
         });
 
-        // Initialize the how to play button
-        howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
-        howToPlayButton.setOnClickListener(new View.OnClickListener() {
+        // Initialize the select TV button
+        selectTVButton = (Button) findViewById(R.id.select_tv_button);
+        selectTVButton.setEnabled(false);
+        selectTVButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showHowToPlay();
+                showSelectTVScreen();
             }
         });
+
+        // Initialize the no TV discovered button
+        noTVDiscoveredButton = (Button) findViewById(R.id.no_tv_button);
+        noTVDiscoveredButton.setEnabled(true);
+        noTVDiscoveredButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNoTVDiscoveredScreen();
+            }
+        });
+
     }
 
     @Override
@@ -86,19 +111,40 @@ public class MainActivity extends Activity implements ConnectivityListener {
     }
 
     private void playGame() {
-        Intent gameIntent = new Intent();
-        gameIntent.setClass(this, GameActivity.class);
-        startActivity(gameIntent);
+        launchIntent(GameActivity.class);
     }
 
     private void showHowToPlay() {
-        Intent howToPlayIntent = new Intent();
-        howToPlayIntent.setClass(this, HowToPlayActivity.class);
-        startActivity(howToPlayIntent);
+        launchIntent(HowToPlayActivity.class);
+    }
+
+    private void showSelectTVScreen() {
+        //launchIntent(HowToPlayActivity.class); //FIXME
+    }
+
+    private void showNoTVDiscoveredScreen() {
+        //launchIntent(HowToPlayActivity.class); //FIXME
+
+        //FIXME
+        if(!connectivityManager.hasDiscoveredService()) {
+            Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
+            connectivityManager.startDiscovery();
+        }
+    }
+
+    private void launchIntent(Class cls){
+        Intent intent = new Intent();
+        intent.setClass(this, cls);
+        startActivity(intent);
     }
 
     @Override
     public void onConnectivityUpdate(int eventId) {
+        //disable all the buttons except for the No TV discovered
+        selectTVButton.setEnabled(false);
+        noTVDiscoveredButton.setEnabled(true);
+        playButton.setEnabled(false);
+
         switch (eventId) {
             case DISCOVERY_STOPPED:
                 // Restart discovery as long as we don't have a discovered service.
@@ -113,7 +159,10 @@ public class MainActivity extends Activity implements ConnectivityListener {
                 Toast.makeText(this, "Attempting connection.", Toast.LENGTH_SHORT).show();
                 String[] services = connectivityManager.getDiscoveredServiceNames();
                 if ((services != null) && (services.length > 0)) {
-                    connectivityManager.connect(services[0]);
+                    if(services.length == 1) {
+                        connectivityManager.connect(services[0]);
+                    }
+                    selectTVButton.setEnabled(services.length > 1);
                 }
                 break;
             case DISCOVERY_LOST_SERVICE:
@@ -125,6 +174,11 @@ public class MainActivity extends Activity implements ConnectivityListener {
                 // Enabled the play button
                 if (playButton != null) {
                     playButton.setEnabled(true);
+                }
+
+                //disable the no tv found
+                if(noTVDiscoveredButton != null) {
+                    noTVDiscoveredButton.setEnabled(false);
                 }
                 break;
             case APPLICATION_DISCONNECTED:
