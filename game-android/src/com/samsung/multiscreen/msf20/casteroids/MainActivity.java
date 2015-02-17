@@ -139,8 +139,8 @@ public class MainActivity extends Activity implements ConnectivityListener {
         //launchIntent(HowToPlayActivity.class); //FIXME
 
         //FIXME
+        Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
         if(!connectivityManager.hasDiscoveredService()) {
-            Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
             connectivityManager.startDiscovery();
         }
     }
