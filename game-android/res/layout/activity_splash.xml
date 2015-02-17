@@ -13,7 +13,7 @@
         android:keepScreenOn="true"
         android:textStyle="bold"
         android:gravity="center"
-        android:text="@string/app_name"
+        android:text="@string/casteroids"
         android:textSize="50sp"
         android:textColor="#fff" />
 

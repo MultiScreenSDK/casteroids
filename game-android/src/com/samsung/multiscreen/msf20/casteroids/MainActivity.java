@@ -21,6 +21,9 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
  */
 public class MainActivity extends Activity implements ConnectivityListener {
 
+    /** Code to send to the next screen when calling startActivityForResult */
+    private static final  int SELECT_TV_RESULT_CODE = 1000;
+
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
 
@@ -67,7 +70,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         // Initialize the select TV button
         selectTVButton = (Button) findViewById(R.id.select_tv_button);
-        selectTVButton.setEnabled(false);
         selectTVButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,8 +96,8 @@ public class MainActivity extends Activity implements ConnectivityListener {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
         // Get an instance of the ConnectivtyManager and register for connectivity updates.
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
@@ -132,7 +134,11 @@ public class MainActivity extends Activity implements ConnectivityListener {
     }
 
     private void showSelectTVScreen() {
-        //launchIntent(HowToPlayActivity.class); //FIXME
+        //start activity for result here
+        Intent intent = new Intent();
+        intent.setClass(this, SelectDeviceActivity.class);
+        startActivityForResult(intent, SELECT_TV_RESULT_CODE);
+
     }
 
     private void showNoTVDiscoveredScreen() {
@@ -154,7 +160,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
     @Override
     public void onConnectivityUpdate(int eventId) {
         //disable all the buttons except for the No TV discovered
-        selectTVButton.setEnabled(false);
         noTVDiscoveredButton.setEnabled(true);
         playButton.setEnabled(false);
 
@@ -175,7 +180,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
                     if(services.length == 1) {
                         connectivityManager.connect(services[0]);
                     }
-                    selectTVButton.setEnabled(services.length > 1);
                 }
                 break;
             case DISCOVERY_LOST_SERVICE:
@@ -209,6 +213,16 @@ public class MainActivity extends Activity implements ConnectivityListener {
                 // Re-start discover
                 connectivityManager.startDiscovery();
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == SELECT_TV_RESULT_CODE){
+            if(resultCode == Activity.RESULT_OK) {
+                //user selected a TV and is ready to go
+                playGame();
+            }
         }
     }
 }
