@@ -1,5 +1,10 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,9 +25,9 @@ public class MessageDataHelper {
      */
 
     /**
-     * Returns the JSON encoded JOIN message data in the TV application defined format:<br>
+     * Returns the JSON encoded JOIN message data in the TV application defined JSON format:<br>
      * <code>
-     *     { "name": "Buck", "color": "blue" }
+     *     { "name": "Buck Rogers", "color": "blue" }
      * </code>
      * 
      * @param name
@@ -49,24 +54,69 @@ public class MessageDataHelper {
 
     /**
      * Returns the decoded game start count down time in seconds from the GAME_START message data sent by the TV
-     * application.
+     * application. The data is expected to be the TV application defined format of an integer stored in a string value.
      * 
      * @param data
+     *            The string data from the GAME_START message.
      * @return
      */
-    public static int decodeStartCountDownSeconds(String data) {
+    public static int decodeGameStartCountDownSeconds(String data) {
         return getIntFromString(data, 0);
     }
 
     /**
      * Returns the decoded player out count down time in seconds from the PLAYER_OUT message data sent by the TV
-     * application.
+     * application. The data is expected to be the TV application defined format of an integer stored in a string value.
      * 
      * @param data
+     *            The string data from the PLAYER_OUT message.
      * @return
      */
     public static int decodePlayerOutCountDownSeconds(String data) {
         return getIntFromString(data, 0);
+    }
+
+    /**
+     * Returns the decoded and sorted ScoreData list from the GAME_OVER message data sent by the TV application. The
+     * data is The list is sorted by the best score to the worst score. The data is expected to be in the TV application
+     * defined JSON format:<br>
+     * <code>
+     * [ { "name": "Buck Rogers", "score": 9700 }, { "name": "Captain Kirk", "score": 3370 } ]
+     * </code>
+     * 
+     * @param data
+     *            The string data from the GAME_OVER message.
+     * @return
+     */
+    public static List<ScoreData> decodeGameOverScoreData(String data) {
+        List<ScoreData> scoreDataList = new ArrayList<ScoreData>();
+
+        try {
+            // Initialize a JSON Array with the given data object
+            JSONArray jsonArray = new JSONArray(data);
+
+            // Loop through the length of the JSON Array...
+            for (int i = 0; i < jsonArray.length(); i++) {
+                // Get the JSON object at the current index.
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                // Get the score data from the current JSON object.
+                String name = jsonObject.getString("name");
+                int score = jsonObject.getInt("score");
+
+                // Create and add a ScoreData object to the score data list.
+                scoreDataList.add(new ScoreData(name, score));
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to decode the ScoreData list. data=" + data, e);
+            scoreDataList.clear();
+        }
+
+        // Sort the score data.
+        Collections.sort(scoreDataList);
+
+        // Return the sorted score data list.
+        return scoreDataList;
     }
 
     /******************************************************************************************************************

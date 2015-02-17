@@ -1,7 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
 /**
- * Enumeration of all the application defined message events.
+ * Enumeration of all the TV application defined message events.
  * 
  * @author Dan McCafferty
  * 
@@ -40,7 +40,7 @@ public enum Event {
     // destroyed). The payload contains the count down until the player can rejoin the game.
     PLAYER_OUT("player_out", false);
 
-    // The application defined name for the message event
+    // The TV application defined name for the message event
     private final String name;
 
     // A flag indicating whether or not the event is one the client sends versus
@@ -51,7 +51,7 @@ public enum Event {
      * Constructor.
      * 
      * @param name
-     *            The application defined name for the message event
+     *            The TV application defined name for the message event
      * @param send
      *            A flag indicating whether or not the event is one the client sends versus one the client receives.
      */
@@ -61,7 +61,7 @@ public enum Event {
     }
 
     /**
-     * Returns the application defined name for the message event.
+     * Returns the TV application defined name for the message event.
      * 
      * @return
      */
@@ -85,5 +85,25 @@ public enum Event {
      */
     public boolean doesClientReceive() {
         return !send;
+    }
+
+    /**
+     * Returns an Event with the given TV application defined name or NULL if no match.
+     * 
+     * @param name
+     *            The TV application defined name for the message event
+     * @return
+     */
+    public static Event getByName(String name) {
+        Event event = null;
+
+        for (Event currentEvent : Event.values()) {
+            if (currentEvent.name.equalsIgnoreCase(name)) {
+                event = currentEvent;
+                break;
+            }
+        }
+
+        return event;
     }
 }
