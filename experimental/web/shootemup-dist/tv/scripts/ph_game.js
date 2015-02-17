@@ -20,6 +20,8 @@ BasicGame.Game.prototype = {
       this.player.direction = 0;
       this.physics.enable(this.player, Phaser.Physics.ARCADE);
       
+      this.audio_fire = this.game.add.audio("playerFire");
+      
       this.bullets = [];
       this.nextShotAt = 0;
       this.shotDelay = 100;
@@ -93,6 +95,7 @@ BasicGame.Game.prototype = {
       }
       bullet.tint = color;
       this.bullets.push(bullet);
+      this.audio_fire.play();
   },
 
 };
