@@ -1,14 +1,15 @@
-package com.samsung.multiscreen.msf20.game;
+package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
-import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 
 /**
  * Entry point into the Game.
@@ -18,13 +19,20 @@ import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
  */
 public class MainActivity extends Activity implements ConnectivityListener {
 
+    /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
 
-    private Button playButton = null;
+    /** References to buttons on the screen */
+    private Button playButton, howToPlayButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //make full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        //content view
         setContentView(R.layout.activity_main);
 
         // Initialize the play button
@@ -34,6 +42,15 @@ public class MainActivity extends Activity implements ConnectivityListener {
             @Override
             public void onClick(View v) {
                 playGame();
+            }
+        });
+
+        // Initialize the how to play button
+        howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
+        howToPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHowToPlay();
             }
         });
     }
@@ -72,6 +89,12 @@ public class MainActivity extends Activity implements ConnectivityListener {
         Intent gameIntent = new Intent();
         gameIntent.setClass(this, GameActivity.class);
         startActivity(gameIntent);
+    }
+
+    private void showHowToPlay() {
+        Intent howToPlayIntent = new Intent();
+        howToPlayIntent.setClass(this, HowToPlayActivity.class);
+        startActivity(howToPlayIntent);
     }
 
     @Override

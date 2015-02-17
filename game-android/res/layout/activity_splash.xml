@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.samsung.multiscreen.msf20.game.SplashActivity"
+    tools:context="com.samsung.multiscreen.msf20.casteroids.SplashActivity"
     android:background="@drawable/deepspace">
 
     <!-- The primary full-screen view. This can be replaced with whatever view

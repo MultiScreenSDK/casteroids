@@ -23,7 +23,7 @@ import com.samsung.multiscreen.Search;
 import com.samsung.multiscreen.Search.OnServiceFoundListener;
 import com.samsung.multiscreen.Search.OnServiceLostListener;
 import com.samsung.multiscreen.Service;
-import com.samsung.multiscreen.msf20.game.BuildConfig;
+import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
 
 /**
  * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs.<br>

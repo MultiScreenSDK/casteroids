@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game.utils;
+package com.samsung.multiscreen.msf20.casteroids.utils;
 
 import android.os.Handler;
 import android.os.Looper;

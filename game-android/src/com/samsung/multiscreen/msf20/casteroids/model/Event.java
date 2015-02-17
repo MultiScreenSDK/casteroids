@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game.model;
+package com.samsung.multiscreen.msf20.casteroids.model;
 
 /**
  * Enumeration of all the application defined message events.

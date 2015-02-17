@@ -5,6 +5,15 @@
     android:background="@color/blue_grey_800"
 	>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/how_to_play_button"
+        android:text="@string/how_to_play"
+        android:layout_above="@+id/play_button"
+        android:layout_centerHorizontal="true"
+        />
+
 	<Button
 		android:layout_width="120dp"
 		android:layout_height="120dp"

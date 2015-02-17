@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game;
+package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,13 +17,13 @@ import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
-import com.samsung.multiscreen.msf20.game.model.Event;
-import com.samsung.multiscreen.msf20.game.model.Fire;
-import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.game.model.GameOption;
-import com.samsung.multiscreen.msf20.game.model.Rotate;
-import com.samsung.multiscreen.msf20.game.model.Thrust;
-import com.samsung.multiscreen.msf20.game.views.CompassView;
+import com.samsung.multiscreen.msf20.casteroids.model.Event;
+import com.samsung.multiscreen.msf20.casteroids.model.Fire;
+import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.GameOption;
+import com.samsung.multiscreen.msf20.casteroids.model.Rotate;
+import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
+import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
 
 /**
  * The spaceship game happens here.

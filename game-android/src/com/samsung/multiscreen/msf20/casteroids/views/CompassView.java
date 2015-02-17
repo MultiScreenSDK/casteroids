@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game.views;
+package com.samsung.multiscreen.msf20.casteroids.views;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.samsung.multiscreen.msf20.game.R;
+import com.samsung.multiscreen.msf20.casteroids.R;
 
 /**
  * Visual representation of the orientation of the device while held in landscape mode.

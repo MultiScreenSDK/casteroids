@@ -1,9 +1,9 @@
-package com.samsung.multiscreen.msf20.game;
+package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Application;
 import android.util.Log;
 
-import com.samsung.multiscreen.msf20.game.utils.ThreadUtils;
+import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
 
 /**
  *

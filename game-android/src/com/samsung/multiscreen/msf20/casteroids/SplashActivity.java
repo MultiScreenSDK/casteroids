@@ -1,4 +1,4 @@
-package com.samsung.multiscreen.msf20.game;
+package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.samsung.multiscreen.msf20.game.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.game.utils.ThreadUtils;
+import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
 
 /**
  * Splash Screen for the game.

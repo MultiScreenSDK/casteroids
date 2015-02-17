@@ -9,8 +9,8 @@ buildscript {
 apply plugin: 'android'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-    //compile 'com.android.support:support-v4:21.0.3'
+    compile fileTree(dir: 'libs', include: '*.jar', exclude: 'android-support-v4.jar')
+    compile 'com.android.support:support-v4:21.0.3'
 }
 
 android {
