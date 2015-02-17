@@ -18,15 +18,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
-import com.samsung.multiscreen.msf20.connectivity.MessageListener;
+import com.samsung.multiscreen.msf20.casteroids.model.Color;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.Fire;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.casteroids.model.GameOption;
 import com.samsung.multiscreen.msf20.casteroids.model.Rotate;
 import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
 import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
  * The spaceship game happens here.
@@ -120,8 +120,8 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         // Get an instance of the ConnectivtyManager and register for connectivity updates.
         gameConnectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         gameConnectivityManager.registerConnectivityListener(this);
-        gameConnectivityManager.registerMessageListener(this, Event.GAME_STATE.getName());
-        gameConnectivityManager.sendGameOptionMessage(GameOption.JOIN);
+        gameConnectivityManager.registerMessageListener(this, Event.GAME_START, Event.GAME_OVER);
+        gameConnectivityManager.sendJoinMessage("Buck", Color.BLUE);
 
         // If we are not connected return to the main screen.
         if (!gameConnectivityManager.isConnected()) {
@@ -145,7 +145,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
         // Unregister self as a listener
         gameConnectivityManager.unregisterConnectivityListener(this);
-        gameConnectivityManager.unregisterMessageListener(this, Event.GAME_STATE.getName());
+        gameConnectivityManager.unregisterMessageListener(this, Event.GAME_START, Event.GAME_OVER);
 
         //stop the sensor listeners as it can drain the battery if you don't
         sensorManager.unregisterListener(sensorEventListener);
@@ -321,8 +321,10 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
     @Override
     public void onMessage(String event, String data, byte[] payload) {
-        // TODO Auto-generated method stub
-        
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Received event '" + event + "'");
+        }
+        // TODO: Implement GAME_START's countdown and GAME_OVER.
     }
         
     //-----------------------------------------

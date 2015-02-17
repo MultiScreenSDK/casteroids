@@ -11,9 +11,12 @@ public enum Event {
      * Events that the Client Sends
      */
 
-    // Event sent to start/stop/pause the game.
-    GAME_OPTION("game_option", true),
-    
+    // Event sent to join the game.
+    JOIN("join", true),
+
+    // Event sent to quit the game.
+    QUIT("quit", true),
+
     // Event sent to start/stop rotation of the spacecraft
     ROTATE("rotate", true),
 
@@ -27,14 +30,15 @@ public enum Event {
      * Events that the Client receives
      */
 
-    // Event receive with the updated game state.
-    GAME_STATE("game_state", false),
+    // Event receive with count down to the start of the game.
+    GAME_START("game_start", false),
 
-    // Event receive with the clients color.
-    COLOR("color", false),
+    // Event receive to indicate the end of the game.
+    GAME_OVER("game_over", false),
 
-    // Event receive with the updated game score.
-    SCORE("score", false);
+    // Event receive to indicate the player's is out of the game since his/her spaceship was blown to smithereens (i.e.
+    // destroyed). The payload contains the count down until the player can rejoin the game.
+    PLAYER_OUT("player_out", false);
 
     // The application defined name for the message event
     private final String name;

@@ -1,8 +1,9 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
-import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
-
 import android.content.Context;
+
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
+import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
  * Extends the ConnectivityManager with app specific logic.<br>
@@ -55,14 +56,31 @@ public class GameConnectivityManager extends ConnectivityManager {
     }
 
     /**
-     * Sends a GAME_OPTION message to the TV application.
+     * Sends a JOIN message to the TV application.
      * 
-     * @param rotate
+     * @param name
+     *            The name of the player.
+     * @param color
+     *            The color the player chose.
+     * @return
      */
-    public void sendGameOptionMessage(GameOption option) {
-        sendMessage(Event.GAME_OPTION.getName(), option.getName());
+    public boolean sendJoinMessage(String name, Color color) {
+        String data = MessageDataHelper.encodeJoinData(name, color);
+
+        if (data != null) {
+            sendMessage(Event.JOIN.getName(), data);
+        }
+
+        return (data != null);
     }
-        
+
+    /**
+     * Sends a QUIT message to the TV application.
+     */
+    public void sendQuitMessage() {
+        sendMessage(Event.QUIT.getName(), null);
+    }
+
     /**
      * Sends a ROTATE message to the TV application.
      * 
@@ -88,5 +106,29 @@ public class GameConnectivityManager extends ConnectivityManager {
      */
     public void sendFireMessage(Fire fire) {
         sendMessage(Event.FIRE.getName(), fire.getName());
+    }
+    
+    /**
+     * Registers the given listener for message updates.
+     * 
+     * @param listener
+     * @param events
+     */
+    public void registerMessageListener(MessageListener listener, Event... events) {
+        for (Event event : events) {
+            registerMessageListener(listener, event.getName());
+        }
+    }
+
+    /**
+     * Unregisters the given listener for message updates.
+     * 
+     * @param listener
+     * @param events
+     */
+    public void unregisterMessageListener(MessageListener listener, Event... events) {
+        for (Event event : events) {
+            unregisterMessageListener(listener, event.getName());
+        }
     }
 }
