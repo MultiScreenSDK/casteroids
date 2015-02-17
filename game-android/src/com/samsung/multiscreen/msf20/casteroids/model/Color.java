@@ -49,4 +49,24 @@ public enum Color {
     public int getColorInt() {
         return colorInt;
     }
+    
+    /**
+     * Returns an Color with the given TV application defined name or NULL if no match.
+     * 
+     * @param name
+     *            The TV application defined name for the message event
+     * @return
+     */
+    public static Color getByName(String name) {
+        Color color = null;
+
+        for (Color currentColor : Color.values()) {
+            if (currentColor.name.equalsIgnoreCase(name)) {
+                color = currentColor;
+                break;
+            }
+        }
+
+        return color;
+    }    
 }
