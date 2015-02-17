@@ -34,7 +34,11 @@ public enum Event {
     GAME_START("game_start", false),
 
     // Event receive to indicate the end of the game.
-    GAME_OVER("game_over", false);
+    GAME_OVER("game_over", false),
+
+    // Event receive to indicate the player's is out of the game since his/her spaceship was blown to smithereens (i.e.
+    // destroyed). The payload contains the count down until the player can rejoin the game.
+    PLAYER_OUT("player_out", false);
 
     // The application defined name for the message event
     private final String name;

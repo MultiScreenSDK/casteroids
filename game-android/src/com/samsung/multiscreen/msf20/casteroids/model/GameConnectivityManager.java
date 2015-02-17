@@ -1,12 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
-import android.util.Log;
 
-import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
@@ -70,7 +65,7 @@ public class GameConnectivityManager extends ConnectivityManager {
      * @return
      */
     public boolean sendJoinMessage(String name, Color color) {
-        String data = MessageDataHelper.jsonEncodeJoinData(name, color);
+        String data = MessageDataHelper.encodeJoinData(name, color);
 
         if (data != null) {
             sendMessage(Event.JOIN.getName(), data);
