@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity> 
+        </activity>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="landscape" >
@@ -46,7 +46,7 @@
         <activity
             android:name=".SelectDeviceActivity"
             android:label="@string/title_activity_select_device"
-            android:theme="@android:style/Theme.Holo.Dialog">
+            android:theme="@style/AppDialog">
         </activity>
     </application>
 
