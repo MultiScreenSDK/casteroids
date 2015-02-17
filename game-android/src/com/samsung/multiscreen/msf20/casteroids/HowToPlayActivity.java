@@ -77,6 +77,7 @@ public class HowToPlayActivity extends Activity {
         public Object instantiateItem(ViewGroup container, int position) {
             Context context = container.getContext();
             TextView v = new TextView(context);
+            v.setTypeface(((GameApplication)context.getApplicationContext()).getCustomTypeface());
             v.setText("Page " + (position+1));
             v.setTextSize(50.0f);
             v.setTextColor(0xffffffff);

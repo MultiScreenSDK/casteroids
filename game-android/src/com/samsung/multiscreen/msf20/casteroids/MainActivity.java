@@ -2,6 +2,7 @@ package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -26,6 +27,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
     /** References to buttons on the screen */
     private Button playButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
 
+    /** Reference to the custom typeface for the game */
+    private Typeface customTypeface;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         //content view
         setContentView(R.layout.activity_main);
+
+        //get the custom typeface from the application
+        customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
 
         // Initialize the how to play button
         howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
@@ -77,6 +84,12 @@ public class MainActivity extends Activity implements ConnectivityListener {
                 showNoTVDiscoveredScreen();
             }
         });
+
+        //set the various buttons with the typeface
+        howToPlayButton.setTypeface(customTypeface);
+        playButton.setTypeface(customTypeface);
+        selectTVButton.setTypeface(customTypeface);
+        noTVDiscoveredButton.setTypeface(customTypeface);
 
     }
 

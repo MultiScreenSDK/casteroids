@@ -2,6 +2,7 @@ package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +14,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
@@ -34,6 +37,9 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
     /** Debugging */
     private static final String TAG = GameActivity.class.getSimpleName();
+
+    /** Reference to the custom typeface for the game */
+    private Typeface customTypeface;
 
     /** Keep track of state */
     private boolean turningLeft, turningRight, thrusting, firing;
@@ -79,6 +85,9 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         //xml layout
         setContentView(R.layout.activity_game);
 
+        //get the custom typeface from the application
+        customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
+
         //sensor code
         compassView = (CompassView)this.findViewById(R.id.compass_view);
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
@@ -91,6 +100,17 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
         //button touches
         setOnTouchListeners();
+
+        Button thrustButton = (Button) findViewById(R.id.thrust_button);
+        Button fireButton = (Button) findViewById(R.id.fire_button);
+        Button pauseButton = (Button) findViewById(R.id.pause_button);
+        TextView instructionsText = (TextView) findViewById(R.id.instructions_text);
+
+        //set the custom typefaces
+        thrustButton.setTypeface(customTypeface);
+        fireButton.setTypeface(customTypeface);
+        pauseButton.setTypeface(customTypeface);
+        instructionsText.setTypeface(customTypeface);
     }
 
     @Override

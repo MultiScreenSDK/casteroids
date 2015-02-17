@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
@@ -30,6 +31,9 @@ public class SplashActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_splash);
+
+        TextView gameTitle = (TextView)findViewById(R.id.game_title);
+        gameTitle.setTypeface(((GameApplication)getApplication()).getCustomTypeface());
 
         // Get an instance of the ConnectivtyManager and start discovery of compatible Samsung SmartTVs.
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
