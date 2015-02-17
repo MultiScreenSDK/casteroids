@@ -163,6 +163,10 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
             // Clear the service map to release Service objects
             serviceMap.clear();
+            
+            // Clear the connectivity listener list and message listener map and release listener objects
+            connectivityListenerList.clear();
+            messageListenerMap.clear();
         }
     }
 
