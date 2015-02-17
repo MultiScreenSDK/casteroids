@@ -46,6 +46,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
         //content view
         setContentView(R.layout.activity_main);
 
+        // Get an instance of the ConnectivtyManager
+        connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
 
@@ -99,8 +102,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
     protected void onResume() {
         super.onResume();
 
-        // Get an instance of the ConnectivtyManager and register for connectivity updates.
-        connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+        //Register for connectivity updates.
         connectivityManager.registerConnectivityListener(this);
 
         // Enable the play button if we are currently connected
