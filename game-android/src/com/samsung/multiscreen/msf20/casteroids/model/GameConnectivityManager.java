@@ -1,8 +1,5 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -31,14 +28,8 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
     // The Channel ID for the TV application
     private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.game";
 
-    // The last game start count down seconds received from the TV application.
-    private int gameStartCountDownSeconds = 0;
-
-    // The last score data list received from the TV application.
-    private List<ScoreData> scoreData = new ArrayList<ScoreData>();
-
-    // The last player out count down seconds received from the TV application.
-    private int playerOutCountDownSeconds = 0;
+    // Contains game state data collected from events received from the TV Application.
+    private GameState gameState = new GameState();
 
     /**
      * Constructor.
@@ -73,39 +64,13 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
     }
 
     /**
-     * Returns the last game start count down seconds received from the TV application.<br>
-     * <br>
-     * This is intended to be used when a screen is initializing and then that screen should register for and process
-     * updates.
+     * Returns the GameState object. It contains the most recent game state data collected from events received from the
+     * TV Application.
      * 
      * @return
      */
-    public int getGameStartCountDownSeconds() {
-        return gameStartCountDownSeconds;
-    }
-
-    /**
-     * Returns the last score data list received from the TV application.<br>
-     * <br>
-     * This is intended to be used when a screen is initializing and then that screen should register for and process
-     * updates.
-     * 
-     * @return
-     */
-    public List<ScoreData> getScoreData() {
-        return scoreData;
-    }
-
-    /**
-     * Returns the last player out count down seconds received from the TV application.<br>
-     * <br>
-     * This is intended to be used when a screen is initializing and then that screen should register for and process
-     * updates.
-     * 
-     * @return
-     */
-    public int getPlayerOutCountDownSeconds() {
-        return playerOutCountDownSeconds;
+    public GameState getGameState() {
+        return gameState;
     }
 
     /**
@@ -221,16 +186,21 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
         // Switch on the Event
         switch (event) {
             case GAME_START:
-                this.gameStartCountDownSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
+                gameState.onGameStart(MessageDataHelper.decodeGameStartCountDownSeconds(data));
                 break;
             case GAME_OVER:
-                this.scoreData = MessageDataHelper.decodeGameOverScoreData(data);
+                gameState.onGameOver(MessageDataHelper.decodeGameOverScoreData(data));
                 break;
             case PLAYER_OUT:
-                this.playerOutCountDownSeconds = MessageDataHelper.decodePlayerOutCountDownSeconds(data);
+                gameState.onPlayerOut(MessageDataHelper.decodePlayerOutCountDownSeconds(data));
                 break;
             default:
                 // Ignore.
         }
+    }
+
+    @Override
+    public String toString() {
+        return "GameConnectivityManager [gameState=" + gameState + "]";
     }
 }
