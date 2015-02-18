@@ -22,7 +22,7 @@ $(function () {
         // We will use a little javascript to determine the tv app url
         var tvAppUrl = window.location.href.replace('/mobile','/tv');
 
-        app = service.application(tvAppUrl, 'com.samsung.multiscreen.game');
+        app = service.application(tvAppUrl, 'com.samsung.multiscreen.castroids');
 
         app.connect({name: username}, function (err) {
             if(err) return console.error(err);

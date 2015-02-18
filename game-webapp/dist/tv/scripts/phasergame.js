@@ -118,7 +118,7 @@ $(function(){
 
     window.msf.local(function(err, service){
 
-        var channel = service.channel('com.samsung.multiscreen.game');
+        var channel = service.channel('com.samsung.multiscreen.castroids');
 
         channel.connect({name: 'TV'}, function (err) {
             if(err) return console.error(err);
