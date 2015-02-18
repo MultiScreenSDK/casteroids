@@ -9,10 +9,9 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
- * Extends the ConnectivityManager with app specific logic.<br>
- * <br>
- * This class serves as a layer of abstraction between the app logic and the connectivity logic in a way where the app
- * logic does not know anything about the underlying protocols or SDK being used.s<br>
+ * This class extends the ConnectivityManager with Castroids game specific logic. It serves as a layer of abstraction
+ * between the Castroids game logic and the connectivity and transport logic in a way where the the game does not know
+ * anything about the underlying protocols or SDK being used.
  * 
  * @author Dan McCafferty
  * 
@@ -159,7 +158,8 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
         switch (eventId) {
             case APPLICATION_CONNECTED:
                 // Any time we connect register for Events that this class is interested in.
-                this.registerMessageListener(this, Event.SLOT_UPDATE, Event.GAME_START, Event.GAME_OVER, Event.PLAYER_OUT);
+                this.registerMessageListener(this, Event.SLOT_UPDATE, Event.GAME_START, Event.GAME_OVER,
+                        Event.PLAYER_OUT);
                 break;
             default:
                 // Ignore.

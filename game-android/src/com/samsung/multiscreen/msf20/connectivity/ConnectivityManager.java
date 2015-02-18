@@ -28,7 +28,11 @@ import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
 /**
  * Encapsulates the logic to Discover, Connect, and Communicate to compatible Samsung SmartTVs.<br>
  * <br>
- * This class does not contain any application specific logic.
+ * This class does not contain any application specific logic nor does it make assumptions about the application using
+ * it.<br>
+ * <br>
+ * The class was architected in way where the code using this class does not need to know anything about the underlying
+ * protocols or SDK being used.
  * 
  * @author Dan McCafferty
  * 

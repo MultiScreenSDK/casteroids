@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import android.util.Log;
 
 /**
- * Helper class that JSON encodes/decodes message data transmitted between the client and TV applications.
+ * Helper class that encodes/decodes message data transmitted between the client and TV applications.
  * 
  * @author Dan McCafferty
  * 
