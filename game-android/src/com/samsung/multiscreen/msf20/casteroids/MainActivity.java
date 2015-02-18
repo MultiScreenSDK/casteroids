@@ -147,7 +147,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
     }
 
     private void playGame() {
-        launchIntent(GameActivity.class);
+        launchIntent(PlayerInfoActivity.class);
     }
 
     private void showHowToPlay() {
