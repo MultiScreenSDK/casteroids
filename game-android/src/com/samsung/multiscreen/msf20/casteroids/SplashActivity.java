@@ -11,13 +11,14 @@ import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
 
 /**
- * Splash Screen for the game.
+ * Splash Screen for the Casteroids game.
  *
  * @author Nik Bhattacharya
  *
  */
 public class SplashActivity extends Activity {
 
+    /** Reference to the Connectivity Manager */
     private GameConnectivityManager connectivityManager = null;
     
     @Override
@@ -49,6 +50,9 @@ public class SplashActivity extends Activity {
         }, 1500);
     }
 
+    /**
+     * Launch the appropriate activity from the splash screen.
+     */
     private void launchActivity() {
         Intent mainActivityIntent = new Intent();
         mainActivityIntent.setClass(this, MainActivity.class);

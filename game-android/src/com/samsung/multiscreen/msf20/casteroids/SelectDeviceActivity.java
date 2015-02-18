@@ -14,7 +14,10 @@ import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
 /**
- * Dialog that lets the user connect to a Device.
+ * Activity that lets the user connect to a Device. Shown as a Dialog to the user
+ * using the Theme.Dialog style.
+ *
+ * @author Nik Bhattacharya
  */
 public class SelectDeviceActivity extends Activity implements ConnectivityListener, AdapterView.OnItemClickListener {
 

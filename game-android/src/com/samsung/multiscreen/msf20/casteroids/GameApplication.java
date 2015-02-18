@@ -9,7 +9,7 @@ import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
 
 /**
  *
- * Game Application singleton.
+ * Casteroids Game Application singleton.
  *
  * @author Nik Bhattacharya
  */

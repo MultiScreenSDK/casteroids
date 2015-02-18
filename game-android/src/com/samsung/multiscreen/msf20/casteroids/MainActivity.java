@@ -14,7 +14,8 @@ import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
 /**
- * Entry point into the Game.
+ * Landing page for the game. Depending on the connectivity manager, it shows a
+ * different connection button.
  *
  * @author Nik Bhattacharya
  *

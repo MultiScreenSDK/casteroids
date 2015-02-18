@@ -19,7 +19,9 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
 /**
  *
- * Player enters name and chooses Color in this screen.
+ * Screen where player enters name and chooses Color.
+ *
+ * @author Nik Bhattacharya
  *
  */
 

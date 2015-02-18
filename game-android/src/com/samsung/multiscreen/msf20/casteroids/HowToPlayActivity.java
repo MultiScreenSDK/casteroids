@@ -14,8 +14,8 @@ import android.widget.TextView;
 
 /**
  *
- * How to Play describes how to the game.
- *
+ * How to Play instructions are shown in a ViewPager so the user can swipe
+ * through the various sections.
  *
  * @author Nik Bhattacharya
  */

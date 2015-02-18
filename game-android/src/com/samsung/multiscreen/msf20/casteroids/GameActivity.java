@@ -29,7 +29,7 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
- * The spaceship game happens here.
+ * The game controller screen for Casteroids.
  *
  * @author Nik Bhattacharya
  */
@@ -75,7 +75,6 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
 
         //remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -180,9 +179,6 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
             setTurningLeft(true);
         }
     }
-
-
-
 
     private void setOnTouchListeners() {
 
@@ -317,7 +313,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
                 break;
             case APPLICATION_DISCONNECTED:
             case APPLICATION_CONNECT_FAILED:
-                // TODO: Notify the user that the connection was lost.
+                //Notify the user that the connection was lost.
                 Toast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
                 // We lost connect, return to the main activity.
                 finish();
