@@ -26,7 +26,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
     private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
 
     // The Channel ID for the TV application
-    private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.game";
+    private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.castroids";
 
     // Contains game state data collected from events received from the TV Application.
     private GameState gameState = new GameState();
@@ -159,7 +159,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
         switch (eventId) {
             case APPLICATION_CONNECTED:
                 // Any time we connect register for Events that this class is interested in.
-                this.registerMessageListener(this, Event.GAME_START, Event.GAME_OVER, Event.PLAYER_OUT);
+                this.registerMessageListener(this, Event.SLOT_UPDATE, Event.GAME_START, Event.GAME_OVER, Event.PLAYER_OUT);
                 break;
             default:
                 // Ignore.
@@ -185,6 +185,9 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 
         // Switch on the Event
         switch (event) {
+            case SLOT_UPDATE:
+                gameState.onSlotData(MessageDataHelper.decodeSlotUpdateSlotData(data));
+                break;
             case GAME_START:
                 gameState.onGameStart(MessageDataHelper.decodeGameStartCountDownSeconds(data));
                 break;
