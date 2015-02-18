@@ -18,7 +18,7 @@ public interface MessageListener {
      * Called when a new message that the Message Listener registered for was received.<br>
      * <br>
      * NOTE: This callback will not be on the UI thread. If the callback results in the UI being updated you need to run
-     * that change ont he UI thread.
+     * that change on the UI thread.
      * 
      * @param event
      *            The application defined event name.

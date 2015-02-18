@@ -46,6 +46,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
         //content view
         setContentView(R.layout.activity_main);
 
+        // Get an instance of the ConnectivtyManager
+        connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
 
@@ -60,7 +63,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
-        playButton.setEnabled(false);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +81,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         // Initialize the no TV discovered button
         noTVDiscoveredButton = (Button) findViewById(R.id.no_tv_button);
-        noTVDiscoveredButton.setEnabled(true);
         noTVDiscoveredButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,21 +100,41 @@ public class MainActivity extends Activity implements ConnectivityListener {
     protected void onResume() {
         super.onResume();
 
-        // Get an instance of the ConnectivtyManager and register for connectivity updates.
-        connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+        //Register for connectivity updates.
         connectivityManager.registerConnectivityListener(this);
 
-        // Enable the play button if we are currently connected
-        playButton.setEnabled(connectivityManager.isConnected());
+        //capture the current state of the connection and show on the UI
+        bindViews();
+    }
+
+    /**
+     * Hide and show buttons depending on the state of the connection.
+     */
+    private void bindViews(){
+        playButton.setVisibility(View.GONE);
+        selectTVButton.setVisibility(View.GONE);
+        noTVDiscoveredButton.setVisibility(View.GONE);
 
         // Make sure the connectivity manager is in the correct state.
         if (connectivityManager.hasDiscoveredService()) {
             String[] services = connectivityManager.getDiscoveredServiceNames();
             if ((services != null) && (services.length > 0)) {
-                connectivityManager.connect(services[0]);
+                if(services.length == 1) {
+                    if(!connectivityManager.isConnected()) {
+                        connectivityManager.connect(services[0]);
+                    }
+                }
+                boolean hasSingleService = services.length == 1;
+                if(hasSingleService){
+                    playButton.setVisibility(View.VISIBLE);
+                } else {
+                    //multiple services
+                    selectTVButton.setVisibility(View.VISIBLE);
+                }
             }
-        } else if (!connectivityManager.isDiscovering()) {
-            connectivityManager.startDiscovery();
+        } else {
+            //no tvs discovered yet
+            noTVDiscoveredButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -159,61 +180,29 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
     @Override
     public void onConnectivityUpdate(int eventId) {
-        //disable all the buttons except for the No TV discovered
-        noTVDiscoveredButton.setEnabled(true);
-        playButton.setEnabled(false);
-
         switch (eventId) {
             case DISCOVERY_STOPPED:
                 // Restart discovery as long as we don't have a discovered service.
-                // TODO: Allow the user to refresh
                 if (!connectivityManager.hasDiscoveredService()) {
                     connectivityManager.startDiscovery();
                 }
                 break;
             case DISCOVERY_FOUND_SERVICE:
-                // Connect to the first service we find.
-                // TODO: Display the available services to the user and allow user to select the service to connect to.
-                Toast.makeText(this, "Attempting connection.", Toast.LENGTH_SHORT).show();
-                String[] services = connectivityManager.getDiscoveredServiceNames();
-                if ((services != null) && (services.length > 0)) {
-                    if(services.length == 1) {
-                        connectivityManager.connect(services[0]);
-                    }
-                }
-                break;
             case DISCOVERY_LOST_SERVICE:
-                // Ignore
-                break;
             case APPLICATION_CONNECTED:
-                // TODO: Notify the user that the connection was made.
-                Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-                // Enabled the play button
-                if (playButton != null) {
-                    playButton.setEnabled(true);
-                }
-
-                //disable the no tv found
-                if(noTVDiscoveredButton != null) {
-                    noTVDiscoveredButton.setEnabled(false);
-                }
-                break;
             case APPLICATION_DISCONNECTED:
-                // TODO: Notify the user that the connection was lost.
-                Toast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
-                // Disable the play button
-                if (playButton != null) {
-                    playButton.setEnabled(false);
-                }
-                connectivityManager.startDiscovery();
                 break;
             case APPLICATION_CONNECT_FAILED:
                 // TODO: Notify the user that the connection attempt failed.
                 Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
                 // Re-start discover
                 connectivityManager.startDiscovery();
+
                 break;
         }
+
+        //always rebind the views when an event comes in
+        bindViews();
     }
 
     @Override
