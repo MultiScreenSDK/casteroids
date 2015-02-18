@@ -53,6 +53,49 @@ public class MessageDataHelper {
      */
 
     /**
+     * Returns the decoded and sorted SlotData list from the SLOT_UPDATE message data sent by the TV application. The
+     * data is The list is sorted by the order of the color. The data is expected to be in the TV application
+     * defined JSON format:<br>
+     * <code>
+     * [ { "available": "false", "color": "red" }, { "available": "true", "color": "blue" } ]
+     * </code>
+     * 
+     * @param data
+     *            The string data from the SLOT_UPDATE message.
+     * @return
+     */
+    public static List<SlotData> decodeSlotUpdateSlotData(String data) {
+        List<SlotData> slotDataList = new ArrayList<SlotData>();
+
+        try {
+            // Initialize a JSON Array with the given data object
+            JSONArray jsonArray = new JSONArray(data);
+
+            // Loop through the length of the JSON Array...
+            for (int i = 0; i < jsonArray.length(); i++) {
+                // Get the JSON object at the current index.
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                // Get the score data from the current JSON object.
+                boolean available = jsonObject.getBoolean("available");
+                Color color = Color.getByName(jsonObject.getString("color"));
+
+                // Create and add a ScoreData object to the score data list.
+                slotDataList.add(new SlotData(available, color));
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to decode the SlotData list. data=" + data, e);
+            slotDataList.clear();
+        }
+
+        // Sort the slot data.
+        Collections.sort(slotDataList);
+
+        // Return the sorted slot data list.
+        return slotDataList;
+    }
+    
+    /**
      * Returns the decoded game start count down time in seconds from the GAME_START message data sent by the TV
      * application. The data is expected to be the TV application defined format of an integer stored in a string value.
      * 

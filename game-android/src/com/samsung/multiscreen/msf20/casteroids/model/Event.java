@@ -30,13 +30,17 @@ public enum Event {
      * Events that the Client receives
      */
 
-    // Event receive with count down to the start of the game.
+    // Event received with the updated slot information. This will allow us to know how many users can join the game and
+    // which colors are available.
+    SLOT_UPDATE("slot_update", false),
+
+    // Event received with count down to the start of the game.
     GAME_START("game_start", false),
 
-    // Event receive to indicate the end of the game.
+    // Event received to indicate the end of the game.
     GAME_OVER("game_over", false),
 
-    // Event receive to indicate the player's is out of the game since his/her spaceship was blown to smithereens (i.e.
+    // Event received to indicate the player's is out of the game since his/her spaceship was blown to smithereens (i.e.
     // destroyed). The payload contains the count down until the player can rejoin the game.
     PLAYER_OUT("player_out", false);
 
