@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/root_view"
+    tools:context=".PlayerInfoActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Your Name"
+        android:id="@+id/name_label"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/name_text"
+        android:imeOptions="actionDone"
+        android:layout_below="@+id/name_label"
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Start Game"
+        android:id="@+id/play_button"
+        android:drawableBottom="@drawable/ic_launcher"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Select Color"
+        android:id="@+id/color_label"
+        android:layout_below="@+id/name_text"
+        android:layout_alignLeft="@+id/name_label"
+        android:layout_alignStart="@+id/name_label" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/color1_button"
+        android:layout_below="@+id/color_label"
+        android:layout_toLeftOf="@+id/color_label"
+        android:layout_toStartOf="@+id/color_label" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/color2_button"
+        android:layout_alignBottom="@+id/color1_button"
+        android:layout_toRightOf="@+id/color1_button"
+        android:layout_toEndOf="@+id/color1_button" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/color3_button"
+        android:layout_alignBottom="@+id/color2_button"
+        android:layout_toRightOf="@+id/color2_button"
+        android:layout_toEndOf="@+id/color2_button" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/color4_button"
+        android:layout_alignBottom="@+id/color3_button"
+        android:layout_toRightOf="@+id/color3_button"
+        android:layout_toEndOf="@+id/color3_button" />
+
+</RelativeLayout>

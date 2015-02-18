@@ -1,0 +1,21 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.samsung.multiscreen.msf20.casteroids.SplashActivity"
+    android:background="@drawable/deepspace">
+
+
+    <TextView
+        android:id="@+id/game_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="@string/casteroids"
+        android:textSize="50sp"
+        android:textColor="#fff" />
+
+
+</FrameLayout>
