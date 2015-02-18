@@ -76,6 +76,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
         super.onCreate(savedInstanceState);
 
+
         //remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
