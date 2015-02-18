@@ -96,6 +96,10 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     protected ConnectivityManager(Context context, String url, String channelId, long discoveryTimeoutMillis) {
         this.TAG = this.getClass().getSimpleName();
 
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Creating " + TAG + ".");
+        }
+
         this.context = context.getApplicationContext();
 
         this.url = url;
@@ -163,7 +167,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
             // Clear the service map to release Service objects
             serviceMap.clear();
-            
+
             // Clear the connectivity listener list and message listener map and release listener objects
             connectivityListenerList.clear();
             messageListenerMap.clear();
