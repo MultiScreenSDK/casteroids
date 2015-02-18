@@ -1,7 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
 /**
- * Enumeration of all the application defined message events.
+ * Enumeration of all the TV application defined message events.
  * 
  * @author Dan McCafferty
  * 
@@ -11,9 +11,12 @@ public enum Event {
      * Events that the Client Sends
      */
 
-    // Event sent to start/stop/pause the game.
-    GAME_OPTION("game_option", true),
-    
+    // Event sent to join the game.
+    JOIN("join", true),
+
+    // Event sent to quit the game.
+    QUIT("quit", true),
+
     // Event sent to start/stop rotation of the spacecraft
     ROTATE("rotate", true),
 
@@ -27,16 +30,17 @@ public enum Event {
      * Events that the Client receives
      */
 
-    // Event receive with the updated game state.
-    GAME_STATE("game_state", false),
+    // Event receive with count down to the start of the game.
+    GAME_START("game_start", false),
 
-    // Event receive with the clients color.
-    COLOR("color", false),
+    // Event receive to indicate the end of the game.
+    GAME_OVER("game_over", false),
 
-    // Event receive with the updated game score.
-    SCORE("score", false);
+    // Event receive to indicate the player's is out of the game since his/her spaceship was blown to smithereens (i.e.
+    // destroyed). The payload contains the count down until the player can rejoin the game.
+    PLAYER_OUT("player_out", false);
 
-    // The application defined name for the message event
+    // The TV application defined name for the message event
     private final String name;
 
     // A flag indicating whether or not the event is one the client sends versus
@@ -47,7 +51,7 @@ public enum Event {
      * Constructor.
      * 
      * @param name
-     *            The application defined name for the message event
+     *            The TV application defined name for the message event
      * @param send
      *            A flag indicating whether or not the event is one the client sends versus one the client receives.
      */
@@ -57,7 +61,7 @@ public enum Event {
     }
 
     /**
-     * Returns the application defined name for the message event.
+     * Returns the TV application defined name for the message event.
      * 
      * @return
      */
@@ -81,5 +85,25 @@ public enum Event {
      */
     public boolean doesClientReceive() {
         return !send;
+    }
+
+    /**
+     * Returns an Event with the given TV application defined name or NULL if no match.
+     * 
+     * @param name
+     *            The TV application defined name for the message event
+     * @return
+     */
+    public static Event getByName(String name) {
+        Event event = null;
+
+        for (Event currentEvent : Event.values()) {
+            if (currentEvent.name.equalsIgnoreCase(name)) {
+                event = currentEvent;
+                break;
+            }
+        }
+
+        return event;
     }
 }
