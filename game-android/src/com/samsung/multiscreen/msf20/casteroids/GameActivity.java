@@ -296,8 +296,13 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         pauseGame(null);
     }
 
+    /**
+     * Sends a quit message to the game manager.
+     *
+     * @param view calling view
+     */
     public void pauseGame(View view) {
-        // TODO send message
+        gameConnectivityManager.sendQuitMessage();
         finish();
     }
 
