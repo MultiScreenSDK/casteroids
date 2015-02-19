@@ -23,6 +23,7 @@ public class CompassView extends View {
     private Paint markerPaint;
     private Paint textPaint;
     private Paint circlePaint;
+    private int gyroColor;
 
     /**
      * Constructor.
@@ -71,8 +72,10 @@ public class CompassView extends View {
         textPaint.setColor(r.getColor(R.color.grey_100));
         textPaint.setTextSize(45);
 
+        gyroColor = r.getColor(R.color.amber_600);
+
         markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        markerPaint.setColor(r.getColor(R.color.green_800));
+        markerPaint.setColor(gyroColor);
     }
 
     @Override
@@ -159,5 +162,15 @@ public class CompassView extends View {
      */
     public void setShowNumber(boolean show) {
         this.showNumber = show;
+    }
+
+    /**
+     * Sets the color of the gyroscope.
+     *
+     * @param color argb hex color.
+     */
+    public void setGyroColor(int color) {
+        this.gyroColor = color;
+        markerPaint.setColor(gyroColor);
     }
 }

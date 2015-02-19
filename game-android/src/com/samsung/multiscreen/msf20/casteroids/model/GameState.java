@@ -1,5 +1,6 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,9 @@ public class GameState {
     // The current slot data list received from the TV application.
     private List<SlotData> slotData = null;
 
+    // The current join response data received from the TV application.
+    private JoinResponseData joinResponseData = null;
+    
     // The current game start count down seconds received from the TV application.
     private int gameStartCountDownSeconds = -1;
 
@@ -30,6 +34,12 @@ public class GameState {
      */
     public GameState() {
         super();
+        
+        // FIXME: Remove. Added here so UI can use it while the TV application is being updated.
+        slotData = new ArrayList<SlotData>();
+        for (Color color : Color.values()) {
+        	slotData.add(new SlotData(true, color));
+        }
     }
 
     /**
@@ -41,6 +51,15 @@ public class GameState {
         this.slotData = slotData;
     }
 
+    /**
+     * Called when a join response data is received.
+     * 
+     * @param joinResponseData
+     */
+    protected void onJoinResponse(JoinResponseData joinResponseData) {
+    	this.joinResponseData = joinResponseData;
+    }
+    
     /**
      * Called when a game is starting.
      * 
@@ -58,6 +77,7 @@ public class GameState {
      * @param scoreData
      */
     protected void onGameOver(List<ScoreData> scoreData) {
+    	this.joinResponseData = null;
         this.gameStartCountDownSeconds = -1;
         this.scoreData = scoreData;
         this.playerOutCountDownSeconds = -1;
@@ -84,6 +104,15 @@ public class GameState {
         return slotData;
     }
 
+    /**
+     * The current join response data received from the TV application.
+     * 
+     * @return
+     */
+    public JoinResponseData getJoinResponseData() {
+    	return joinResponseData;
+    }
+    
     /**
      * Returns the current game start count down seconds received from the TV application or -1 if not applicable.<br>
      * <br>

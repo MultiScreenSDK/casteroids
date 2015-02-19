@@ -88,12 +88,16 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
 
+        //get the color from the intent
+        int color = getIntent().getIntExtra("color", getResources().getColor(R.color.pink_400));
+
         //sensor code
         compassView = (CompassView)this.findViewById(R.id.compass_view);
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         compassView.setShowNumber(true);
+        compassView.setGyroColor(color);
 
         //to control the vibration on button press
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -289,7 +293,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
     @Override
     public void onBackPressed() {
-        pauseGame(null);
+        quitGame(null);
     }
 
     /**
@@ -297,7 +301,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
      *
      * @param view calling view
      */
-    public void pauseGame(View view) {
+    public void quitGame(View view) {
         gameConnectivityManager.sendQuitMessage();
         finish();
     }

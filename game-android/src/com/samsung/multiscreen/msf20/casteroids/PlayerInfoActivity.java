@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.samsung.multiscreen.msf20.casteroids.model.Color;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.JoinResponseData;
+import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
 import com.samsung.multiscreen.msf20.casteroids.model.SlotData;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
@@ -107,7 +109,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.registerConnectivityListener(this);
 
         //register for SLOT changes
-        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE);
+        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE);
 
         //rebind the data
         bindAvailableSlots();
@@ -121,7 +123,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.unregisterConnectivityListener(this);
 
         //unregister for SLOT changes
-        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE);
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE);
     }
 
 
@@ -132,8 +134,20 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     @Override
     public void onMessage(String event, String data, byte[] payload) {
-        //we are only listening for SLOT_DATA changes, so re-bind available slots
-        bindAvailableSlots();
+        if(event.equals(Event.JOIN_REQUEST.getName())){
+            Toast.makeText(this, "Joining game...", Toast.LENGTH_SHORT).show();
+        } else if (event.equals(Event.JOIN_RESPONSE.getName())){
+
+            JoinResponseData joinResponseData = MessageDataHelper.decodeJoinResponseData(data);
+            if(joinResponseData.isSuccessful()){
+                startGame(joinResponseData);
+            } else {
+                Toast.makeText(this, "Couldn't join game. Try again.", Toast.LENGTH_SHORT).show();
+                bindAvailableSlots();
+            }
+        } else if (event.equals(Event.SLOT_UPDATE.getName())){
+            bindAvailableSlots();
+        }
     }
 
     @Override
@@ -155,7 +169,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                 break;
             case R.id.play_button:
                 if(checkUserSelections()) {
-                    playGame();
+                    connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedSlotData.getColor());
                 }
             default:
                 break;
@@ -211,20 +225,15 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         return true;
     }
 
-    private void playGame() {
+    private void startGame(JoinResponseData data) {
 
-        boolean joinedGame = connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedSlotData.getColor());
+        Intent intent = new Intent();
+        intent.putExtra("color", data.getColor().getColorInt());
+        intent.setClass(this, GameActivity.class);
+        startActivity(intent);
 
-        if(joinedGame) {
+        //don't keep ourselves around
+        finish();
 
-            Intent intent = new Intent();
-            intent.setClass(this, GameActivity.class);
-            startActivity(intent);
-
-            //don't keep ourselves around
-            finish();
-        } else {
-            Toast.makeText(this, "Could not join game. Try again.", Toast.LENGTH_SHORT).show();
-        }
     }
 }
