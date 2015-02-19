@@ -17,6 +17,9 @@ public class GameState {
     // The current slot data list received from the TV application.
     private List<SlotData> slotData = null;
 
+    // The current join response data received from the TV application.
+    private JoinResponseData joinResponseData = null;
+    
     // The current game start count down seconds received from the TV application.
     private int gameStartCountDownSeconds = -1;
 
@@ -49,6 +52,15 @@ public class GameState {
     }
 
     /**
+     * Called when a join response data is received.
+     * 
+     * @param joinResponseData
+     */
+    protected void onJoinResponse(JoinResponseData joinResponseData) {
+    	this.joinResponseData = joinResponseData;
+    }
+    
+    /**
      * Called when a game is starting.
      * 
      * @param gameStartCountDownSeconds
@@ -65,6 +77,7 @@ public class GameState {
      * @param scoreData
      */
     protected void onGameOver(List<ScoreData> scoreData) {
+    	this.joinResponseData = null;
         this.gameStartCountDownSeconds = -1;
         this.scoreData = scoreData;
         this.playerOutCountDownSeconds = -1;
@@ -91,6 +104,15 @@ public class GameState {
         return slotData;
     }
 
+    /**
+     * The current join response data received from the TV application.
+     * 
+     * @return
+     */
+    public JoinResponseData getJoinResponseData() {
+    	return joinResponseData;
+    }
+    
     /**
      * Returns the current game start count down seconds received from the TV application or -1 if not applicable.<br>
      * <br>

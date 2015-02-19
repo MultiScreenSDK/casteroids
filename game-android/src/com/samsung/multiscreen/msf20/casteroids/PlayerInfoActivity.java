@@ -173,9 +173,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     private void playGame() {
 
-        boolean joinedGame = connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedColor);
+        connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedColor);
 
-        if(joinedGame) {
+        // TODO: Process the JOIN_RESPONSE to determine whether or not the join was successful.
+        //if(joinedGame) {
 
             Intent intent = new Intent();
             intent.setClass(this, GameActivity.class);
@@ -183,8 +184,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
             //don't keep ourselves around
             finish();
-        } else {
-            Toast.makeText(this, "Could not join game. Try again.", Toast.LENGTH_SHORT).show();
-        }
+        //} else {
+        //    Toast.makeText(this, "Could not join game. Try again.", Toast.LENGTH_SHORT).show();
+        //}
     }
 }
