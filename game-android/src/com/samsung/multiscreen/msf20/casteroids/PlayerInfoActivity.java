@@ -1,7 +1,9 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -55,6 +57,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Reference to the slot selected by the player */
     private SlotData selectedSlotData = null;
 
+    /** Player info preferences */
+    SharedPreferences prefs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //content view
         setContentView(R.layout.activity_player_info);
+
+        //shared prefs
+        prefs = getSharedPreferences("playerinfo", Context.MODE_PRIVATE);
 
         // Get an instance of the ConnectivtyManager
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
@@ -113,6 +120,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //rebind the data
         bindAvailableSlots();
+
+        //put in the player name if it was previously saved
+        nameText.setText(getPlayerNameFromPreferences());
+        nameText.setSelection(nameText.getText().length());
     }
 
     @Override
@@ -227,6 +238,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     private void startGame(JoinResponseData data) {
 
+        writePlayerNameToPreferences(data.getName());
+
         Intent intent = new Intent();
         intent.putExtra("color", data.getColor().getColorInt());
         intent.setClass(this, GameActivity.class);
@@ -234,6 +247,18 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //don't keep ourselves around
         finish();
-
     }
+
+    private void writePlayerNameToPreferences(String name) {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("name", name);
+        editor.apply();
+    }
+
+    private String getPlayerNameFromPreferences(){
+        return prefs.getString("name", "");
+    }
+
+
+
 }
