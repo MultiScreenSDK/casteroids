@@ -1,5 +1,6 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +31,12 @@ public class GameState {
      */
     public GameState() {
         super();
+        
+        // FIXME: Remove. Added here so UI can use it while the TV application is being updated.
+        slotData = new ArrayList<SlotData>();
+        for (Color color : Color.values()) {
+        	slotData.add(new SlotData(true, color));
+        }
     }
 
     /**
