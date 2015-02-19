@@ -14,8 +14,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.Color;
+import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.SlotData;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.MessageListener;
+
+import java.util.List;
 
 /**
  *
@@ -25,13 +30,16 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
  *
  */
 
-public class PlayerInfoActivity extends Activity implements ConnectivityListener, View.OnClickListener{
+public class PlayerInfoActivity extends Activity implements ConnectivityListener, MessageListener, View.OnClickListener{
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
 
     /** Reference to the root view */
     private View rootView;
+
+    /** Reference to the initial background color of the root view */
+    private int rootViewDefaultBackgoundColor;
 
     /** References to buttons on the screen */
     private Button playButton, color1Button, color2Button, color3Button, color4Button;
@@ -42,8 +50,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
 
-    /** Reference to the color selected by the player */
-    private Color selectedColor = null;
+    /** Reference to the slot selected by the player */
+    private SlotData selectedSlotData = null;
 
 
     @Override
@@ -68,6 +76,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         //Get reference to the root view
         rootView = findViewById(R.id.root_view);
 
+        //set the root views initial background color
+        rootViewDefaultBackgoundColor = this.getResources().getColor(R.color.blue_grey_900);
+
         //Get references to the buttons
         playButton = (Button) findViewById(R.id.play_button);
         color1Button = (Button) findViewById(R.id.color1_button);
@@ -86,7 +97,6 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color3Button.setOnClickListener(this);
         color4Button.setOnClickListener(this);
 
-        setColorButtonNames(color1Button, color2Button, color3Button, color4Button);
     }
 
     @Override
@@ -95,6 +105,12 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //register for connectivity changes
         connectivityManager.registerConnectivityListener(this);
+
+        //register for SLOT changes
+        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE);
+
+        //rebind the data
+        bindAvailableSlots();
     }
 
     @Override
@@ -103,12 +119,21 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //unregister for connectivity changes
         connectivityManager.unregisterConnectivityListener(this);
+
+        //unregister for SLOT changes
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE);
     }
 
 
     @Override
     public void onConnectivityUpdate(int eventId) {
+        //not doing anything here right now
+    }
 
+    @Override
+    public void onMessage(String event, String data, byte[] payload) {
+        //we are only listening for SLOT_DATA changes, so re-bind available slots
+        bindAvailableSlots();
     }
 
     @Override
@@ -117,16 +142,16 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         switch (viewId) {
             case R.id.color1_button:
-                selectColor((Color) color1Button.getTag());
+                selectColorForSlot((SlotData) color1Button.getTag());
                 break;
             case R.id.color2_button:
-                selectColor((Color)color2Button.getTag());
+                selectColorForSlot((SlotData) color2Button.getTag());
                 break;
             case R.id.color3_button:
-                selectColor((Color)color3Button.getTag());
+                selectColorForSlot((SlotData) color3Button.getTag());
                 break;
             case R.id.color4_button:
-                selectColor((Color)color4Button.getTag());
+                selectColorForSlot((SlotData) color4Button.getTag());
                 break;
             case R.id.play_button:
                 if(checkUserSelections()) {
@@ -137,22 +162,37 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         }
     }
 
-    private void selectColor(Color color) {
-        this.selectedColor = color;
-        rootView.setBackgroundColor(color.getColorInt());
+    private void selectColorForSlot(SlotData slotData) {
+        this.selectedSlotData = slotData;
+        rootView.setBackgroundColor(slotData.getColor().getColorInt());
     }
 
-    private void setColorButtonNames(Button ...buttons) {
+    private void bindAvailableSlots() {
 
-        Color[] values = Color.values();
-        for(int i=0; i < values.length; i++) {
-            Color c = values[i];
+        Button[] buttons = new Button[]{color1Button, color2Button, color3Button, color4Button};
+
+        List<SlotData> data = connectivityManager.getGameState().getSlotData();
+
+        for (int i=0; i < data.size(); i++) {
+            SlotData slot = data.get(i);
+
+            if(!slot.isAvailable() && selectedSlotData != null && slot.equals(selectedSlotData)) {
+                //the user selection is no longer valid
+                selectedSlotData = null;
+                rootView.setBackgroundColor(rootViewDefaultBackgoundColor);
+
+                Toast.makeText(this, "The Color you selected is no longer available. Please select another one.", Toast.LENGTH_SHORT).show();
+            }
+
             Button b = buttons[i];
+            Color c = slot.getColor();
+
             b.setText(c.getName().toUpperCase());
             b.setTextColor(c.getColorInt());
-            b.setTag(c);
-        }
+            b.setTag(slot);
 
+            b.setEnabled(slot.isAvailable());
+        }
     }
 
     private boolean checkUserSelections() {
@@ -162,7 +202,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             return false;
         }
 
-        if(selectedColor == null) {
+        if(selectedSlotData == null) {
             Toast.makeText(this, "You must choose a color", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -173,7 +213,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     private void playGame() {
 
-        boolean joinedGame = connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedColor);
+        boolean joinedGame = connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedSlotData.getColor());
 
         if(joinedGame) {
 
