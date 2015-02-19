@@ -24,7 +24,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	private static GameConnectivityManager instance = null;
 
 	// The URL where the TV application lives
-	// private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
+	//private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
 	private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
@@ -85,18 +85,19 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 * @return
 	 */
 	public void sendJoinMessage(String name, Color color) {
-		String data = MessageDataHelper.encodeJoinData(name, color);
+		String data = MessageDataHelper.encodeJoinRequestData(name, color);
 
 		if (data != null) {
 			sendMessage(Event.JOIN_REQUEST.getName(), data);
 		} else {
-			Log.e(TAG, "Failed to create data string using name='" + name + "', and color=" + color + ".");
+			Log.e(TAG, "Failed to create JOIN_REQUEST data using name='" + name + "' and color=" + color + ".");
 		}
 
 		// FIXME: Remove. Sending JOIN_RESPONSE until the TV Application is updated to do this.
 		List<MessageListener> listeners = messageListenerMap.get(Event.JOIN_RESPONSE.getName());
 		if (listeners != null) {
-			String responseData = "{ \"response_code\": 0, \"name\": \""+name+"\", \"color\": \""+color.getName()+"\" }";
+			String responseData = "{ \"response_code\": 0, \"name\": \"" + name + "\", \"color\": \"" + color.getName()
+			        + "\" }";
 			for (MessageListener listener : listeners) {
 				listener.onMessage(Event.JOIN_RESPONSE.getName(), responseData, null);
 			}
@@ -114,9 +115,18 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 * Sends a ROTATE message to the TV application.
 	 * 
 	 * @param rotate
+	 *            Which direction to rotate.
+	 * @param strength
+	 *            The strength of the rotate from 0 to 100.
 	 */
-	public void sendRotateMessage(Rotate rotate) {
-		sendMessage(Event.ROTATE.getName(), rotate.getName());
+	public void sendRotateMessage(Rotate rotate, int strength) {
+		String data = MessageDataHelper.encodeRotateData(rotate, strength);
+
+		if (data != null) {
+			sendMessage(Event.ROTATE.getName(), data);
+		} else {
+			Log.e(TAG, "Failed to create ROTATE data using rotate='" + rotate + "' and strength=" + strength + ".");
+		}
 	}
 
 	/**
@@ -170,8 +180,8 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 		switch (eventId) {
 			case APPLICATION_CONNECTED:
 				// Any time we connect register for Events that this class is interested in.
-				this.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.GAME_START, Event.GAME_OVER,
-				        Event.PLAYER_OUT);
+				this.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.GAME_START,
+				        Event.GAME_OVER, Event.PLAYER_OUT);
 				break;
 			default:
 				// Ignore.

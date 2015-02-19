@@ -43,6 +43,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
     /** Keep track of state */
     private boolean turningLeft, turningRight, thrusting, firing;
+    private int strengthLeft, strengthRight;
 
     /** GameConnectivityManager enables sending messages to the TV */
     private GameConnectivityManager gameConnectivityManager;
@@ -169,21 +170,28 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
             compassView.invalidate();
         }
 
-        int threshold = 10;
+        int threshold = 5;
+        int strength = getStrength(threshold, pitch);
+        
         if(pitch > -threshold && pitch < threshold) {
             if(turningRight) {
-                setTurningRight(false);
+                setTurningRight(false, 0);
             }
             if(turningLeft) {
-                setTurningLeft(false);
+                setTurningLeft(false, 0);
             }
-        } else if (pitch <= -threshold && !turningRight) {
-            setTurningRight(true);
-        } else if(pitch >= threshold && !turningLeft) {
-            setTurningLeft(true);
+        } else if (pitch <= -threshold && (!turningRight || strengthRight != strength)) {
+            setTurningRight(true, strength);
+        } else if(pitch >= threshold && (!turningLeft || strengthLeft != strength)) {
+            setTurningLeft(true, strength);
         }
     }
 
+    private int getStrength(int threshold, float pitch) {
+    	// Creates and returns a strength value ranging from 0 to 20 based on the given threshold and pitch.
+    	return (int)(((Math.abs(pitch)-threshold) * 20) / (90 - threshold));
+    }
+    
     private void setOnTouchListeners() {
 
         int[] buttons = new int[] { R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button };
@@ -227,10 +235,10 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
     private void handleEvent(int viewId, boolean value) {
         switch (viewId) {
             case R.id.left_button:
-                setTurningLeft(value);
+                setTurningLeft(value, 45);
                 break;
             case R.id.right_button:
-                setTurningRight(value);
+                setTurningRight(value, 45);
                 break;
             case R.id.thrust_button:
                 setThrusting(value);
@@ -244,23 +252,25 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         Log.v(TAG, toString());
     }
 
-    private void setTurningLeft(boolean value) {
+    private void setTurningLeft(boolean value, int strength) {
         turningLeft = value;
+        strengthLeft = strength;
 
         if (value) {
-            gameConnectivityManager.sendRotateMessage(Rotate.LEFT);
+            gameConnectivityManager.sendRotateMessage(Rotate.LEFT, strength);
         } else {
-            gameConnectivityManager.sendRotateMessage(Rotate.NONE);
+            gameConnectivityManager.sendRotateMessage(Rotate.NONE, 0);
         }
     }
 
-    private void setTurningRight(boolean value) {
+    private void setTurningRight(boolean value, int strength) {
         turningRight = value;
+        strengthRight = strength;
 
         if (value) {
-            gameConnectivityManager.sendRotateMessage(Rotate.RIGHT);
+            gameConnectivityManager.sendRotateMessage(Rotate.RIGHT, strength);
         } else {
-            gameConnectivityManager.sendRotateMessage(Rotate.NONE);
+            gameConnectivityManager.sendRotateMessage(Rotate.NONE, 0);
         }
     }
 

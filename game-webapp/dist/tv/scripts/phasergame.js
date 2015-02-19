@@ -63,6 +63,7 @@ $(function(){
             sprite.body.acceleration.set(0); //what is the difference between set(num) vs assignment via = sign?
         }
 
+        /*
         if(turningLeft == true) {
             //rotating left
             sprite.body.angularVelocity = -300;
@@ -73,6 +74,7 @@ $(function(){
             //no rotation
             sprite.body.angularVelocity = 0;
         }
+        */
 
         if(firing == true) {
             fireBullet();
@@ -125,14 +127,21 @@ $(function(){
         });
 
         channel.on('rotate', function(msg, from){
-            if(msg == 'left') {
-                turningLeft = true;
-            } else if (msg == 'right') {
-                turningRight = true;
-            } else if (msg == 'none') {
-                turningLeft = false;
-                turningRight = false;
+            var rotateData = JSON.parse(msg);
+
+            var velocity = ((rotateData.strength * 400) / 20) + 100;
+
+            if(rotateData.rotate == 'left') {
+                //rotating left
+                sprite.body.angularVelocity = -velocity;
+            } else if(rotateData.rotate == 'right') {
+                //rotating right
+                sprite.body.angularVelocity = velocity;
+            } else {
+                //no rotation
+                sprite.body.angularVelocity = 0;
             }
+
             console.log((from.attributes.name || 'Unknown'));
         });
 

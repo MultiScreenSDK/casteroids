@@ -25,7 +25,7 @@ public class MessageDataHelper {
 	 */
 
 	/**
-	 * Returns the JSON encoded JOIN message data in the TV application defined JSON format:<br>
+	 * Returns the JSON encoded JOIN_REQUEST message data in the TV application defined JSON format:<br>
 	 * <code>
 	 *     { "name": "Buck Rogers", "color": "blue" }
 	 * </code>
@@ -34,14 +34,40 @@ public class MessageDataHelper {
 	 * @param color
 	 * @return
 	 */
-	public static String encodeJoinData(String name, Color color) {
+	public static String encodeJoinRequestData(String name, Color color) {
 		JSONObject jsonObject = new JSONObject();
 
 		try {
 			jsonObject.put("name", name);
 			jsonObject.put("color", color.getName());
 		} catch (JSONException e) {
-			Log.e(TAG, "Faled to JSON encode GAME_JOIN message data. name=" + name + ", color=" + color, e);
+			Log.e(TAG, "Faled to JSON encode JOIN_REQUEST message data. name=" + name + ", color=" + color, e);
+			return null;
+		}
+
+		return jsonObject.toString();
+	}
+
+	/**
+	 * Returns the JSON encoded ROTATE message data in the TV application defined JSON format:<br>
+	 * <code>
+	 *     { "rotate": "left", strength: 50 }
+	 * </code>
+	 * 
+	 * @param rotate
+	 *            Which direction to rotate.
+	 * @param strength
+	 *            The strength of the rotate from 0 to 20.
+	 * @return
+	 */
+	public static String encodeRotateData(Rotate rotate, int strength) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			jsonObject.put("rotate", rotate.getName());
+			jsonObject.put("strength", (rotate != Rotate.NONE ? strength : 0));
+		} catch (JSONException e) {
+			Log.e(TAG, "Faled to JSON encode ROTATE message data. rotate=" + rotate + ", strength=" + strength, e);
 			return null;
 		}
 
