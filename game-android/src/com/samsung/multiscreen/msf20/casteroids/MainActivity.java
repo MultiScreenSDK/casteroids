@@ -34,6 +34,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
 
+    /** Reference to the root view */
+    private View rootView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
+
+        //get a reference to the root view
+        rootView = findViewById(R.id.root_view);
 
         // Initialize the how to play button
         howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
@@ -94,7 +100,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
-
     }
 
     @Override
@@ -107,6 +112,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
         //capture the current state of the connection and show on the UI
         bindViews();
     }
+
 
     /**
      * Hide and show buttons depending on the state of the connection.
