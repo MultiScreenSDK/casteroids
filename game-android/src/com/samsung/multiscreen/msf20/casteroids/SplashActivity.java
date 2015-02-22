@@ -1,8 +1,13 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -44,19 +49,66 @@ public class SplashActivity extends Activity {
         ThreadUtils.postOnUiThreadDelayed(new Runnable() {
             @Override
             public void run() {
-                finish();
                 launchActivity();
             }
-        }, 1500);
+        }, 200);
     }
 
     /**
      * Launch the appropriate activity from the splash screen.
      */
     private void launchActivity() {
-        Intent mainActivityIntent = new Intent();
-        mainActivityIntent.setClass(this, MainActivity.class);
-        startActivity(mainActivityIntent);
+
+        //create the animation
+        View leftDoor = findViewById(R.id.left_door);
+        View rightDoor = findViewById(R.id.right_door);
+
+
+        //create the unlock animation
+        View lock1 = findViewById(R.id.view_2);
+        View lock2 = findViewById(R.id.view_3);
+
+        ObjectAnimator unlockLock1 = ObjectAnimator.ofFloat(lock1, "rotation", -720);
+        ObjectAnimator unlockLock2 = ObjectAnimator.ofFloat(lock2, "rotation", 720);
+
+        int unlockDoorsDuration = 1000;
+
+        AnimatorSet unlockDoors = new AnimatorSet();
+        unlockDoors.playTogether(unlockLock1, unlockLock2);
+        unlockDoors.setDuration(unlockDoorsDuration);
+        unlockDoors.start();
+
+        //create the open doors animation
+        int leftDoorWidth = leftDoor.getWidth();
+        int rightDoorWidth = rightDoor.getWidth();
+        ObjectAnimator openLeftDoor = ObjectAnimator.ofFloat(leftDoor, View.TRANSLATION_X, -leftDoorWidth);
+        ObjectAnimator openRightDoor = ObjectAnimator.ofFloat(rightDoor, View.TRANSLATION_X, rightDoorWidth);
+
+        AnimatorSet openDoors = new AnimatorSet();
+        openDoors.playTogether(openLeftDoor, openRightDoor);
+        openDoors.setDuration(1500);
+        openDoors.setStartDelay(unlockDoorsDuration);
+
+        openDoors.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ThreadUtils.postOnUiThreadDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Intent mainActivityIntent = new Intent();
+                        mainActivityIntent.setClass(SplashActivity.this, MainActivity.class);
+                        startActivity(mainActivityIntent);
+
+                        finish();
+                    }
+                }, 500);
+            }
+        });
+
+        openDoors.start();
+
+
     }
 
 }

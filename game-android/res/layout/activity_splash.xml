@@ -1,10 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.samsung.multiscreen.msf20.casteroids.SplashActivity"
     android:background="@drawable/deepspace">
-
 
     <TextView
         android:id="@+id/game_title"
@@ -15,7 +14,70 @@
         android:gravity="center"
         android:text="@string/casteroids"
         android:textSize="50sp"
-        android:textColor="#fff" />
+        android:textColor="#fff"
+        />
 
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/left_door"
+            android:src="@drawable/left_door"
+            android:scaleType="fitXY"
+            android:layout_marginRight="-100dp"/>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/right_door">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/right_door"
+                android:scaleType="fitXY"/>
+
+            <FrameLayout
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/view_1"
+                    android:src="@drawable/lock_1"
+                    />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/view_2"
+                    android:layout_margin="20dp"
+                    android:src="@drawable/lock_1"
+                   />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/view_3"
+                    android:layout_margin="30dp"
+                    android:src="@drawable/lock_2"
+                    />
+
+            </FrameLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>
