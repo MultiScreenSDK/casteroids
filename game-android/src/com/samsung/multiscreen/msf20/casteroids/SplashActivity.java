@@ -68,10 +68,10 @@ public class SplashActivity extends Activity {
         View lock1 = findViewById(R.id.view_2);
         View lock2 = findViewById(R.id.view_3);
 
-        ObjectAnimator unlockLock1 = ObjectAnimator.ofFloat(lock1, "rotation", -720);
+        ObjectAnimator unlockLock1 = ObjectAnimator.ofFloat(lock1, "rotation", -360);
         ObjectAnimator unlockLock2 = ObjectAnimator.ofFloat(lock2, "rotation", 720);
 
-        int unlockDoorsDuration = 1000;
+        int unlockDoorsDuration = 1200;
 
         AnimatorSet unlockDoors = new AnimatorSet();
         unlockDoors.playTogether(unlockLock1, unlockLock2);
@@ -86,7 +86,7 @@ public class SplashActivity extends Activity {
 
         AnimatorSet openDoors = new AnimatorSet();
         openDoors.playTogether(openLeftDoor, openRightDoor);
-        openDoors.setDuration(1500);
+        openDoors.setDuration(1300);
         openDoors.setStartDelay(unlockDoorsDuration);
 
         openDoors.addListener(new AnimatorListenerAdapter() {
@@ -99,6 +99,7 @@ public class SplashActivity extends Activity {
                         Intent mainActivityIntent = new Intent();
                         mainActivityIntent.setClass(SplashActivity.this, MainActivity.class);
                         startActivity(mainActivityIntent);
+                        overridePendingTransition(android.R.anim.fade_in, R.anim.slide_up_anim);
 
                         finish();
                     }
