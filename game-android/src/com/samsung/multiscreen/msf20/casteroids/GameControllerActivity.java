@@ -97,7 +97,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        compassView.setShowNumber(true);
+        compassView.setShowNumber(false);
         compassView.setGyroColor(color);
 
         //to control the vibration on button press
@@ -189,7 +189,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
     private int getStrength(int threshold, float pitch) {
     	// Creates and returns a strength value ranging from 0 to 20 based on the given threshold and pitch.
-    	return (int)(((Math.abs(pitch)-threshold) * 20) / (90 - threshold));
+    	return (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
     }
     
     private void setOnTouchListeners() {
