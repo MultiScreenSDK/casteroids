@@ -22,6 +22,8 @@ import com.samsung.multiscreen.msf20.casteroids.model.Color;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.Fire;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.JoinResponseData;
+import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
 import com.samsung.multiscreen.msf20.casteroids.model.Rotate;
 import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
 import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
@@ -340,7 +342,13 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Received event '" + event + "'");
         }
-        // TODO: Implement GAME_START's countdown and GAME_OVER.
+        if(event.equals(Event.GAME_OVER.getName())){
+            Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
+            quitGame(null); //FIXME:  Show the game results screen
+        } else if (event.equals(Event.GAME_START.getName())){
+            //show countdown
+            Toast.makeText(this, "Game starting in " + gameConnectivityManager.getGameState().getGameStartCountDownSeconds() + " seconds", Toast.LENGTH_SHORT).show();
+        }
     }
         
     //-----------------------------------------
