@@ -204,7 +204,12 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         int newColor = slotData.getColor().getColorInt();
 
         //run an animation changing the color from old to new
-        ObjectAnimator colorFade = ObjectAnimator.ofObject(rootView, "backgroundColor", argbEvaluator, prevColor, newColor);
+        animateBackgroundColor(prevColor, newColor);
+    }
+
+    private void animateBackgroundColor(int startColor, int endColor) {
+        //run an animation changing the color from old to new
+        ObjectAnimator colorFade = ObjectAnimator.ofObject(rootView, "backgroundColor", argbEvaluator, startColor, endColor);
         colorFade.setDuration(600);
         colorFade.start();
     }
@@ -218,11 +223,16 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         for (int i=0; i < data.size(); i++) {
             SlotData slot = data.get(i);
 
+            //in case the current user selection is no longer valid
             if(!slot.isAvailable() && selectedSlotData != null && slot.equals(selectedSlotData)) {
-                //the user selection is no longer valid
-                selectedSlotData = null;
-                rootView.setBackgroundColor(rootViewDefaultBackgoundColor);
 
+                //animate the background back to the default color first
+                animateBackgroundColor(selectedSlotData.getColor().getColorInt(), rootViewDefaultBackgoundColor);
+
+                //clear out the selection
+                selectedSlotData = null;
+
+                //message the user
                 Toast.makeText(this, "The Color you selected is no longer available. Please select another one.", Toast.LENGTH_SHORT).show();
             }
 
