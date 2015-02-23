@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.CycleInterpolator;
 import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
@@ -76,6 +78,7 @@ public class SplashActivity extends Activity {
         AnimatorSet unlockDoors = new AnimatorSet();
         unlockDoors.playTogether(unlockLock1, unlockLock2);
         unlockDoors.setDuration(unlockDoorsDuration);
+        unlockDoors.setInterpolator(new AccelerateInterpolator(1.0f));
         unlockDoors.start();
 
         //create the open doors animation
@@ -87,7 +90,8 @@ public class SplashActivity extends Activity {
         AnimatorSet openDoors = new AnimatorSet();
         openDoors.playTogether(openLeftDoor, openRightDoor);
         openDoors.setDuration(1300);
-        openDoors.setStartDelay(unlockDoorsDuration);
+        openDoors.setInterpolator(new AccelerateInterpolator(1.2f));
+        openDoors.setStartDelay(unlockDoorsDuration + 250 /** slight extra delay after the doors unlock */);
 
         openDoors.addListener(new AnimatorListenerAdapter() {
             @Override
