@@ -9,8 +9,8 @@ package com.samsung.multiscreen.msf20.casteroids.model;
 public class JoinResponseData {
 	// The TV Application defined response codes.
 	public static final int RESPONCE_CODE_SUCCESS = 0;
-	public static final int RESPONSE_CODE_NO_SLOT = 1;
-	public static final int RESPONSE_CODE_COLOR_TAKEN = 2;
+	public static final int RESPONSE_CODE_COLOR_NOT_AVAILABLE = 1;
+	public static final int RESPONSE_CODE_ERROR = 2;
 
 	// The TV Application defined response code.
 	private final int responseCode;

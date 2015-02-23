@@ -1,7 +1,5 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
-import java.util.List;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -76,7 +74,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	}
 
 	/**
-	 * Sends a JOIN message to the TV application.
+	 * Sends a JOIN_REQUEST message to the TV application.
 	 * 
 	 * @param name
 	 *            The name of the player.
@@ -91,16 +89,6 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 			sendMessage(Event.JOIN_REQUEST.getName(), data);
 		} else {
 			Log.e(TAG, "Failed to create JOIN_REQUEST data using name='" + name + "' and color=" + color + ".");
-		}
-
-		// FIXME: Remove. Sending JOIN_RESPONSE until the TV Application is updated to do this.
-		List<MessageListener> listeners = messageListenerMap.get(Event.JOIN_RESPONSE.getName());
-		if (listeners != null) {
-			String responseData = "{ \"response_code\": 0, \"name\": \"" + name + "\", \"color\": \"" + color.getName()
-			        + "\" }";
-			for (MessageListener listener : listeners) {
-				listener.onMessage(Event.JOIN_RESPONSE.getName(), responseData, null);
-			}
 		}
 	}
 
