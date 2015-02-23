@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:id="@+id/root_view"
+    android:background="@color/blue_grey_500"
     tools:context=".PlayerInfoActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Your Name"
+        android:text="@string/your_name"
         android:id="@+id/name_label"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -28,7 +29,7 @@
     <Button
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Start Game"
+        android:text="@string/start_game"
         android:id="@+id/play_button"
         android:drawableBottom="@drawable/ic_launcher"
         android:layout_alignParentBottom="true"
@@ -38,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Select Color"
+        android:text="@string/select_color"
         android:id="@+id/color_label"
         android:layout_below="@+id/name_text"
         android:layout_alignLeft="@+id/name_label"

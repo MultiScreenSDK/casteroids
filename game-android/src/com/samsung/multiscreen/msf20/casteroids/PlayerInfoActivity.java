@@ -1,5 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -60,6 +62,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Player info preferences */
     SharedPreferences prefs = null;
 
+    /** Reference to an ARGB animation evaluator that is cached for performance reasons */
+    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +91,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         rootView = findViewById(R.id.root_view);
 
         //set the root views initial background color
-        rootViewDefaultBackgoundColor = this.getResources().getColor(R.color.blue_grey_900);
+        rootViewDefaultBackgoundColor = this.getResources().getColor(R.color.blue_grey_500);
 
         //Get references to the buttons
         playButton = (Button) findViewById(R.id.play_button);
@@ -188,8 +193,20 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     }
 
     private void selectColorForSlot(SlotData slotData) {
+
+        //get the old slot data color
+        int prevColor = this.selectedSlotData != null ? this.selectedSlotData.getColor().getColorInt() : rootViewDefaultBackgoundColor;
+
+        //set the new slot data
         this.selectedSlotData = slotData;
-        rootView.setBackgroundColor(slotData.getColor().getColorInt());
+
+        //get the new color
+        int newColor = slotData.getColor().getColorInt();
+
+        //run an animation changing the color from old to new
+        ObjectAnimator colorFade = ObjectAnimator.ofObject(rootView, "backgroundColor", argbEvaluator, prevColor, newColor);
+        colorFade.setDuration(600);
+        colorFade.start();
     }
 
     private void bindAvailableSlots() {
