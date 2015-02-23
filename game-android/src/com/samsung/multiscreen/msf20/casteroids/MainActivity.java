@@ -1,10 +1,15 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
+import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -100,6 +105,11 @@ public class MainActivity extends Activity implements ConnectivityListener {
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
+
+        //if we are lollipop, do a custom animation
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            runLollipopCode();
+        }
     }
 
     @Override
@@ -111,6 +121,29 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         //capture the current state of the connection and show on the UI
         bindViews();
+    }
+
+    /**
+     * Android 5.0 (Lollipop) specific code here.
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void runLollipopCode() {
+        rootView.setVisibility(View.INVISIBLE);
+
+        //show how we can support material design
+        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+
+            public boolean onPreDraw() {
+                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                rootView.setVisibility(View.VISIBLE);
+
+                Animator anim = ViewAnimationUtils.createCircularReveal(rootView, rootView.getWidth() / 2, rootView.getHeight() / 2, 0, rootView.getWidth());
+                anim.setDuration(1000);
+                anim.start();
+
+                return false;
+            }
+        });
     }
 
 
