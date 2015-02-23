@@ -22,8 +22,6 @@ import com.samsung.multiscreen.msf20.casteroids.model.Color;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.Fire;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.casteroids.model.JoinResponseData;
-import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
 import com.samsung.multiscreen.msf20.casteroids.model.Rotate;
 import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
 import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
@@ -35,10 +33,10 @@ import com.samsung.multiscreen.msf20.connectivity.MessageListener;
  *
  * @author Nik Bhattacharya
  */
-public class GameActivity extends Activity implements View.OnTouchListener, ConnectivityListener, MessageListener {
+public class GameControllerActivity extends Activity implements View.OnTouchListener, ConnectivityListener, MessageListener {
 
     /** Debugging */
-    private static final String TAG = GameActivity.class.getSimpleName();
+    private static final String TAG = GameControllerActivity.class.getSimpleName();
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
@@ -299,7 +297,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Conn
 
     @Override
     public String toString() {
-        return "GameActivity{" + "turningLeft=" + turningLeft + ", turningRight=" + turningRight + ", thrusting="
+        return "GameControllerActivity{" + "turningLeft=" + turningLeft + ", turningRight=" + turningRight + ", thrusting="
                 + thrusting + ", firing=" + firing + '}';
     }
 

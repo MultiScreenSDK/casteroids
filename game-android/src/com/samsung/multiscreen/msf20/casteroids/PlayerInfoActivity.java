@@ -269,7 +269,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         Intent intent = new Intent();
         intent.putExtra("color", data.getColor().getColorInt());
-        intent.setClass(this, GameActivity.class);
+        intent.setClass(this, GameControllerActivity.class);
         startActivity(intent);
 
         //don't keep ourselves around
