@@ -153,7 +153,7 @@ $(function(){
             var rotateData = JSON.parse(msg);
 
             // Map the 0 to 20 range value from the message's data to a 100 to 400 range value for the game.
-            var velocity = ((rotateData.strength * 400) / 20) + 100;
+            var velocity = ((rotateData.strength * 300) / 20) + 100;
 
             // Update the angular velocity based on the rotate direction (right, left, or none).
             if(rotateData.rotate == 'left') {
