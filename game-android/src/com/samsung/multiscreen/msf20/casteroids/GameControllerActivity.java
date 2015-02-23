@@ -126,7 +126,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         gameConnectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         gameConnectivityManager.registerConnectivityListener(this);
         gameConnectivityManager.registerMessageListener(this, Event.GAME_START, Event.GAME_OVER);
-        gameConnectivityManager.sendJoinMessage("Buck", Color.BLUE);
 
         // If we are not connected return to the main screen.
         if (!gameConnectivityManager.isConnected()) {

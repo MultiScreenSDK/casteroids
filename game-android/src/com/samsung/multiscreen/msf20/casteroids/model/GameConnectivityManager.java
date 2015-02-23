@@ -82,7 +82,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 *            The color the player chose.
 	 * @return
 	 */
-	public void sendJoinMessage(String name, Color color) {
+	public void sendJoinRequestMessage(String name, Color color) {
 		String data = MessageDataHelper.encodeJoinRequestData(name, color);
 
 		if (data != null) {
