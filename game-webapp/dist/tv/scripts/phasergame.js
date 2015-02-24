@@ -255,7 +255,7 @@ $(function(){
             console.log('connect');
 
             // Send the slot update to the new client sp it knows what slots are available.
-            sendSlotUpdate(client.id);
+            sendSlotUpdate('all');
         });
 
         channel.on('disconnect', function(client){
@@ -268,7 +268,7 @@ $(function(){
             console.log('clientConnect');
 
             // Send the slot update to the new client sp it knows what slots are available.
-            sendSlotUpdate(client.id);
+            sendSlotUpdate('all');
         });
 
         channel.on('clientDisconnect', function(client){
