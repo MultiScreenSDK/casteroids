@@ -206,6 +206,12 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        connectivityManager.disconnect();
+        super.onBackPressed();
+    }
+
     private void selectColorForSlot(SlotData slotData) {
 
         //get the old slot data color
