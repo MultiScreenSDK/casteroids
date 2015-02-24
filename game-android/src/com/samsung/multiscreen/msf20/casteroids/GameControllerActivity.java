@@ -339,6 +339,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
      */
     public void quitGame(View view) {
         gameConnectivityManager.sendQuitMessage();
+        gameConnectivityManager.disconnect();
         finish();
     }
 
