@@ -117,6 +117,11 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     protected void onResume() {
         super.onResume();
 
+        // If not connected, exit this screen.
+        if(!connectivityManager.isConnected()) {
+        	finish();
+        }
+        
         //register for connectivity changes
         connectivityManager.registerConnectivityListener(this);
 

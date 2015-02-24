@@ -10,6 +10,8 @@ $(function(){
     var bulletTime = 0;
     var thrusting;
 
+    var console_logging = false;
+
     //  A placeholder for one player in the gave
     function Slot(color, colorCode) {
         this.color = color || 'unknown';
@@ -41,7 +43,10 @@ $(function(){
     for (var i in slots) {
         var slot = slots[i];
         colorToSlotMap[slot.color] = slot;
-        console.log('adding '+slot);
+
+        if (console_logging) {
+            console.log('adding '+slot);
+        }
     }
 
     function preload() {
@@ -169,6 +174,7 @@ $(function(){
 
         // If the slot is null then the player has been removed or the given client id is invalid.
         if (slot == null) {
+            console.log('Ignoring rotate. Invalid client. clientId=' + clientId);
             return;
         }
 
@@ -193,6 +199,7 @@ $(function(){
 
         // If the slot is null then the player has been removed or the given client id is invalid.
         if (slot == null) {
+            console.log('Ignoring thrust. Invalid client. clientId=' + clientId);
             return;
         }
 
@@ -207,6 +214,7 @@ $(function(){
 
         // If the slot is null then the player has been removed or the given client id is invalid.
         if (slot == null) {
+            console.log('Ignoring fire. Invalid client. clientId=' + clientId);
             return;
         }
 
@@ -252,34 +260,38 @@ $(function(){
         });
 
         channel.on('connect', function(client){
-            console.log('connect');
-
             // Send the slot update to the new client sp it knows what slots are available.
             sendSlotUpdate('all');
+            if (console_logging) {
+                console.log('connect');
+            }
         });
 
         channel.on('disconnect', function(client){
-            console.log('disconnect');
             removePlayer(client.id);
             sendSlotUpdate('all');
+            if (console_logging) {
+                console.log('disconnect');
+            }
         });
 
         channel.on('clientConnect', function(client){
-            console.log('clientConnect');
-
             // Send the slot update to the new client sp it knows what slots are available.
             sendSlotUpdate('all');
+            if (console_logging) {
+                console.log('clientConnect');
+            }
         });
 
         channel.on('clientDisconnect', function(client){
-            console.log('clientDisconnect');
             removePlayer(client.id);
             sendSlotUpdate('all');
+            if (console_logging) {
+                console.log('clientDisconnect');
+            }
         });
 
         channel.on('join_request', function(msg, from) {
-            console.log('join_request. from=' + (from.id || 'Unknown'));
-
             // Parse the JSON data received from the client.
             var joinRequestData = JSON.parse(msg);
 
@@ -292,7 +304,6 @@ $(function(){
                 response_code : responseCode };
 
             // Send a join_response back to the client
-            console.log('sending join_response ' + JSON.stringify(joinResponse) + ". to=" + from.id);
             channel.publish('join_response', JSON.stringify(joinResponse), from.id);
 
             // If the client successfully joined, send out the slot data update.
@@ -302,33 +313,45 @@ $(function(){
                 // TODO: REMOVE statement below after the addPlayer method's TODO for starting the game is complete.
                 sendGameStart(0);
             }
+
+            if (console_logging) {
+                console.log('join_request. from=' + (from.id || 'Unknown'));
+                console.log('sending join_response ' + JSON.stringify(joinResponse) + ". to=" + from.id);
+            }
         });
 
         channel.on('quit', function(msg, from) {
-            console.log('quit. from=' + (from.id || 'Unknown'));
             removePlayer(from.id);
             sendSlotUpdate('all');
+            if (console_logging) {
+                console.log('quit. from=' + (from.id || 'Unknown'));
+            }
         });
 
         channel.on('rotate', function(msg, from){
-            console.log('rotate. from=' + (from.id || 'Unknown'));
-
             // Parse the JSON data received from the client.
             var rotateData = JSON.parse(msg);
 
             // Rotate the player
             onRotatePlayer(from.id, rotateData.rotate, rotateData.strength);
+            if (console_logging) {
+                console.log('rotate. from=' + (from.id || 'Unknown'));
+            }
         });
 
         channel.on('thrust', function(msg, from){
-            console.log('thrust. from=' + (from.id || 'Unknown'));
             onThrust(from.id, msg == 'on');
+            if (console_logging) {
+                console.log('thrust. from=' + (from.id || 'Unknown'));
+            }
         });
 
         channel.on('fire', function(msg, from){
-            console.log('fire. from=' + (from.id || 'Unknown'));
             if (msg == 'on') {
                 onFire(from.id);
+            }
+            if (console_logging) {
+                console.log('fire. from=' + (from.id || 'Unknown'));
             }
         });
 
@@ -341,26 +364,34 @@ $(function(){
             }
 
             // Send a slot_update to the client(s)
-            console.log('sending slot_update ' + JSON.stringify(slotData) + ". to=" + to);
             channel.publish('slot_update', JSON.stringify(slotData), to);
+            if (console_logging) {
+                console.log('sending slot_update ' + JSON.stringify(slotData) + ". to=" + to);
+            }
         }
 
         function sendGameStart(countdown) {
             // Send a game_start to all clients
-            console.log('sending game_start ' + countdown + " secs. to=all");
             channel.publish('game_start', countdown);
+            if (console_logging) {
+                console.log('sending game_start ' + countdown + " secs. to=all");
+            }
         }
 
         function sendPlayerOut(clientId, countdown) {
             // Send a player_out to the client
-            console.log('sending player_out ' + countdown + " secs. to=" + clientId);
             channel.publish('player_out', countdown, clientId);
+            if (console_logging) {
+                console.log('sending player_out ' + countdown + " secs. to=" + clientId);
+            }
         }
 
         function sendGameOver() {
             // Send a game_over to all clients
-            console.log('sending game_over. to=all');
             channel.publish('game_over', null);
+            if (console_logging) {
+                console.log('sending game_over. to=all');
+            }
         }
 
     });
