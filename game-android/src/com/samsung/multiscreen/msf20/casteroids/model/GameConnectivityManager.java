@@ -22,8 +22,8 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	private static GameConnectivityManager instance = null;
 
 	// The URL where the TV application lives
-	//private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
-	private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
+	private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
+	//private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
 	private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.castroids";
