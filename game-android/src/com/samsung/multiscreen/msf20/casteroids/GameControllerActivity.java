@@ -9,6 +9,12 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -29,6 +35,8 @@ import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
+import java.util.ArrayList;
+
 /**
  * The game controller screen for Casteroids.
  *
@@ -41,6 +49,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
+
+    /** Keep track of which color the user selected */
+    private int userSelectedColor;
 
     /** Keep track of state */
     private boolean turningLeft, turningRight, thrusting, firing;
@@ -103,7 +114,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
 
         //get the color from the intent
-        int color = getIntent().getIntExtra("color", getResources().getColor(R.color.pink_400));
+        userSelectedColor= getIntent().getIntExtra("color", getResources().getColor(R.color.pink_400));
 
         //sensor code
         compassView = (CompassView)this.findViewById(R.id.compass_view);
@@ -111,7 +122,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         compassView.setShowNumber(false);
-        compassView.setGyroColor(color);
+        compassView.setGyroColor(userSelectedColor);
 
         //to control the vibration on button press
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -368,15 +379,58 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
             //show a toast for any non 0 wait time.
             if(numSeconds != 0) {
-                toast = Toast.makeText(this, "Game starting in " + numSeconds + " seconds", Toast.LENGTH_SHORT);
+                toast = Toast.makeText(this, getStyledString("Game starting in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
 
             //Only 0 means we are in
             setUserInputEnabled(numSeconds == 0);
+        } else if (event.equals(Event.PLAYER_OUT.getName())){
+            //show countdown
+            int numSeconds = MessageDataHelper.decodePlayerOutCountDownSeconds(data);
 
+            if(toast != null) {
+                toast.cancel();
+            }
+
+            //show a toast for any non 0 wait time.
+            if(numSeconds != 0) {
+                toast = Toast.makeText(this, getStyledString("You are out. Prepare to re-enter in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
+
+            //Only 0 means we are in
+            setUserInputEnabled(numSeconds == 0);
         }
+    }
+
+    /**
+     * An example of how to use a Spannable in Android to style specific
+     * sections of a String.
+     *
+     * @param string the string to be styled
+     * @return the spannable with the styles embedded
+     */
+    private Spannable getStyledString(String string) {
+
+        Spannable spannable = new SpannableString(string);
+        ArrayList<Integer> spans = new ArrayList<Integer>(spannable.length());
+        for(int i = 0; i < spannable.length(); i++){
+            if(Character.isDigit(spannable.charAt(i))){
+                spans.add(new Integer(i));
+            }
+        }
+        for(int j = 0; j < spans.size(); j++) {
+            int index = spans.get(j).intValue();
+            spannable.setSpan(new RelativeSizeSpan(1.7f), index, index+1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(userSelectedColor), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new StyleSpan(Typeface.BOLD), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return spannable;
     }
 
     private void setUserInputEnabled(boolean enabled){
@@ -389,7 +443,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
                 fireButton.setEnabled(false);
                 compassView.setVisibility(View.INVISIBLE);
 
-                //FIXME:  check this
                 setFiring(false);
                 setThrusting(false);
                 setTurningRight(false, 0);
