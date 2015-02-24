@@ -1,6 +1,6 @@
 $(function(){
 
-    "use strict"; 
+    "use strict";
     var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'casteroids', {preload: preload, create: create, update: update, render: render});
 
     var sprite;
@@ -8,7 +8,7 @@ $(function(){
     var bullet;
     var bullets;
     var bulletTime = 0;
-    var thrusting;
+    var thrusting, firing;
 
     var console_logging = false;
 
@@ -99,6 +99,10 @@ $(function(){
 
         // NOTE: The spacecraft's angular velocity is updated when handling rotate events from the client.
         // NOTE: The spacecraft's firing of bullets is performed when handling fire events from the client.
+
+        if(firing == true) {
+            fireBullet();
+        }
 
         screenWrap(sprite);
 
@@ -208,7 +212,7 @@ $(function(){
     }
 
     // Fires a bullet from the client's spaceship. Called when the client sends a fire event.
-    function onFire(clientId) {
+    function onFire(clientId, firingEnabled) {
         // Look up the requested slot by the color name
         var slot = clientIdToSlotMap[clientId];
 
@@ -219,6 +223,10 @@ $(function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
+        firing = firingEnabled;
+    }
+
+    function fireBullet() {
         if(game.time.now > bulletTime) {
             bullet = bullets.getFirstExists(false); //what is this?
 
@@ -347,9 +355,7 @@ $(function(){
         });
 
         channel.on('fire', function(msg, from){
-            if (msg == 'on') {
-                onFire(from.id);
-            }
+            onFire(from.id, msg == 'on');
             if (console_logging) {
                 console.log('fire. from=' + (from.id || 'Unknown'));
             }
@@ -395,5 +401,5 @@ $(function(){
         }
 
     });
-	
+
 });
