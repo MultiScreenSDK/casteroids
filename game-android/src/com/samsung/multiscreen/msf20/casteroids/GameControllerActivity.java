@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -22,6 +23,7 @@ import com.samsung.multiscreen.msf20.casteroids.model.Color;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.Fire;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
 import com.samsung.multiscreen.msf20.casteroids.model.Rotate;
 import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
 import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
@@ -51,6 +53,15 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Vibration service */
     private Vibrator vibrator;
 
+    /** References to various buttons */
+    private Button thrustButton, fireButton, quitButton;
+
+    /** Reference to toast shown on the screen */
+    private Toast toast = null;
+
+    /** Reference to text labels*/
+    private TextView instructionsText;
+
     /** Device orientation */
     float pitch = 0;
 
@@ -71,6 +82,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
     /** Magnetic Field sensor */
     Sensor magneticField;
+
+    /** Whether user input is enabled */
+    private boolean isEnabled = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,15 +120,15 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         //button touches
         setOnTouchListeners();
 
-        Button thrustButton = (Button) findViewById(R.id.thrust_button);
-        Button fireButton = (Button) findViewById(R.id.fire_button);
-        Button pauseButton = (Button) findViewById(R.id.pause_button);
-        TextView instructionsText = (TextView) findViewById(R.id.instructions_text);
+        thrustButton = (Button) findViewById(R.id.thrust_button);
+        fireButton = (Button) findViewById(R.id.fire_button);
+        quitButton = (Button) findViewById(R.id.pause_button);
+        instructionsText = (TextView) findViewById(R.id.instructions_text);
 
         //set the custom typefaces
         thrustButton.setTypeface(customTypeface);
         fireButton.setTypeface(customTypeface);
-        pauseButton.setTypeface(customTypeface);
+        quitButton.setTypeface(customTypeface);
         instructionsText.setTypeface(customTypeface);
     }
 
@@ -207,12 +221,15 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        int id = v.getId();
+        //only send values if we are enabled
+        if(isEnabled) {
+            int id = v.getId();
 
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            handleDown(id);
-        } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-            handleUp(id);
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                handleDown(id);
+            } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                handleUp(id);
+            }
         }
 
         return false;
@@ -345,7 +362,42 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             quitGame(null); //FIXME:  Show the game results screen
         } else if (event.equals(Event.GAME_START.getName())){
             //show countdown
-            Toast.makeText(this, "Game starting in " + gameConnectivityManager.getGameState().getGameStartCountDownSeconds() + " seconds", Toast.LENGTH_SHORT).show();
+            int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
+
+            if(toast != null) {
+                toast.cancel();
+            }
+            toast = Toast.makeText(this, "Game starting in " + numSeconds + " seconds", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+
+            //Only 0 means we are in
+            setUserInputEnabled(numSeconds == 0);
+
+        }
+    }
+
+    private void setUserInputEnabled(boolean enabled){
+        if(this.isEnabled != enabled){
+            //toggle the setting
+            this.isEnabled = enabled;
+
+            if(!this.isEnabled) {
+                thrustButton.setEnabled(false);
+                fireButton.setEnabled(false);
+                compassView.setVisibility(View.INVISIBLE);
+
+                //FIXME:  check this
+                setFiring(false);
+                setThrusting(false);
+                setTurningRight(false, 0);
+                setTurningLeft(false, 0);
+
+            } else {
+                thrustButton.setEnabled(true);
+                fireButton.setEnabled(true);
+                compassView.setVisibility(View.VISIBLE);
+            }
         }
     }
         
