@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.samsung.multiscreen.msf20.casteroids.model.Color;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.Fire;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
@@ -140,7 +139,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         gameConnectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         gameConnectivityManager.registerConnectivityListener(this);
         gameConnectivityManager.registerMessageListener(this, Event.GAME_START, Event.GAME_OVER);
-        gameConnectivityManager.sendJoinMessage("Buck", Color.BLUE);
 
         // If we are not connected return to the main screen.
         if (!gameConnectivityManager.isConnected()) {

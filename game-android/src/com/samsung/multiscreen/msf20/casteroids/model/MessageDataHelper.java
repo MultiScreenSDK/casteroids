@@ -83,7 +83,7 @@ public class MessageDataHelper {
 	 * data is The list is sorted by the order of the color. The data is expected to be in the TV application defined
 	 * JSON format:<br>
 	 * <code>
-	 * [ { "available": "false", "color": "red" }, { "available": "true", "color": "blue" } ]
+	 * [ { "available": false, "color": "red" }, { "available": true, "color": "blue" } ]
 	 * </code>
 	 * 
 	 * @param data

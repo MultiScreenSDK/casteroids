@@ -185,7 +185,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                 break;
             case R.id.play_button:
                 if(checkUserSelections()) {
-                    connectivityManager.sendJoinMessage(nameText.getText().toString(), selectedSlotData.getColor());
+                    connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
                 }
             default:
                 break;

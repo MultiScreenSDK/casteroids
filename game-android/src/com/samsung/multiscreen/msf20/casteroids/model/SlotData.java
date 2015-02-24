@@ -53,6 +53,6 @@ public class SlotData implements Comparable<SlotData> {
     @Override
     public int compareTo(SlotData another) {
         // Sort the slot by the color's ordinal so that they are in the order the Colors are defined.
-        return (another.getColor().ordinal() - getColor().ordinal());
+        return (getColor().ordinal() - another.getColor().ordinal());
     }
 }

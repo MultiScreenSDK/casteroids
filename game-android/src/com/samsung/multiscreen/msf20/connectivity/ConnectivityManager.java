@@ -83,8 +83,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     private List<ConnectivityListener> connectivityListenerList = new ArrayList<ConnectivityListener>();
 
     // A map that stores the registered message listeners
-    // FIXME: Set back to private after TV Application sends JOIN_RESPONSE
-    protected Map<String, List<MessageListener>> messageListenerMap = new HashMap<String, List<MessageListener>>();
+    private Map<String, List<MessageListener>> messageListenerMap = new HashMap<String, List<MessageListener>>();
 
     /**
      * Constructor.
