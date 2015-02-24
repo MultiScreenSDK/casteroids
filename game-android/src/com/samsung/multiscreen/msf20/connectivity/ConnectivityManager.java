@@ -469,7 +469,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     public void onConnect(Client client) {
         // We are connected! :)
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Application.onConnect() client: " + client.toString());
+            Log.d(TAG, "Application.onConnect() client: " + getAsString(client));
         }
 
         synchronized (lock) {
@@ -485,7 +485,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     public void onDisconnect(Client client) {
         // We are disconnected! :(
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Application.onDisconnect() client: " + client.toString());
+            Log.d(TAG, "Application.onDisconnect() client: " + getAsString(client));
         }
 
         synchronized (lock) {
@@ -504,7 +504,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     public void onSuccess(Client client) {
         // The application is launched, and is ready to accept messages. :)
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Application connect onSuccess() client: " + client.toString());
+            Log.d(TAG, "Application connect onSuccess() client: " + getAsString(client));
         }
     }
 
@@ -518,6 +518,15 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
         // Notify listeners of the error.
         notifyConnectivityListeners(ConnectivityListener.APPLICATION_CONNECT_FAILED);
+    }
+    
+    /**
+     * Returns the toString() value of the given Client object or "null" if null.
+     * @param client
+     * @return
+     */
+    private String getAsString(Client client) {
+    	return (client != null) ? client.toString() : "null";
     }
 
     /******************************************************************************************************************
