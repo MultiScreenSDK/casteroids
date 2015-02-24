@@ -32,7 +32,12 @@ import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
  * it.<br>
  * <br>
  * The class was architected in way where the code using this class does not need to know anything about the underlying
- * protocols or SDK being used.
+ * protocols or SDK being used.<br>
+ * <br>
+ * The scope of this class is tied to the scope of this example application. Sicne it only needs to send messages
+ * directly to the TV Application and the messages are limited to String data, this class does not include logic for
+ * sending messages directly to other clients nor logic for sending byte[] payloads with the message. This functionality
+ * can easily be added to this class. See the notes in the class for more details.
  * 
  * @author Dan McCafferty
  * 
@@ -343,7 +348,11 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     }
 
     /******************************************************************************************************************
-     * Connect related methods
+     * Connect related methods.<br>
+     * <br>
+     * This example application connects to the TV application and listens for connect and disconnect events. Since 
+     * this example application does not need to communicate directly with other clients it does not store Client 
+     * objects for the other clients that are connected to the same TV Application instance.
      */
 
     /**
@@ -512,7 +521,10 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
     }
 
     /******************************************************************************************************************
-     * Communicate related methods
+     * Communicate related methods.<br>
+     * <br>
+     * This example application sends messages to the TV Application with String data. This example does not include 
+     * logic for sending messages directly to other clients nor logic for sending byte[] payloads with the message.
      */
 
     /**

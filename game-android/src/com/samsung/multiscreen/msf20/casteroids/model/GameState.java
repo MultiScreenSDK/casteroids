@@ -15,7 +15,7 @@ import java.util.List;
 public class GameState {
 
     // The current slot data list received from the TV application.
-    private List<SlotData> slotData = null;
+    private List<SlotData> slotDataList = null;
 
     // The current join response data received from the TV application.
     private JoinResponseData joinResponseData = null;
@@ -24,7 +24,7 @@ public class GameState {
     private int gameStartCountDownSeconds = -1;
 
     // The current score data list received from the TV application.
-    private List<ScoreData> scoreData = null;
+    private List<ScoreData> scoreDataList = null;
 
     // The current player out count down seconds received from the TV application.
     private int playerOutCountDownSeconds = -1;
@@ -35,10 +35,11 @@ public class GameState {
     public GameState() {
         super();
         
-        // FIXME: Remove. Added here so UI can use it while the TV application is being updated.
-        slotData = new ArrayList<SlotData>();
+		// Initialize the SlotData list by defaulting everything on. It will be updated as soon as the application
+		// connects with the TV Application.
+        slotDataList = new ArrayList<SlotData>();
         for (Color color : Color.values()) {
-        	slotData.add(new SlotData(true, color));
+        	slotDataList.add(new SlotData(true, color));
         }
     }
 
@@ -48,7 +49,7 @@ public class GameState {
      * @param slotData
      */
     protected void onSlotData(List<SlotData> slotData) {
-        this.slotData = slotData;
+        this.slotDataList = slotData;
     }
 
     /**
@@ -67,7 +68,7 @@ public class GameState {
      */
     protected void onGameStart(int gameStartCountDownSeconds) {
         this.gameStartCountDownSeconds = gameStartCountDownSeconds;
-        this.scoreData = null;
+        this.scoreDataList = null;
         this.playerOutCountDownSeconds = -1;
     }
 
@@ -79,7 +80,7 @@ public class GameState {
     protected void onGameOver(List<ScoreData> scoreData) {
     	this.joinResponseData = null;
         this.gameStartCountDownSeconds = -1;
-        this.scoreData = scoreData;
+        this.scoreDataList = scoreData;
         this.playerOutCountDownSeconds = -1;
     }
 
@@ -93,6 +94,33 @@ public class GameState {
     }
 
     /**
+     * Returns a flag indicating whether or not at least one Slot is available.<br>
+     * <br>
+     * This is intended to be used by the UI logic to determine whether or not the user can join the game.
+     *  
+     * @return
+     */
+    public boolean hasAvailableSlot() {
+    	if (hasSlotData()) {
+        	for (SlotData slotData : slotDataList) {
+        		if (slotData.isAvailable()) {
+        			return true;
+        		}
+        	}
+    	}
+    	return false;
+    }
+    
+    /**
+     * Returns whether or not there is SlotData available.
+     * 
+     * @return
+     */
+    public boolean hasSlotData() {
+    	return ((slotDataList != null) && !slotDataList.isEmpty());
+    }
+    
+    /**
      * Returns the current slot data list received from the TV application or null if not applicable.<br>
      * <br>
      * This is intended to be used when a screen is initializing and then that screen should register for and process
@@ -101,9 +129,18 @@ public class GameState {
      * @return
      */
     public List<SlotData> getSlotData() {
-        return slotData;
+        return slotDataList;
     }
 
+    /**
+     * Returns whether or not there is JoinResponseData available.
+     * 
+     * @return
+     */
+    public boolean hasJoinResponseData() {
+    	return (joinResponseData != null);
+    }
+    
     /**
      * The current join response data received from the TV application.
      * 
@@ -126,6 +163,15 @@ public class GameState {
     }
 
     /**
+     * Returns whether or not there is ScoreData available.
+     * 
+     * @return
+     */
+    public boolean hasScoreData() {
+    	return ((scoreDataList != null) && !scoreDataList.isEmpty());
+    }
+    
+    /**
      * Returns the current score data list received from the TV application or null if not applicable.<br>
      * <br>
      * This is intended to be used when a screen is initializing and then that screen should register for and process
@@ -134,7 +180,7 @@ public class GameState {
      * @return
      */
     public List<ScoreData> getScoreData() {
-        return scoreData;
+        return scoreDataList;
     }
 
     /**
@@ -151,7 +197,7 @@ public class GameState {
 
     @Override
     public String toString() {
-        return "GameState [slotData=" + slotData + ", gameStartCountDownSeconds=" + gameStartCountDownSeconds
-                + ", scoreData=" + scoreData + ", playerOutCountDownSeconds=" + playerOutCountDownSeconds + "]";
+        return "GameState [slotData=" + slotDataList + ", gameStartCountDownSeconds=" + gameStartCountDownSeconds
+                + ", scoreData=" + scoreDataList + ", playerOutCountDownSeconds=" + playerOutCountDownSeconds + "]";
     }
 }

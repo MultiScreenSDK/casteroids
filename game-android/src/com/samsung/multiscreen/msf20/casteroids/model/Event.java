@@ -8,7 +8,7 @@ package com.samsung.multiscreen.msf20.casteroids.model;
  */
 public enum Event {
 	/**
-	 * Events that the Client Sends
+	 * Events that the Client sends to the TV Application.
 	 */
 
 	// Event sent to request to join the game. The server will send back a JOIN_RESPONSE that indicates whether or not
@@ -28,7 +28,7 @@ public enum Event {
 	FIRE("fire", true),
 
 	/**
-	 * Events that the Client receives
+	 * Events that the Client receives from the TV Application.
 	 */
 
 	// Event received with the updated slot information. This will allow us to know how many users can join the game and
