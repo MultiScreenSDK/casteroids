@@ -348,13 +348,13 @@ $(function(){
         function sendGameStart(countdown) {
             // Send a game_start to all clients
             console.log('sending game_start ' + countdown + " secs. to=all");
-            channel.publish('game_start', countdown);
+            channel.publish('game_start', countdown.toString());
         }
 
         function sendPlayerOut(clientId, countdown) {
             // Send a player_out to the client
             console.log('sending player_out ' + countdown + " secs. to=" + clientId);
-            channel.publish('player_out', countdown, clientId);
+            channel.publish('player_out', countdown.toString(), clientId);
         }
 
         function sendGameOver() {
