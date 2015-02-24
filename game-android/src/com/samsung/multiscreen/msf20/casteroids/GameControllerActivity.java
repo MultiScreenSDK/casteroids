@@ -367,9 +367,13 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             if(toast != null) {
                 toast.cancel();
             }
-            toast = Toast.makeText(this, "Game starting in " + numSeconds + " seconds", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+
+            //show a toast for any non 0 wait time.
+            if(numSeconds != 0) {
+                toast = Toast.makeText(this, "Game starting in " + numSeconds + " seconds", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
 
             //Only 0 means we are in
             setUserInputEnabled(numSeconds == 0);
