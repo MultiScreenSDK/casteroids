@@ -380,7 +380,7 @@ $(function(){
             // Send a game_start to all clients
             channel.publish('game_start', countdown);
             if (console_logging) {
-                console.log('sending game_start ' + countdown + " secs. to=all");
+                console.log('sending game_start ' + countdown.toString() + " secs. to=all");
             }
         }
 
@@ -388,7 +388,7 @@ $(function(){
             // Send a player_out to the client
             channel.publish('player_out', countdown, clientId);
             if (console_logging) {
-                console.log('sending player_out ' + countdown + " secs. to=" + clientId);
+                console.log('sending player_out ' + countdown.toString() + " secs. to=" + clientId);
             }
         }
 
