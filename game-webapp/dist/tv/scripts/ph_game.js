@@ -10,7 +10,7 @@ BasicGame.Game.prototype = {
         // Here I setup the user controlled ship
         
     this.X_POSITIONS = [this.game.width/4, 3*(this.game.width/4)];
-    this.Y_POSITIONS = [this.game.height/4, 3*];
+    this.Y_POSITIONS = [this.game.height/4, 3*(this.game.height/4)];
       this.players[pos] = this.game.add.sprite((this.game.width/4)*(pos+1), this.Y_POSITIONS[pos], 'ship');
       this.players[pos].id = id;
       this.players[pos].tint = color;

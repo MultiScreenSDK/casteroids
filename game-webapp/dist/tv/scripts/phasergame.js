@@ -13,9 +13,9 @@ $(function(){
     
 
     function preload() {
-        game.load.image('space', 'images/deep-space.jpg');
-        game.load.image('bullet', 'images/bullets.png');
-        game.load.image('ship', 'images/ship.png');
+        game.load.image('space', 'assets/deep-space.jpg');
+        game.load.image('bullet', 'assets/bullets.png');
+        game.load.image('ship', 'assets/ship.png');
     }
 
     function create() {
