@@ -1,5 +1,8 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
+    this.NUM_PLAYERS = 2;
+    this.COLORS = [0x00FF00, 0xFFFF00];
+    this.isMuted = false;
 };
 
 
@@ -11,13 +14,10 @@ BasicGame.Game.prototype = {
         
     this.X_POSITIONS = [this.game.width/4, 3*(this.game.width/4)];
     this.Y_POSITIONS = [this.game.height/4, 3*(this.game.height/4)];
-      this.players[pos] = this.game.add.sprite((this.game.width/4)*(pos+1), this.Y_POSITIONS[pos], 'ship');
+      this.players[pos] = this.game.add.sprite(this.X_POSITIONS[pos], this.Y_POSITIONS[pos], 'ship');
       this.players[pos].id = id;
       this.players[pos].tint = color;
       this.players[pos].anchor.setTo(0.5);
-      // current sprite doesn't have any animation
-//      this.player.animations.add('fly', [ 0, 1, 2 ], 20, true);
-//      this.player.play('fly');
       this.physics.enable(this.players[pos], Phaser.Physics.ARCADE);
       this.players[pos].body.drag.set(BasicGame.PLAYER_DRAG);
       this.players[pos].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
@@ -61,18 +61,15 @@ BasicGame.Game.prototype = {
           // players lifecycle
           if(this.players[index].isDead) {
               if(this.game.time.now - this.players[index].tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                  this.setupPlayers();
+                  this.player(index, index, this.COLORS[index]);
               }
           } else {
               // player control
               if(index == 0) {
                   if (this.cursors.up.isDown)  {
                       this.game.physics.arcade.accelerationFromRotation(this.players[index].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[index].body.acceleration);
-                      this.players[index].thrust = this.add.sprite(sprite.x+32, sprite.y+64, 'bullet');
-                      this.players[index].thrust.anchor.setTo(0.5, 0.5);
                   } else {
                       this.players[index].body.acceleration.set(0);
-                      //this.players[index].thrust.destroy();
                   }
 
                   if (this.cursors.left.isDown) {
@@ -113,6 +110,10 @@ BasicGame.Game.prototype = {
           }
       }
       
+      if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
+          this.isMuted = !this.isMuted;
+      }
+      
       this.screenWrap(this.enemy);
       this.enemy.bullets.forEachExists(this.screenWrap, this);
       
@@ -140,9 +141,6 @@ BasicGame.Game.prototype = {
   },
     
   setupPlayers: function () {
-      this.NUM_PLAYERS = 2;
-      this.COLORS = [0x00FF00, 0xFFFF00];
-      
       for (index = 0; index < this.NUM_PLAYERS; index++) {
           this.player(index, index, this.COLORS[index]); // re-using the index as the id, it can be changed later on
       }
@@ -251,14 +249,18 @@ BasicGame.Game.prototype = {
               this.game.physics.arcade.velocityFromRotation(player.rotation-BasicGame.ORIENTATION_CORRECTION, player.bulletSpeed, player.bullet.body.velocity);
               player.bulletTime = this.game.time.now + player.bulletDelay;
               player.bullet.tint = player.tint;
-              this.sfx.play('shot');
+              if(!this.isMuted) {
+                  this.sfx.play('shot');
+              }
           }
       }
   },
         
   hit: function(target, bullet) {
       bullet.destroy();
-      this.sfx.play('boss hit');
+      if(!this.isMuted) {
+          this.sfx.play('boss hit');
+      }
       target.hp -= BasicGame.HIT_POW;
       if(target.hp <= 0) {
           if(target == this.enemy) {

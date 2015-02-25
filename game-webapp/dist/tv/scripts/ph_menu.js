@@ -21,8 +21,7 @@ BasicGame.MainMenu.prototype = {
     },
     
     startGame: function (pointer) {
-        //  Ok, the Play Button has been clicked or touched, so let's stop the music (otherwise it'll carry on playing)
-        //  And start the actual game
+        //  Start the actual game
         this.state.start('Game');
   }
 };
