@@ -17,10 +17,16 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+
     </style>
 
     <!-- Pre-Lollipop devices will have Holo themed Dialogs -->
     <style name="AppDialog" parent="android:Theme.Holo.Dialog"/>
+
+    <style name="AppButton" parent="android:Widget.Button">
+        <item name="android:background">@drawable/rounded_button</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textColor">@color/grey_100</item>
+    </style>
 
 </resources>
