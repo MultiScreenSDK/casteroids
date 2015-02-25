@@ -3,14 +3,15 @@ var GameManager;
 $(GameManager = function(){
     "use strict";
 
-    var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'casteroids', {preload: preload, create: create, update: update, render: render});
+    var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'casteroids');
 
-    var sprite;
-    var cursors;
-    var bullet;
-    var bullets;
-    var bulletTime = 0;
-    var thrusting;
+    //  Add the States your game has.
+    //  You don't have to do this in the html, it could be done in your Boot state too, but for simplicity I'll keep it here.
+    game.state.add('Boot', BasicGame.Boot);
+    game.state.add('Preloader', BasicGame.Preloader);
+    game.state.add('MainMenu', BasicGame.MainMenu);
+    game.state.add('Game', BasicGame.Game);
+    game.state.add('GameOver', BasicGame.GameOver);
 
     //  A placeholder for one player in the gave
     function Slot(color, colorCode) {
@@ -46,81 +47,6 @@ $(GameManager = function(){
         var slot = slots[i];
         colorToSlotMap[slot.color] = slot;
         console.log('adding '+slot);
-    }
-
-    function preload() {
-        game.load.image('space', 'assets/deep-space.jpg');
-        game.load.image('bullet', 'assets/bullets.png');
-        game.load.image('ship', 'assets/ship.png');
-    }
-
-    function create() {
-        game.scale.parentIsWindow = true;
-        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        game.renderer.clearBeforeRender = false;
-        game.renderer.roundPixels = true;
-
-        //arcade physics
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        //space
-        game.add.tileSprite(0, 0, game.width, game.height, 'space');
-
-        //bullets
-        bullets = game.add.group();
-        bullets.enableBody = true;
-        bullets.physicsBodyType = Phaser.Physics.ARCADE;
-
-        //40 bullets
-        bullets.createMultiple(40, 'bullet');
-        bullets.setAll('anchor.x', -1.0);
-        bullets.setAll('anchor.y', 0.5);
-
-        //ship
-        sprite = game.add.sprite(300, 300, 'ship');
-        sprite.anchor.set(0.5);
-
-        //add the sprites physics
-        game.physics.enable(sprite, Phaser.Physics.ARCADE); //why this way and not setting the physicsBodyType??
-
-        sprite.body.drag.set(100);
-        sprite.body.maxVelocity.set(200);
-    }
-
-    function update() {
-        if(thrusting == true) {
-            //thrust
-            game.physics.arcade.accelerationFromRotation(sprite.rotation, 200, sprite.body.acceleration);
-        } else {
-            //no acceleration
-            sprite.body.acceleration.set(0); //what is the difference between set(num) vs assignment via = sign?
-        }
-
-        // NOTE: The spacecraft's angular velocity is updated when handling rotate events from the client.
-        // NOTE: The spacecraft's firing of bullets is performed when handling fire events from the client.
-
-        screenWrap(sprite);
-
-        bullets.forEachExists(screenWrap, this); //what is this??
-    }
-
-    function screenWrap(sprite) {
-        if(sprite.x < 0) {
-            sprite.x = game.width;
-        }
-        else if(sprite.x > game.width) {
-            sprite.x = 0;
-        }
-
-        if(sprite.y < 0) {
-            sprite.y = game.height;
-        } else if(sprite.y > game.height) {
-            sprite.y = 0;
-        }
-    }
-
-    function render() {
-
     }
 
     // Attempts to add a player to the game. Called when a client requests to join the game.
@@ -247,6 +173,9 @@ $(GameManager = function(){
         }
     }
 
+    //  Now start the Boot state.
+    game.state.start('Boot');
+    
     // Define what is exposed on the GameManager variable.
     return {
         slots: slots,
