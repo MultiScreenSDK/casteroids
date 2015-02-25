@@ -100,6 +100,7 @@ $(GameManager = function(){
         // Create add the Player object to the game and slot.
         // TODO: Create and add the player to the game and slot
         // slot.player = player;
+        BasicGame.MainMenu.prototype.onPlayerUpdate(1);
 
         // Add the client id to slot mapping
         clientIdToSlotMap[clientId] = slot;
@@ -128,6 +129,7 @@ $(GameManager = function(){
         // Remove the player from the game and slot
         // TODO: Remove the player from the game
         slot.player = null;
+        BasicGame.MainMenu.prototype.onPlayerUpdate(0);
 
         // Remove client id to slot mapping
         delete clientIdToSlotMap[clientId];
