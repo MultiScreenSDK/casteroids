@@ -13,6 +13,13 @@ $(GameManager = function(){
     game.state.add('Game', BasicGame.Game);
     game.state.add('GameOver', BasicGame.GameOver);
 
+    var sprite;
+    var cursors;
+    var bullet;
+    var bullets;
+    var bulletTime = 0;
+    var thrusting;
+
     //  A placeholder for one player in the gave
     function Slot(color, colorCode) {
         this.color = color || 'unknown';
@@ -175,7 +182,7 @@ $(GameManager = function(){
 
     //  Now start the Boot state.
     game.state.start('Boot');
-    
+
     // Define what is exposed on the GameManager variable.
     return {
         slots: slots,
