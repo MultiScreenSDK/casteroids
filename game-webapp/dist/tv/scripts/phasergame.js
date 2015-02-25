@@ -13,11 +13,7 @@ $(GameManager = function(){
     game.state.add('Game', BasicGame.Game);
     game.state.add('GameOver', BasicGame.GameOver);
 
-    var sprite;
-    var cursors;
     var bullet;
-    var bullets;
-    var bulletTime = 0;
     var thrusting;
 
     //  A placeholder for one player in the gave
@@ -180,18 +176,40 @@ $(GameManager = function(){
         }
     }
 
+    function onGameStart(countdown) {
+        ConnectivityManager.onGameStart(countdown);
+    }
+
+    function sendPlayerOut(clientId, countdown) {
+        ConnectivityManager.onPlayerOut(clientId, countdown);
+    }
+
+    function sendGameOver() {
+        ConnectivityManager.onGameOver();
+    }
+
     //  Now start the Boot state.
     game.state.start('Boot');
 
     // Define what is exposed on the GameManager variable.
     return {
+        // Variables
         slots: slots,
         JoinResponseCode: JoinResponseCode,
+
+        // Game State Methods
+        onGameStart: function(countdown) { onGameStart(countdown); },
+        onPlayerOut: function(clientId, countdown) { onPlayerOut(clientId, countdown); },
+        onGameOver: function() { onGameOver(); },
+
+        // Player Join/Quit Methods
         addPlayer: function(clientId, name, color) { return addPlayer(clientId, name, color); },
         removePlayer: function(clientId) { return removePlayer(clientId); },
-        onRotate: function(clientId, direction, strength) { return onRotate(clientId, direction, strength); },
-        onThrust: function(clientId, thrustEnabled) { return onThrust(clientId, thrustEnabled); },
-        onFire: function(clientId) { return onFire(clientId); }
+
+        // Player Control Methods
+        onRotate: function(clientId, direction, strength) { onRotate(clientId, direction, strength); },
+        onThrust: function(clientId, thrustEnabled) { onThrust(clientId, thrustEnabled); },
+        onFire: function(clientId) { onFire(clientId); }
     }
 
 }());

@@ -15,6 +15,7 @@ BasicGame.MainMenu.prototype = {
     
     update: function () {
         if (this.input.keyboard.isDown(Phaser.Keyboard.Z) || this.input.activePointer.isDown) {
+            GameManager.onGameStart(0);
             this.startGame();
         }
     },
