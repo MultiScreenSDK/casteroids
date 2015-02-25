@@ -48,7 +48,9 @@ public class JoinResponseData {
 	}
 
 	/**
-	 * Returns the TV Application defined response code.
+	 * Returns the TV Application defined response code.<br>
+	 * <br>
+	 * NOTE: The response codes are available as public static variables on this class.
 	 * 
 	 * @return
 	 */

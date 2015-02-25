@@ -145,7 +145,21 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     @Override
     public void onConnectivityUpdate(int eventId) {
-        //not doing anything here right now
+        switch (eventId) {
+            case DISCOVERY_STOPPED:
+            case DISCOVERY_FOUND_SERVICE:
+            case DISCOVERY_LOST_SERVICE:
+            case APPLICATION_CONNECTED:
+                // Ignore
+                break;
+            case APPLICATION_DISCONNECTED:
+            case APPLICATION_CONNECT_FAILED:
+                //Notify the user that the connection was lost.
+                Toast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
+                // We lost connect, return to the main activity.
+                finish();
+                break;
+        }
     }
 
     @Override

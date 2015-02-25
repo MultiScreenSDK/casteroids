@@ -1,7 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
 /**
- * Contains a slot's availability and color data.
+ * Contains a Slot's availability and color data.
  * 
  * @author Dan McCafferty
  * 
