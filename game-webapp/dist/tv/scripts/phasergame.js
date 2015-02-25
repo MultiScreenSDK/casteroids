@@ -3,25 +3,28 @@ var GameManager;
 $(GameManager = function(){
     "use strict";
 
+    // Create the Game object.
     var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'casteroids');
 
-    //  Add the States your game has.
-    //  You don't have to do this in the html, it could be done in your Boot state too, but for simplicity I'll keep it here.
+    //  Add States to the Game object.
     game.state.add('Boot', BasicGame.Boot);
     game.state.add('Preloader', BasicGame.Preloader);
     game.state.add('MainMenu', BasicGame.MainMenu);
     game.state.add('Game', BasicGame.Game);
     game.state.add('GameOver', BasicGame.GameOver);
 
-    var bullet;
-    var thrusting;
+    // The response codes when adding a new player.
+    var JoinResponseCode = {
+        SUCCESS: 0,
+        COLOR_TAKEN: 1,
+        ERROR: 2
+    };
 
     //  A placeholder for one player in the gave
     function Slot(color, colorCode) {
         this.color = color || 'unknown';
         this.colorCode = colorCode || 0x000000;
         this.available = true;
-        // TODO: Move the clientId to the Player object. It's here because there currently isn't a Player object.
         this.clientId = null;
         this.player = null;
     }
@@ -31,13 +34,6 @@ $(GameManager = function(){
         new Slot('orange', 0xff8800),
         new Slot('green', 0x00ff00),
         new Slot('blue', 0x0000ff) ];
-
-    // The response codes when adding a new player.
-    var JoinResponseCode = {
-        SUCCESS: 0,
-        COLOR_TAKEN: 1,
-        ERROR: 2
-    };
 
     // Store client id to slot mappings.
     var clientIdToSlotMap = {};
@@ -51,6 +47,34 @@ $(GameManager = function(){
         colorToSlotMap[slot.color] = slot;
         console.log('adding '+slot);
     }
+
+    /******************************************************************************************************************
+     * Game State Methods
+     */
+
+    // Called by the MainMenu state when its performing the countdown to the game start.
+    function onGameStart(countdown) {
+        // TODO: Check current state
+        // TODO: Update current state
+        ConnectivityManager.onGameStart(countdown);
+    }
+
+    // Called by the Game state when a player is out (i.e. blown to smithereens)
+    function sendPlayerOut(clientId, countdown) {
+        // TODO: The method should take a player info or something else and we should look up the client id from it.
+        ConnectivityManager.onPlayerOut(clientId, countdown);
+    }
+
+    // Called by the Game state when the game is over.
+    function sendGameOver() {
+        // TODO: Construct the scoreData. Does this method need data passed in to do so?
+        var scoreData = null;
+        ConnectivityManager.onGameOver(scoreData);
+    }
+
+    /******************************************************************************************************************
+     * Player Join/Quit Methods
+     */
 
     // Attempts to add a player to the game. Called when a client requests to join the game.
     function addPlayer(clientId, name, color) {
@@ -105,14 +129,13 @@ $(GameManager = function(){
         // TODO: Remove the player from the game
         slot.player = null;
 
-        // TODO: Remove this section after the above TODO is complete.
-        // For now we are just stopping the ship from moving around after a disconnect
-        sprite.body.angularVelocity = 0;
-        thrusting = 0;
-
         // Remove client id to slot mapping
         delete clientIdToSlotMap[clientId];
     }
+
+    /******************************************************************************************************************
+     * Player Control Methods
+     */
 
     // Rotate the client's spaceship. Called when a client sends a rotate command.
     function onRotate(clientId, direction, strength) {
@@ -149,7 +172,6 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
-        thrusting = thrustEnabled;
     }
 
     // Fires a bullet from the client's spaceship. Called when the client sends a fire event.
@@ -163,29 +185,6 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
-        if(game.time.now > bulletTime) {
-            bullet = bullets.getFirstExists(false); //what is this?
-
-            if(bullet) {
-                bullet.reset(sprite.body.x + 16, sprite.body.y + 16);
-                bullet.lifespan = 2000;  //2 seconds
-                bullet.rotation = sprite.rotation;
-                game.physics.arcade.velocityFromRotation(sprite.rotation, 400, bullet.body.velocity); //what is this??
-                bulletTime = game.time.now + 50;
-            }
-        }
-    }
-
-    function onGameStart(countdown) {
-        ConnectivityManager.onGameStart(countdown);
-    }
-
-    function sendPlayerOut(clientId, countdown) {
-        ConnectivityManager.onPlayerOut(clientId, countdown);
-    }
-
-    function sendGameOver() {
-        ConnectivityManager.onGameOver();
     }
 
     //  Now start the Boot state.

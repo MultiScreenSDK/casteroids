@@ -93,6 +93,7 @@ $(ConnectivityManager = function(){
         });
     });
 
+    // Send a slot_update to all or a specific client.
     function sendSlotUpdate(to) {
         // Create and populate the slot data array
         var slotData = [];
@@ -106,29 +107,29 @@ $(ConnectivityManager = function(){
         channel.publish('slot_update', JSON.stringify(slotData), to);
     }
 
+    // Send a game_start to all clients
     function sendGameStart(countdown) {
-        // Send a game_start to all clients
         console.log('sending game_start ' + countdown + " secs. to=all");
         channel.publish('game_start', countdown);
     }
 
+    // Send a player_out to the client
     function sendPlayerOut(clientId, countdown) {
-        // Send a player_out to the client
         console.log('sending player_out ' + countdown + " secs. to=" + clientId);
         channel.publish('player_out', countdown, clientId);
     }
 
-    function sendGameOver() {
-        // Send a game_over to all clients
-        console.log('sending game_over. to=all');
-        channel.publish('game_over', null);
+    // Send a game_over to all clients
+    function sendGameOver(scoreData) {
+        console.log('sending game_over ' + JSON.stringify(scoreData) + '. to=all');
+        channel.publish('game_over', JSON.stringify(scoreData));
     }
 
     // Define what is exposed on the ConnectivityManager variable.
     return {
         onGameStart: function(countdown) { return sendGameStart(countdown); },
         onPlayerOut: function(clientId, countdown) { return sendPlayerOut(clientId, countdown); },
-        onGameOver: function() { return sendGameOver(); }
+        onGameOver: function(scoreData) { return sendGameOver(scoreData); }
     }
 
 }());
