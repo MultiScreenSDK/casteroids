@@ -104,6 +104,14 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         nameText = (EditText) findViewById(R.id.name_text);
         nameText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
 
+        //set the type on the various ui elements
+        color1Button.setTypeface(customTypeface);
+        color2Button.setTypeface(customTypeface);
+        color3Button.setTypeface(customTypeface);
+        color4Button.setTypeface(customTypeface);
+        playButton.setTypeface(customTypeface);
+        nameText.setTypeface(customTypeface);
+
         //attach listeners
         playButton.setOnClickListener(this);
         color1Button.setOnClickListener(this);
