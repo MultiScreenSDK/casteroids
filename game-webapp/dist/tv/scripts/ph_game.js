@@ -72,7 +72,7 @@ BasicGame.Game.prototype = {
                       this.players[index].thrust.anchor.setTo(0.5, 0.5);
                   } else {
                       this.players[index].body.acceleration.set(0);
-                      this.players[index].thrust.destroy();
+                      //this.players[index].thrust.destroy();
                   }
 
                   if (this.cursors.left.isDown) {
