@@ -1,5 +1,11 @@
 var ConnectivityManager;
 
+/**
+ * The ConnectivityManager manages the communication channel between the client(s) and the TV application and acts as a
+ * layer of abstraction between the client(s) and the game. In order to listen for the correct events, it has to have
+ * some knowledge of the game but does not include any game logic. This approach allows for the form of transport to
+ * be changed without the game logic having to be changed.
+ */
 $(ConnectivityManager = function(){
 
     "use strict";
@@ -87,9 +93,7 @@ $(ConnectivityManager = function(){
 
         channel.on('fire', function(msg, from){
             console.log('fire. from=' + (from.id || 'Unknown'));
-            if (msg == 'on') {
-                GameManager.onFire(from.id);
-            }
+            GameManager.onFire(from.id, msg == 'on');
         });
     });
 

@@ -175,7 +175,7 @@ $(GameManager = function(){
     }
 
     // Fires a bullet from the client's spaceship. Called when the client sends a fire event.
-    function onFire(clientId) {
+    function onFire(clientId, fireEnabled) {
         // Look up the requested slot by the color name
         var slot = clientIdToSlotMap[clientId];
 
@@ -208,7 +208,7 @@ $(GameManager = function(){
         // Player Control Methods
         onRotate: function(clientId, direction, strength) { onRotate(clientId, direction, strength); },
         onThrust: function(clientId, thrustEnabled) { onThrust(clientId, thrustEnabled); },
-        onFire: function(clientId) { onFire(clientId); }
+        onFire: function(clientId, fireEnabled) { onFire(clientId, fireEnabled); }
     }
 
 }());
