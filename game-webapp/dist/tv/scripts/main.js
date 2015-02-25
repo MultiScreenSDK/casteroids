@@ -1,54 +1,5 @@
-$(function(){
-    //  Create your Phaser game and inject it into the gameContainer div.
-    //  We did it in a window.onload event, but you can do it anywhere (requireJS load, anonymous function, jQuery dom ready)
-    var game = new Phaser.Game(1280, 800, Phaser.AUTO, 'gameContainer');
-    
-    //  Add the States your game has.
-    //  You don't have to do this in the html, it could be done in your Boot state too, but for simplicity I'll keep it here.
-    game.state.add('Boot', BasicGame.Boot);
-    game.state.add('Preloader', BasicGame.Preloader);
-    game.state.add('MainMenu', BasicGame.MainMenu);
-    game.state.add('Game', BasicGame.Game);
-    game.state.add('GameOver', BasicGame.GameOver);
-    
-    //  Now start the Boot state.
-    game.state.start('Boot');
-
+var connectivityManager = $(function(){
     "use strict";
-    
-    //  A placeholder for one player in the gave
-    function Slot(color, colorCode) {
-        this.color = color || 'unknown';
-        this.colorCode = colorCode || 0x000000;
-        this.available = true;
-        // TODO: Move the clientId to the Player object. It's here because there currently isn't a Player object.
-        this.clientId = null;
-        this.player = null;
-    }
-
-    var slots = [ new Slot('red', 0xff0000),
-                  new Slot('orange', 0xff8800),
-                  new Slot('green', 0x00ff00),
-                  new Slot('blue', 0x0000ff) ];
-
-    var JoinResponseCode = {
-        SUCCESS: 0,
-        COLOR_TAKEN: 1,
-        ERROR: 2
-    };
-
-    // Store client id to slot mappings.
-    var clientIdToSlotMap = {};
-
-    // Stores color to slot mappings.
-    var colorToSlotMap = {};
-
-    // Initialize the color to slot mappings.
-    for (var i in slots) {
-        var slot = slots[i];
-        colorToSlotMap[slot.color] = slot;
-        console.log('adding '+slot);
-    }
 
     window.msf.local(function(err, service){
         var channel = service.channel('com.samsung.multiscreen.castroids');
@@ -90,7 +41,7 @@ $(function(){
             var joinRequestData = JSON.parse(msg);
 
             // Attempt to add the player to the game.
-            var responseCode = addPlayer(from.id, joinRequestData.name, joinRequestData.color);
+            var responseCode = GameManager.addPlayer(from.id, joinRequestData.name, joinRequestData.color);
 
             // Create the join response data
             var joinResponse = { name : joinRequestData.name,
@@ -102,7 +53,7 @@ $(function(){
             channel.publish('join_response', JSON.stringify(joinResponse), from.id);
 
             // If the client successfully joined, send out the slot data update.
-            if (responseCode == JoinResponseCode.SUCCESS) {
+            if (responseCode == GameManager.JoinResponseCode.SUCCESS) {
                 sendSlotUpdate('all');
 
                 // TODO: REMOVE statement below after the addPlayer method's TODO for starting the game is complete.
@@ -112,7 +63,7 @@ $(function(){
 
         channel.on('quit', function(msg, from) {
             console.log('quit. from=' + (from.id || 'Unknown'));
-            removePlayer(from.id);
+            GameManager.removePlayer(from.id);
             sendSlotUpdate('all');
         });
 
@@ -123,26 +74,26 @@ $(function(){
             var rotateData = JSON.parse(msg);
 
             // Rotate the player
-            onRotatePlayer(from.id, rotateData.rotate, rotateData.strength);
+            GameManager.onRotate(from.id, rotateData.rotate, rotateData.strength);
         });
 
         channel.on('thrust', function(msg, from){
             console.log('thrust. from=' + (from.id || 'Unknown'));
-            onThrust(from.id, msg == 'on');
+            GameManager.onThrust(from.id, msg == 'on');
         });
 
         channel.on('fire', function(msg, from){
             console.log('fire. from=' + (from.id || 'Unknown'));
             if (msg == 'on') {
-                onFire(from.id);
+                GameManager.onFire(from.id);
             }
         });
 
         function sendSlotUpdate(to) {
             // Create and populate the slot data array
             var slotData = [];
-            for (var i in slots) {
-                var slot = slots[i];
+            for (var i in GameManager.slots) {
+                var slot = GameManager.slots[i];
                 slotData[i] = { available : slot.available, color : slot.color};
             }
 

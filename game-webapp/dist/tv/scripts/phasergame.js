@@ -1,6 +1,8 @@
-$(function(){
+var GameManager;
 
-    "use strict"; 
+$(GameManager = function(){
+    "use strict";
+
     var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'casteroids', {preload: preload, create: create, update: update, render: render});
 
     var sprite;
@@ -10,7 +12,41 @@ $(function(){
     var bulletTime = 0;
     var thrusting;
 
-    
+    //  A placeholder for one player in the gave
+    function Slot(color, colorCode) {
+        this.color = color || 'unknown';
+        this.colorCode = colorCode || 0x000000;
+        this.available = true;
+        // TODO: Move the clientId to the Player object. It's here because there currently isn't a Player object.
+        this.clientId = null;
+        this.player = null;
+    }
+
+    // The available slots in the game (4 players of different colors)
+    var slots = [ new Slot('red', 0xff0000),
+        new Slot('orange', 0xff8800),
+        new Slot('green', 0x00ff00),
+        new Slot('blue', 0x0000ff) ];
+
+    // The response codes when adding a new player.
+    var JoinResponseCode = {
+        SUCCESS: 0,
+        COLOR_TAKEN: 1,
+        ERROR: 2
+    };
+
+    // Store client id to slot mappings.
+    var clientIdToSlotMap = {};
+
+    // Stores color to slot mappings.
+    var colorToSlotMap = {};
+
+    // Initialize the color to slot mappings.
+    for (var i in slots) {
+        var slot = slots[i];
+        colorToSlotMap[slot.color] = slot;
+        console.log('adding '+slot);
+    }
 
     function preload() {
         game.load.image('space', 'assets/deep-space.jpg');
@@ -66,6 +102,25 @@ $(function(){
         screenWrap(sprite);
 
         bullets.forEachExists(screenWrap, this); //what is this??
+    }
+
+    function screenWrap(sprite) {
+        if(sprite.x < 0) {
+            sprite.x = game.width;
+        }
+        else if(sprite.x > game.width) {
+            sprite.x = 0;
+        }
+
+        if(sprite.y < 0) {
+            sprite.y = game.height;
+        } else if(sprite.y > game.height) {
+            sprite.y = 0;
+        }
+    }
+
+    function render() {
+
     }
 
     // Attempts to add a player to the game. Called when a client requests to join the game.
@@ -131,7 +186,7 @@ $(function(){
     }
 
     // Rotate the client's spaceship. Called when a client sends a rotate command.
-    function onRotatePlayer(clientId, direction, strength) {
+    function onRotate(clientId, direction, strength) {
         // Look up the requested slot by the color name
         var slot = clientIdToSlotMap[clientId];
 
@@ -191,5 +246,16 @@ $(function(){
             }
         }
     }
-	
-});
+
+    // Define what is exposed on the GameManager variable.
+    return {
+        slots: slots,
+        JoinResponseCode: JoinResponseCode,
+        addPlayer: function(clientId, name, color) { return addPlayer(clientId, name, color); },
+        removePlayer: function(clientId) { return removePlayer(clientId); },
+        onRotate: function(clientId, direction, strength) { return onRotate(clientId, direction, strength); },
+        onThrust: function(clientId, thrustEnabled) { return onThrust(clientId, thrustEnabled); },
+        onFire: function(clientId) { return onFire(clientId); }
+    }
+
+}());
