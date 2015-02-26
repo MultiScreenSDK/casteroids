@@ -6,7 +6,8 @@ $(GameManager = function(){
     // Create the Game object.
     var game = new Phaser.Game(1280, 720, Phaser.AUTO, 'casteroids');
 
-    //  Add States to the Game object.
+    //Add States to the Game object.
+    //the first argument is the name of the state and the second is the name of the function to call inside such state.
     game.state.add('Boot', BasicGame.Boot);
     game.state.add('Preloader', BasicGame.Preloader);
     game.state.add('MainMenu', BasicGame.MainMenu);
