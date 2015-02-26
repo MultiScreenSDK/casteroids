@@ -22,19 +22,26 @@ $(GameManager = function(){
     };
 
     //  A placeholder for one player in the gave
-    function Slot(color, colorCode) {
+    function Slot(playerPosition, color, colorCode) {
+        // Whether or not this slot is available.
+        this.available = true;
+
+        // The player position associated to this slot.
+        this.playerPosition = playerPosition;
+
+        // The client id associated to this slot.
+        this.clientId = null;
+
+        // The color and color code associated to this slot.
         this.color = color || 'unknown';
         this.colorCode = colorCode || 0x000000;
-        this.available = true;
-        this.clientId = null;
-        this.player = null;
     }
 
     // The available slots in the game (4 players of different colors)
-    var slots = [ new Slot('red', 0xff0000),
-        new Slot('orange', 0xff8800),
-        new Slot('green', 0x00ff00),
-        new Slot('blue', 0x0000ff) ];
+    var slots = [ new Slot(0, 'red', 0xff0000),
+        new Slot(1, 'orange', 0xff8800),
+        new Slot(2, 'green', 0x00ff00),
+        new Slot(3, 'blue', 0x0000ff) ];
 
     // Store client id to slot mappings.
     var clientIdToSlotMap = {};
@@ -46,7 +53,6 @@ $(GameManager = function(){
     for (var i in slots) {
         var slot = slots[i];
         colorToSlotMap[slot.color] = slot;
-        console.log('adding '+slot);
     }
 
     /******************************************************************************************************************
