@@ -3,7 +3,7 @@ BasicGame.MainMenu = function (game) {
     //  Create a Timer
     this.timer = new Phaser.Timer(game);
     //Set the timer to call back every 1 second
-    this.timer.loop(1000, this.updateTimer, this, null);
+    this.timer.loop(1000, this.updateTimer, this);
 };
 
 BasicGame.MainMenu.prototype = {
@@ -14,7 +14,7 @@ BasicGame.MainMenu.prototype = {
 
     create: function () {
         //  This is the preparation screen where players have time to join the game
-        this.add.sprite(this.game.width / 2, 20, 'titlepage').anchor.setTo(0.5, 0.0);
+        this.add.sprite(0, 0, 'titlepage').anchor.setTo(0, 0);
 
         this.style = { font: "3Opx", fill: "#cccccc"};
         this.loadingText = this.add.text(this.game.width / 2, this.game.height / 2 + 130, "Waiting for Players to join");
