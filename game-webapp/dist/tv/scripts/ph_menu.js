@@ -1,13 +1,9 @@
 BasicGame.MainMenu = function (game) {
     this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //initial
-    this.isCountingDown = false;
-
     //  Create a Timer
     this.timer = new Phaser.Timer(game);
-
-    //Set the timer to call back every 1 second, but don't start it
-    this.timer.loop(1000, this.updateTimer, this);
-
+    //Set the timer to call back every 1 second
+    this.timer.loop(1000, this.updateTimer, this, null);
 };
 
 BasicGame.MainMenu.prototype = {
@@ -51,23 +47,17 @@ BasicGame.MainMenu.prototype = {
     onPlayerUpdate: function (count) {
         console.log("onPlayerUpdate " + count);
         if (count > 0) {
-            //FIXME: go ahead and start game immediately for now
+            //FIXME
             this.startGame();
             //FIXME END
 
-            if (this.isCountingDown == false) {
-                //start the countdown
-                this.isCountingDown = true;
-                this.timer.start();
-            }
+            //start the countdown
+            this.timer.start();
         } else {
-            if (this.isCountingDown == true) {
-                this.timer.stop();
-                //stop the countdown
-                this.isCountingDown = false;
-                this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //reset
-                this.loadingText.setText("Waiting for Players to join")
-            }
+            this.timer.stop();
+            //stop the countdown
+            this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //reset
+            this.loadingText.setText("Waiting for Players to join")
         }
     }
 };
