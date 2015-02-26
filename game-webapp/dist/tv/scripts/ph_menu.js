@@ -1,20 +1,22 @@
 BasicGame.MainMenu = function (game) {
+    this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //initial
+    this.isCountingDown = false;
+
+    //  Create a Timer
+    this.timer = new Phaser.Timer(game);
+
+    //Set the timer to call back every 1 second, but don't start it
+    this.timer.loop(1000, this.updateTimer, this);
 
 };
 
 BasicGame.MainMenu.prototype = {
 
+    init: function() {
+
+    },
 
     create: function () {
-
-        this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //initial
-        this.isCountingDown = false;
-
-        //  Create a Timer
-        this.timer = this.game.time.create(false);
-        //Set the timer to call back every 1 second
-        this.timer.loop(1000, this.updateTimer, this);
-
         //  This is the preparation screen where players have time to join the game
         this.add.sprite(this.game.width / 2, 20, 'titlepage').anchor.setTo(0.5, 0.0);
 
@@ -32,7 +34,7 @@ BasicGame.MainMenu.prototype = {
 
     startGame: function (pointer) {
         this.state.start('Game');
-        //GameManager.onGameStart(0); ??
+        GameManager.onGameStart(0);
     },
 
     updateTimer: function() {
@@ -53,6 +55,9 @@ BasicGame.MainMenu.prototype = {
                 //start the countdown
                 this.isCountingDown = true;
                 this.timer.start();
+
+                //go ahead and start game immediately for now
+                this.startGame();
             }
         } else {
             if (this.isCountingDown == true) {
