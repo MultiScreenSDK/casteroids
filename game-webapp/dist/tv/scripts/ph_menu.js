@@ -21,6 +21,9 @@ BasicGame.MainMenu.prototype = {
         //this.loadingText.style = this.style;
         this.loadingText.fill = "#fff";
         this.loadingText.font = 'Revalia';
+        this.loadingText.stroke = '#000000';
+        this.loadingText.strokeThickness = 2;
+        this.loadingText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
         this.loadingText.anchor.setTo(0.5, 0.5);
     },
 
