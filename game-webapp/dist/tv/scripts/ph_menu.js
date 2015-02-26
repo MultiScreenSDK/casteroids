@@ -32,9 +32,9 @@ BasicGame.MainMenu.prototype = {
 
     },
 
-    startGame: function (pointer) {
-        this.state.start('Game');
+    startGame: function () {
         GameManager.onGameStart(0);
+        this.state.start('Game');
     },
 
     updateTimer: function() {
@@ -51,13 +51,14 @@ BasicGame.MainMenu.prototype = {
     onPlayerUpdate: function (count) {
         console.log("onPlayerUpdate " + count);
         if (count > 0) {
+            //FIXME: go ahead and start game immediately for now
+            this.startGame();
+            //FIXME END
+
             if (this.isCountingDown == false) {
                 //start the countdown
                 this.isCountingDown = true;
                 this.timer.start();
-
-                //go ahead and start game immediately for now
-                this.startGame();
             }
         } else {
             if (this.isCountingDown == true) {
