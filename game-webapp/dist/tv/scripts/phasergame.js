@@ -8,11 +8,11 @@ $(GameManager = function(){
 
     //Add States to the Game object.
     //the first argument is the name of the state and the second is the name of the function to call inside such state.
-    game.state.add('Boot', BasicGame.Boot);
-    game.state.add('Preloader', BasicGame.Preloader);
-    game.state.add('MainMenu', BasicGame.MainMenu);
-    game.state.add('Game', BasicGame.Game);
-    game.state.add('GameOver', BasicGame.GameOver);
+    var bootState = game.state.add('Boot', BasicGame.Boot);
+    var loaderState = game.state.add('Preloader', BasicGame.Preloader);
+    var menuState = game.state.add('MainMenu', BasicGame.MainMenu);
+    var gameState = game.state.add('Game', BasicGame.Game);
+    var overState = game.state.add('GameOver', BasicGame.GameOver);
 
     // The response codes when adding a new player.
     var JoinResponseCode = {
@@ -106,8 +106,7 @@ $(GameManager = function(){
 
         // Create add the Player object to the game and slot.
         // TODO: Create and add the player to the game and slot
-        // slot.player = player;
-        BasicGame.MainMenu.prototype.onPlayerUpdate(1);
+        menuState.onPlayerUpdate(1);
 
         // Add the client id to slot mapping
         clientIdToSlotMap[clientId] = slot;
@@ -135,8 +134,7 @@ $(GameManager = function(){
 
         // Remove the player from the game and slot
         // TODO: Remove the player from the game
-        slot.player = null;
-        BasicGame.MainMenu.prototype.onPlayerUpdate(0);
+        menuState.onPlayerUpdate(0);
 
         // Remove client id to slot mapping
         delete clientIdToSlotMap[clientId];
