@@ -1,5 +1,6 @@
 var BasicGame = {
     GAME_LENGTH: 120,
+    GAME_COUNTDOWN_LENGTH: 5,
     ORIENTATION_CORRECTION: Math.PI/2,
     HIT_POW: 10,
     HIT_SCORE: 10,
