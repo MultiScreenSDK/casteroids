@@ -155,11 +155,11 @@ $(GameManager = function(){
 
         // Update the angular velocity based on the rotate direction (right, left, or none).
         if(direction == 'left') {
-            sprite.body.angularVelocity = -velocity;
+            //sprite.body.angularVelocity = -velocity;
         } else if(direction == 'right') {
-            sprite.body.angularVelocity = velocity;
+            //sprite.body.angularVelocity = velocity;
         } else {
-            sprite.body.angularVelocity = 0;
+            //sprite.body.angularVelocity = 0;
         }
     }
 
