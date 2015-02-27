@@ -112,7 +112,10 @@ $(GameManager = function(){
         clientIdToSlotMap[clientId] = slot;
 
         // Notify the Menu state.
-        menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
+        // TODO: Check the state. If this is called while in the game then the game is reset.
+        if (Object.keys(clientIdToSlotMap).length == 1) {
+            menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
+        }
 
         // Return the SUCCESS code
         return JoinResponseCode.SUCCESS;
@@ -140,7 +143,10 @@ $(GameManager = function(){
         delete clientIdToSlotMap[clientId];
 
         // Notify the Menu state.
-        menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
+        // TODO: Check the state. If this is called while in the game then the game is reset.
+        if (Object.keys(clientIdToSlotMap).length == 0) {
+            menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
+        }
     }
 
     /******************************************************************************************************************

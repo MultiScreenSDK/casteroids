@@ -295,13 +295,22 @@ BasicGame.Game.prototype = {
     // Add a player to the game.
     addPlayer: function(clientId, name, colorCode) {
         if (this.game !== undefined) {
-        this.player(clientId, Object.keys(this.players).length, colorCode);
+            this.player(clientId, Object.keys(this.players).length, colorCode);
        }
     },
 
     // Remove a player from the game.
     removePlayer: function(clientId) {
         if (this.game !== undefined) {
+            // Look up the player.
+            var currentPlayer = this.players[clientId];
+
+            // If the player was not found, ignore and return.
+            if (currentPlayer == null) {
+                return;
+            }
+
+            currentPlayer.destroy();
             delete this.player[clientId];
         }
     },
