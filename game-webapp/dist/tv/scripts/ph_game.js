@@ -264,7 +264,7 @@ BasicGame.Game.prototype = {
         }
 
         // update score labels if shot is not from the alien
-        if(bullet.source >= 0){
+        if(this.scoreLabels[bullet.source] != undefined){
             this.scoreLabels[bullet.source].setText(this.scores[bullet.source]);
         }
     },
