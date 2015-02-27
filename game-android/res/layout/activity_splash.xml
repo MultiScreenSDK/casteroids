@@ -15,9 +15,9 @@
         android:text="@string/casteroids"
         android:textSize="60sp"
         android:textColor="#fff"
-        android:shadowDy="2"
-        android:shadowDx="2"
-        android:shadowRadius="2"
+        android:shadowDy="3"
+        android:shadowDx="3"
+        android:shadowRadius="3"
         android:shadowColor="#000"
         />
 
