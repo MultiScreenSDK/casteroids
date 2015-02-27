@@ -39,9 +39,9 @@ BasicGame.Game.prototype = {
 
     create: function () {
         this.setupSystem();
+        this.setupText();
         this.setupPlayers();
         this.setupAlien();
-        this.setupText();
         this.setupAudio();
     },
 
@@ -175,15 +175,8 @@ BasicGame.Game.prototype = {
         // Here I setup the labels and other texts
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
         this.timerLabel = this.add.text(20, 20, "02:00", style);
-        var style_score = { font: "14px Arial", fill: "#cccccc", align: "right" };
-        this.scores = [Object.keys(this.players).length];
-        this.scoreLabels = [Object.keys(this.players).length];
-
-        for (var index in this.players) {
-            var currentPlayer = this.players[index];
-            this.scores[index] = 0;
-            this.scoreLabels[index] = this.add.text(this.game.width-100, 20*(currentPlayer.order+1), "0", style_score);
-        }
+        this.scores = { };
+        this.scoreLabels = { };
     },
 
     // Miscellaneous functions
@@ -295,7 +288,16 @@ BasicGame.Game.prototype = {
     // Add a player to the game.
     addPlayer: function(clientId, name, colorCode) {
         if (this.game !== undefined) {
-            this.player(clientId, Object.keys(this.players).length, colorCode);
+            //  Determine the new player's order.
+            var order = Object.keys(this.players).length;
+
+            // Initialize the new player
+            this.player(clientId, order, colorCode);
+
+            // Initialize the new player's text
+            var style_score = { font: "14px Arial", fill: "#cccccc", align: "right" };
+            this.scores[clientId] = 0;
+            this.scoreLabels[clientId] = this.add.text(this.game.width-100, 20*(order+1), "0", style_score);
        }
     },
 
@@ -310,7 +312,8 @@ BasicGame.Game.prototype = {
                 return;
             }
 
-            currentPlayer.destroy();
+            // TODO: Adrian, please remove the player from the game.
+            //currentPlayer.destroy();
             delete this.player[clientId];
         }
     },
