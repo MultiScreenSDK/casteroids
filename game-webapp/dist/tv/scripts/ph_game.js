@@ -15,6 +15,7 @@ BasicGame.Game.prototype = {
         this.Y_POSITIONS = [this.game.height/4, 3*(this.game.height/4)];
         this.players[pos] = this.game.add.sprite(this.X_POSITIONS[pos], this.Y_POSITIONS[pos], 'ship');
         this.players[pos].id = id;
+        this.players[pos].isThrusting = false;
         this.players[pos].isFiring = false;
         this.players[pos].tint = color;
         this.players[pos].anchor.setTo(0.5);
@@ -64,6 +65,12 @@ BasicGame.Game.prototype = {
             } else {
                 // player control
                 if(index == 0) {
+                    if (this.players[index].isThrusting) {
+                        this.game.physics.arcade.accelerationFromRotation(this.players[0].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[0].body.acceleration);
+                    } else {
+                        this.players[0].body.acceleration.set(0);
+                    }
+
                     if (this.players[index].isFiring) {
                         this.fire(this.players[index]);
                     }
@@ -215,6 +222,9 @@ BasicGame.Game.prototype = {
         //  Then let's go back to the main menu.
         this.state.state['GameOver'].scores = this.scores;
         this.state.start('GameOver');
+
+        // Notify the Game Manager that the game is over.
+        GameManager.onGameOver();
     },
 
     fire: function(player) {
@@ -295,7 +305,7 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Rotate the player's spaceship. Called when a client sends a rotate command.
+    // Called to rotate a specific player's spaceship.
     onRotate: function(playerId, direction, strength) {
         // Map the 0 to 20 range strength value to a 100 to 400 range angular velocity value for the game.
         var velocity = ((strength * 400) / 20) + 100;
@@ -310,18 +320,13 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Enables thrust on a player's spaceship. Called when the client sends a thrust event.
+    // Called to enable thrust on a specific player's spaceship.
     onThrust: function onThrust(playerId, thrustEnabled) {
-        if (thrustEnabled)  {
-            this.game.physics.arcade.accelerationFromRotation(this.players[0].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[0].body.acceleration);
-        } else {
-            this.players[0].body.acceleration.set(0);
-        }
+        this.players[0].isThrusting = thrustEnabled;
     },
 
-    // Fires a bullet from the player's spaceship. Called when the client sends a fire event.
+    // Called to enable firing on a specific player's spaceship.
     onFire: function(playerId, fireEnabled) {
         this.players[0].isFiring = fireEnabled;
     }
 };
-
