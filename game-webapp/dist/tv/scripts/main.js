@@ -28,7 +28,7 @@ $(ConnectivityManager = function(){
 
         channel.on('disconnect', function(client){
             console.log('disconnect');
-            removePlayer(client.id);
+            GameManager.removePlayer(client.id);
             sendSlotUpdate('all');
         });
 
@@ -41,7 +41,7 @@ $(ConnectivityManager = function(){
 
         channel.on('clientDisconnect', function(client){
             console.log('clientDisconnect');
-            removePlayer(client.id);
+            GameManager.removePlayer(client.id);
             sendSlotUpdate('all');
         });
 
