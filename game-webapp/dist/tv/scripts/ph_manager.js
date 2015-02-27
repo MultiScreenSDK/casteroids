@@ -1,5 +1,16 @@
 var GameManager;
 
+/**
+ * The GameManager acts as a layer of abstraction between the client connectivity and game logic.
+ *
+ * When the ConnectivityManager receives an event a client it parses it and sends it to the GameManager and the
+ * GameManager determines how to handle that event based on the current game state (menu, game, game over, etc.).
+ * Typically, it will result in the GameManager notifying the current game state of the event.
+ *
+ * Game states (menu, game, game over, etc.) notify the GameManager of game state changes and player updates and the
+ * GameManager determines how to handle the event. Typically, it will result in the GameManager notifying the
+ * ConnectivityManager which in return will notify the appropriate client(s).
+ */
 $(GameManager = function(){
     "use strict";
 
@@ -66,15 +77,23 @@ $(GameManager = function(){
     }
 
     // Called by the Game state when a player is out (i.e. blown to smithereens)
-    function sendPlayerOut(clientId, countdown) {
+    function onPlayerOut(clientId, countdown) {
         // Notify the clients via the Connectivity manager.
         ConnectivityManager.onPlayerOut(clientId, countdown);
     }
 
     // Called by the Game state when the game is over.
-    function sendGameOver() {
+    function onGameOver(scores) {
+        // Create a score data object consisting of the slot and scores objects.
+        var scoreData = [];
+        var index = 0;
+        for (var clientId in clientIdToSlotMap) {
+            var slot = clientIdToSlotMap[clientId];
+            var score = scores[clientId] || 0;
+            scoreData[index++] = { name : slot.name, color : slot.color, score: score};
+        }
+
         // Notify the clients via the Connectivity manager.
-        var scoreData = null;
         ConnectivityManager.onGameOver(scoreData);
     }
 
@@ -82,7 +101,8 @@ $(GameManager = function(){
      * Player Join/Quit Methods
      */
 
-    // Attempts to add a player to the game. Called when a client requests to join the game.
+    // Attempts to add a player to the game. Called by the ConnectivityManager when it receives join event from a
+    // client.
     function addPlayer(clientId, name, color) {
         // If we already have a player with this client id, remove it and add the new one.
         removePlayer(clientId);
@@ -121,7 +141,8 @@ $(GameManager = function(){
         return JoinResponseCode.SUCCESS;
     }
 
-    // Attempts to remove a player from the game. Called when a player quits or a client disconnects.
+    // Attempts to remove a player from the game. Called by the ConnectivityManager when it receives disconnect,
+    // disconnect or quit event from a client.
     function removePlayer(clientId) {
         // Look up the requested slot by the color name
         var slot = clientIdToSlotMap[clientId];
@@ -194,7 +215,7 @@ $(GameManager = function(){
         // Game State Methods
         onGameStart: function(countdown) { onGameStart(countdown); },
         onPlayerOut: function(clientId, countdown) { onPlayerOut(clientId, countdown); },
-        onGameOver: function() { onGameOver(); },
+        onGameOver: function(scores) { onGameOver(scores); },
 
         // Player Join/Quit Methods
         addPlayer: function(clientId, name, color) { return addPlayer(clientId, name, color); },

@@ -149,7 +149,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         // Get an instance of the ConnectivtyManager and register for connectivity updates.
         gameConnectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
         gameConnectivityManager.registerConnectivityListener(this);
-        gameConnectivityManager.registerMessageListener(this, Event.GAME_START, Event.GAME_OVER);
+        gameConnectivityManager.registerMessageListener(this, Event.GAME_START, Event.PLAYER_OUT, Event.GAME_OVER);
 
         // If we are not connected return to the main screen.
         if (!gameConnectivityManager.isConnected()) {
@@ -173,7 +173,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
         // Unregister self as a listener
         gameConnectivityManager.unregisterConnectivityListener(this);
-        gameConnectivityManager.unregisterMessageListener(this, Event.GAME_START, Event.GAME_OVER);
+        gameConnectivityManager.unregisterMessageListener(this, Event.GAME_START, Event.PLAYER_OUT, Event.GAME_OVER);
 
         //stop the sensor listeners as it can drain the battery if you don't
         sensorManager.unregisterListener(sensorEventListener);

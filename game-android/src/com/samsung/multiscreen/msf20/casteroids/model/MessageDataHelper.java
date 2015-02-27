@@ -203,10 +203,11 @@ public class MessageDataHelper {
 
 				// Get the score data from the current JSON object.
 				String name = jsonObject.getString("name");
+				Color color = Color.getByName(jsonObject.getString("color"));
 				int score = jsonObject.getInt("score");
 
 				// Create and add a ScoreData object to the score data list.
-				scoreDataList.add(new ScoreData(name, score));
+				scoreDataList.add(new ScoreData(name, color, score));
 			}
 		} catch (JSONException e) {
 			Log.e(TAG, "Failed to decode the ScoreData list. data=" + data, e);

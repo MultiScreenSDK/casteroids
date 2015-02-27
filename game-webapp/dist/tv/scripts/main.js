@@ -66,9 +66,6 @@ $(ConnectivityManager = function(){
             // If the client successfully joined, send out the slot data update.
             if (responseCode == GameManager.JoinResponseCode.SUCCESS) {
                 sendSlotUpdate('all');
-
-                // TODO: REMOVE statement below after the addPlayer method's TODO for starting the game is complete.
-                sendGameStart(0);
             }
         });
 
@@ -101,7 +98,11 @@ $(ConnectivityManager = function(){
 
     // Send a slot_update to all or a specific client.
     function sendSlotUpdate(to) {
-        // Create and populate the slot data array
+        // Create and populate the slot data array. It is a subset of the slots object used by the GameManager.
+        //
+        // NOTE: We create the SlotData here instead of in the GameManager since the ConnectivityManager to Client
+        // contract has a subset of the data of the slots object used by the GameManager and we do not want the
+        // GameManager to make any assumptions about the contract between the ConnectivityManager and the clients.
         var slotData = [];
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
@@ -116,13 +117,13 @@ $(ConnectivityManager = function(){
     // Send a game_start to all clients
     function sendGameStart(countdown) {
         console.log('sending game_start ' + countdown + " secs. to=all");
-        channel.publish('game_start', countdown);
+        channel.publish('game_start', countdown.toString());
     }
 
     // Send a player_out to the client
     function sendPlayerOut(clientId, countdown) {
         console.log('sending player_out ' + countdown + " secs. to=" + clientId);
-        channel.publish('player_out', countdown, clientId);
+        channel.publish('player_out', countdown.toString(), clientId);
     }
 
     // Send a game_over to all clients
