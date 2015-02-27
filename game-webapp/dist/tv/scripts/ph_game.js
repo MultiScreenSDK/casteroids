@@ -15,6 +15,7 @@ BasicGame.Game.prototype = {
         this.Y_POSITIONS = [this.game.height/4, 3*(this.game.height/4)];
         this.players[pos] = this.game.add.sprite(this.X_POSITIONS[pos], this.Y_POSITIONS[pos], 'ship');
         this.players[pos].id = id;
+        this.players[pos].isFiring = false;
         this.players[pos].tint = color;
         this.players[pos].anchor.setTo(0.5);
         this.physics.enable(this.players[pos], Phaser.Physics.ARCADE);
@@ -63,21 +64,7 @@ BasicGame.Game.prototype = {
             } else {
                 // player control
                 if(index == 0) {
-                    if (this.cursors.up.isDown)  {
-                        this.game.physics.arcade.accelerationFromRotation(this.players[index].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[index].body.acceleration);
-                    } else {
-                        this.players[index].body.acceleration.set(0);
-                    }
-
-                    if (this.cursors.left.isDown) {
-                        this.players[index].body.angularVelocity = -BasicGame.PLAYER_TURNING_SPEED;
-                    } else if (this.cursors.right.isDown) {
-                        this.players[index].body.angularVelocity = BasicGame.PLAYER_TURNING_SPEED;
-                    } else {
-                        this.players[index].body.angularVelocity = 0;
-                    }
-
-                    if (this.input.keyboard.isDown(Phaser.Keyboard.NUMPAD_0) || this.input.activePointer.isDown) {
+                    if (this.players[index].isFiring) {
                         this.fire(this.players[index]);
                     }
                 } else if(index == 1) {
@@ -306,6 +293,35 @@ BasicGame.Game.prototype = {
         } else if (sprite.y > this.game.height) {
             sprite.y = 0;
         }
-    } 
+    },
+
+    // Rotate the player's spaceship. Called when a client sends a rotate command.
+    onRotate: function(playerId, direction, strength) {
+        // Map the 0 to 20 range strength value to a 100 to 400 range angular velocity value for the game.
+        var velocity = ((strength * 400) / 20) + 100;
+
+        // Update the angular velocity based on the rotate direction (right, left, or none).
+        if(direction == 'left') {
+            this.players[0].body.angularVelocity = -velocity;
+        } else if(direction == 'right') {
+            this.players[0].body.angularVelocity = velocity;
+        } else {
+            this.players[0].body.angularVelocity = 0;
+        }
+    },
+
+    // Enables thrust on a player's spaceship. Called when the client sends a thrust event.
+    onThrust: function onThrust(playerId, thrustEnabled) {
+        if (thrustEnabled)  {
+            this.game.physics.arcade.accelerationFromRotation(this.players[0].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[0].body.acceleration);
+        } else {
+            this.players[0].body.acceleration.set(0);
+        }
+    },
+
+    // Fires a bullet from the player's spaceship. Called when the client sends a fire event.
+    onFire: function(playerId, fireEnabled) {
+        this.players[0].isFiring = fireEnabled;
+    }
 };
 
