@@ -21,7 +21,9 @@ BasicGame.GameOver.prototype = {
 
     update: function () {
         // wait for some time or check for something else before restarting
-        // this.back2Menu();
+        if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+            this.back2Menu();
+        }
     },
 
     back2Menu: function (pointer) {

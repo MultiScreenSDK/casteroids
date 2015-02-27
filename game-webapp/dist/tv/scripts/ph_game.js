@@ -58,7 +58,14 @@ BasicGame.Game.prototype = {
             // collision detection
             this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
             this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-//            this.physics.arcade.overlap(currentPlayer, this.alien, this.hit, null, this);
+            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+            this.physics.arcade.overlap(this.alien, currentPlayer, this.collide, null, this);
+            for (var other_players_id in this.players) {
+                if(other_players_id != id) {
+                    var otherPlayer = this.players[other_players_id];
+                    this.physics.arcade.overlap(currentPlayer, this.otherPlayer, this.collide, null, this);
+                }
+            }
 
             // players lifecycle
             if(currentPlayer.isDead) {
@@ -98,9 +105,6 @@ BasicGame.Game.prototype = {
                 this.setupAlien();
             }
         } else {
-            // homing logic
-            //          this.enemy.rotation = this.physics.arcade.angleBetween(this.enemy, this.player) + BasicGame.ORIENTATION_CORRECTION;
-            //          this.physics.arcade.moveToObject(this.enemy, this.player.body, BasicGame.ENEMY_HOMING_SPEED, BasicGame.ENEMY_HOMING_MAX_TIME);
             this.alien.body.acceleration.set(BasicGame.ALIEN_MAX_SPEED);
             this.fire(this.alien);
         }
@@ -129,6 +133,7 @@ BasicGame.Game.prototype = {
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
         var randRotation = this.rnd.integerInRange(0, 360);
+        var randAngularVelocity = this.rnd.integerInRange(100, 200);
 
         this.alien = this.game.add.sprite(randX, randY, 'ufo');
         this.alien.tint = BasicGame.ALIEN_COLOR;
@@ -137,6 +142,7 @@ BasicGame.Game.prototype = {
         this.alien.play('fly');
         this.physics.enable(this.alien, Phaser.Physics.ARCADE);
         this.alien.rotation = randRotation;
+        this.alien.body.angularVelocity = randAngularVelocity;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
         this.alien.body.setSize(BasicGame.ALIEN_HITBOX_WIDTH, BasicGame.ALIEN_HITBOX_HEIGHT, 0, 0);
@@ -203,14 +209,15 @@ BasicGame.Game.prototype = {
     quitGame: function (pointer) {
 
         //  Here you should destroy anything you no longer need.
-        //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
-        //  Then let's go back to the main menu.
+        //  delete sprites, purge caches, free resources, all that good stuff.
+        //  Then move on to the game over state.
+        console.log(this);
 //        this.state.states['GameOver'].scores = this.scores;
 //        this.state.states['GameOver'].names = this.names;
         this.state.start('GameOver');
 
         // Notify the Game Manager that the game is over.
-        GameManager.onGameOver();
+//        GameManager.onGameOver();
     },
 
     fire: function(origin) {
@@ -267,6 +274,13 @@ BasicGame.Game.prototype = {
         if(this.scoreLabels[bullet.source] != undefined){
             this.scoreLabels[bullet.source].setText(this.scores[bullet.source]);
         }
+    },
+    
+    collide: function(obj1, obj2) {
+        this.explode(obj1);
+        obj1.isDead = true;
+        obj1.tod = this.game.time.now;
+        obj1.destroy();
     },
 
     explode: function (sprite) {
@@ -336,7 +350,7 @@ BasicGame.Game.prototype = {
         var currentPlayer = this.players[clientId];
 
         // If the player was not found, ignore and return.
-        if (currentPlayer == null) {
+        if (currentPlayer == null || currentPlayer.body == null) {
             return;
         }
 
@@ -379,7 +393,7 @@ BasicGame.Game.prototype = {
     },
     
     render: function() {
-        this.game.debug.body(this.alien.bullet);
-        this.game.debug.body(this.alien);
+//        this.game.debug.body(this.alien.bullet);
+//        this.game.debug.body(this.alien);
     },
 };
