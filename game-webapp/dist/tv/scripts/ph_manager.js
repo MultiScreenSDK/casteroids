@@ -105,15 +105,16 @@ $(GameManager = function(){
         slot.clientId = clientId;
         slot.name = name;
 
-        // Create add the Player object to the game
-        gameState.addPlayer(clientId, name, slot.colorCode);
+        // If in the Game state, add the Player to the game
+        if (game.state.getCurrentState() == gameState) {
+            gameState.addPlayer(clientId, name, slot.colorCode);
+        }
 
         // Add the client id to slot mapping
         clientIdToSlotMap[clientId] = slot;
 
-        // Notify the Menu state.
-        // TODO: Check the state. If this is called while in the game then the game is reset.
-        if (Object.keys(clientIdToSlotMap).length == 1) {
+        // If in the Menu state, notify the Menu state.
+        if (game.state.getCurrentState() == menuState) {
             menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
         }
 
@@ -136,15 +137,16 @@ $(GameManager = function(){
         slot.clientId = null;
         slot.name = null;
 
-        // Remove the player from the game
-        gameState.removePlayer(slot.clientId);
+        // If in the Game state, remove the player from the game.
+        if (game.state.getCurrentState() == gameState) {
+            gameState.removePlayer(slot.clientId);
+        }
 
         // Remove client id to slot mapping
         delete clientIdToSlotMap[clientId];
 
-        // Notify the Menu state.
-        // TODO: Check the state. If this is called while in the game then the game is reset.
-        if (Object.keys(clientIdToSlotMap).length == 0) {
+        // If in the Menu state, notify the Menu state.
+        if (game.state.getCurrentState() == menuState) {
             menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
         }
     }
