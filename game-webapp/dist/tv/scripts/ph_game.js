@@ -57,6 +57,7 @@ BasicGame.Game.prototype = {
             // collision detection
             this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
             this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+//            this.physics.arcade.overlap(currentPlayer, this.alien, this.hit, null, this);
 
             // players lifecycle
             if(currentPlayer.isDead) {
@@ -137,6 +138,7 @@ BasicGame.Game.prototype = {
         this.alien.rotation = randRotation;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
+//        this.alien.body.setSize(BasicGame.ALIEN_HITBOX_WIDTH, BasicGame.ALIEN_HITBOX_HEIGHT, 0, 0);
 
         this.alien.hp = BasicGame.ALIEN_HP;
         this.alien.bulletSpeed = BasicGame.ALIEN_BULLET_SPEED;
@@ -146,6 +148,7 @@ BasicGame.Game.prototype = {
         this.alien.bullets = this.add.group();
         this.alien.bullets.enableBody = true;
         this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+//        this.alien.bullets.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
         this.alien.bulletTime = 0;
 
         this.alien.bullets.createMultiple(40, 'laser');
@@ -175,6 +178,7 @@ BasicGame.Game.prototype = {
         // Here I setup the labels and other texts
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
         this.timerLabel = this.add.text(20, 20, "02:00", style);
+        this.timerLabel.font = 'Revalia';
         this.scores = { };
         this.scoreLabels = { };
     },
@@ -298,6 +302,7 @@ BasicGame.Game.prototype = {
             var style_score = { font: "14px Arial", fill: "#cccccc", align: "right" };
             this.scores[clientId] = 0;
             this.scoreLabels[clientId] = this.add.text(this.game.width-100, 20*(order+1), "0", style_score);
+            this.scoreLabels[clientId].font = 'Revalia';
        }
     },
 
@@ -367,5 +372,10 @@ BasicGame.Game.prototype = {
 
         // Update the isFiring flag.
         currentPlayer.isFiring = fireEnabled;
-    }
+    },
+    
+    render: function() {
+        this.game.debug.body(this.alien.bullet);
+        this.game.debug.body(this.alien);
+    },
 };
