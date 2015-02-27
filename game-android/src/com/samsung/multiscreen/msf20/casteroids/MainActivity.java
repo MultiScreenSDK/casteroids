@@ -78,7 +78,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playGame();
+                onPlayButtonClick();
             }
         });
 
@@ -159,13 +159,9 @@ public class MainActivity extends Activity implements ConnectivityListener {
         if (connectivityManager.hasDiscoveredService()) {
             String[] services = connectivityManager.getDiscoveredServiceNames();
             if ((services != null) && (services.length > 0)) {
-                if(services.length == 1) {
-                    if(!connectivityManager.isConnected()) {
-                        connectivityManager.connect(services[0]);
-                    }
-                }
                 boolean hasSingleService = services.length == 1;
                 if(hasSingleService){
+    				playButton.setEnabled(true);
                     playButton.setVisibility(View.VISIBLE);
                 } else {
                     //multiple services
@@ -186,9 +182,28 @@ public class MainActivity extends Activity implements ConnectivityListener {
         connectivityManager.unregisterConnectivityListener(this);
     }
 
-    private void playGame() {
-        launchIntent(PlayerInfoActivity.class);
-    }
+	private void onPlayButtonClick() {
+		// If we are connected to the application, move to the player info screen.
+		if (connectivityManager.isConnected()) {
+			launchIntent(PlayerInfoActivity.class);
+		}
+		// Else if there is at least one service, attempt to connect to a service.
+		else if (connectivityManager.hasDiscoveredService()) {
+			String[] services = connectivityManager.getDiscoveredServiceNames();
+			if ((services != null) && (services.length > 0)) {
+				// Disable the play button so it doesn't get pressed again while we are connecting.
+				playButton.setEnabled(false);
+
+				// Connect to the first available service.
+				// There should only be one for this button to be visible.
+				connectivityManager.connect(services[0]);
+			}
+		}
+		// Else, this button should not even been enabled. Let's rebind the view.
+		else {
+			bindViews();
+		}
+	}
 
     private void showHowToPlay() {
         launchIntent(HowToPlayActivity.class);
@@ -220,38 +235,46 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
     @Override
     public void onConnectivityUpdate(int eventId) {
-        switch (eventId) {
-            case DISCOVERY_STOPPED:
-                // Restart discovery as long as we don't have a discovered service.
-                if (!connectivityManager.hasDiscoveredService()) {
-                    connectivityManager.startDiscovery();
-                }
-                break;
-            case DISCOVERY_FOUND_SERVICE:
-            case DISCOVERY_LOST_SERVICE:
-            case APPLICATION_CONNECTED:
-            case APPLICATION_DISCONNECTED:
-                break;
-            case APPLICATION_CONNECT_FAILED:
-                // TODO: Notify the user that the connection attempt failed.
-                Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
-                // Re-start discover
-                connectivityManager.startDiscovery();
+		switch (eventId) {
+			case DISCOVERY_STOPPED:
+				// Restart discovery as long as we don't have a discovered service.
+				if (!connectivityManager.hasDiscoveredService()) {
+					connectivityManager.startDiscovery();
+				}
+				break;
+			case APPLICATION_CONNECTED:
+                // TODO: Remove toast
+                Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
+				// We are connected to the application move to the player info screen
+				launchIntent(PlayerInfoActivity.class);
+				break;
+			case APPLICATION_DISCONNECTED:
+			case APPLICATION_CONNECT_FAILED:
+				// TODO: Notify the user that the connection attempt failed.
+				Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+				// The application failed to connect or was disconnected, re-start discovery
+				connectivityManager.startDiscovery();
+				break;
+			default:
+				// ignore
+		}
 
-                break;
-        }
-
-        //always rebind the views when an event comes in
-        bindViews();
+		// always rebind the views when an event comes in
+		bindViews();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == SELECT_TV_RESULT_CODE){
-            if(resultCode == Activity.RESULT_OK) {
-                //user selected a TV and is ready to go
-                playGame();
-            }
-        }
+		if (requestCode == SELECT_TV_RESULT_CODE) {
+			// If the user selected a device...
+			if (resultCode == Activity.RESULT_OK) {
+				// If we are connected to the application, move to the player info screen. Otherwise we will wait to be
+				// connected or for the error message.
+				if (connectivityManager.isConnected()) {
+					launchIntent(PlayerInfoActivity.class);
+				}
+				// Else, wait for the connect notification.
+			}
+		}
     }
 }

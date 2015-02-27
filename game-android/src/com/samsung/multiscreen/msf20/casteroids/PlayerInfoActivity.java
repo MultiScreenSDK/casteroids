@@ -125,6 +125,11 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     protected void onResume() {
         super.onResume();
 
+        // If not connected, exit this screen.
+        if(!connectivityManager.isConnected()) {
+        	finish();
+        }
+        
         //register for connectivity changes
         connectivityManager.registerConnectivityListener(this);
 
@@ -212,6 +217,12 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        connectivityManager.disconnect();
+        super.onBackPressed();
     }
 
     private void selectColorForSlot(SlotData slotData) {
