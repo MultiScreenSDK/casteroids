@@ -217,9 +217,9 @@ BasicGame.Game.prototype = {
         if (this.game.time.now > origin.bulletTime) {
             origin.bullet = origin.bullets.getFirstExists(false);
             origin.bullet.source = origin.id;
-            origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
             if (origin.bullet) {
                 origin.bullet.reset(origin.body.x + 32, origin.body.y + 32);
+                origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                 origin.bullet.lifespan = origin.bulletRange;
                 origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
                 this.game.physics.arcade.velocityFromRotation(origin.rotation-BasicGame.ORIENTATION_CORRECTION, origin.bulletSpeed, origin.bullet.body.velocity);
