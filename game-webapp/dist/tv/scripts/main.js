@@ -66,9 +66,6 @@ $(ConnectivityManager = function(){
             // If the client successfully joined, send out the slot data update.
             if (responseCode == GameManager.JoinResponseCode.SUCCESS) {
                 sendSlotUpdate('all');
-
-                // TODO: REMOVE statement below after the addPlayer method's TODO for starting the game is complete.
-                sendGameStart(0);
             }
         });
 
