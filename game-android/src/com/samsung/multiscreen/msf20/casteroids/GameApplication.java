@@ -22,7 +22,7 @@ public class GameApplication extends Application {
     private GameConnectivityManager connectivityManager = null;
 
     /** Custom typeface used in the application */
-    private Typeface customTypeface;
+    private Typeface customTypeface, customTypeface2;
 
     @Override
     public void onCreate() {
@@ -50,6 +50,7 @@ public class GameApplication extends Application {
      */
     private void createCustomTypefaces() {
         customTypeface = Typeface.createFromAsset(getAssets(), "fonts/halo.ttf");
+        customTypeface2 = Typeface.createFromAsset(getAssets(), "fonts/desdemona.ttf");
     }
 
     /**
@@ -59,6 +60,15 @@ public class GameApplication extends Application {
      */
     public Typeface getCustomTypeface() {
         return customTypeface;
+    }
+
+    /**
+     * Returns the 2nd custom typeface for the application.
+     *
+     * @return 2nd custom typeface for the game.
+     */
+    public Typeface getCustomTypeface2() {
+        return customTypeface2;
     }
 
 
