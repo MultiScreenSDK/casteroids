@@ -98,7 +98,11 @@ $(ConnectivityManager = function(){
 
     // Send a slot_update to all or a specific client.
     function sendSlotUpdate(to) {
-        // Create and populate the slot data array
+        // Create and populate the slot data array. It is a subset of the slots object used by the GameManager.
+        //
+        // NOTE: We create the SlotData here instead of in the GameManager since the ConnectivityManager to Client
+        // contract has a subset of the data of the slots object used by the GameManager and we do not want the
+        // GameManager to make any assumptions about the contract between the ConnectivityManager and the clients.
         var slotData = [];
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
