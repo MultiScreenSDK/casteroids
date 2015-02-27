@@ -117,13 +117,13 @@ $(ConnectivityManager = function(){
     // Send a game_start to all clients
     function sendGameStart(countdown) {
         console.log('sending game_start ' + countdown + " secs. to=all");
-        channel.publish('game_start', countdown);
+        channel.publish('game_start', countdown.toString());
     }
 
     // Send a player_out to the client
     function sendPlayerOut(clientId, countdown) {
         console.log('sending player_out ' + countdown + " secs. to=" + clientId);
-        channel.publish('player_out', countdown, clientId);
+        channel.publish('player_out', countdown.toString(), clientId);
     }
 
     // Send a game_over to all clients

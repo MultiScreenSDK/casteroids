@@ -62,8 +62,12 @@ BasicGame.Game.prototype = {
 
             // players lifecycle
             if(currentPlayer.isDead) {
+                // If its time to respawn the player...
                 if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
                     this.player(currentPlayer.id, currentPlayer.order, currentPlayer.tint);
+
+                    // Notify the GameManager that the player is back in so that it can notify the client.
+                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
                 }
             }
             // player control
@@ -251,6 +255,9 @@ BasicGame.Game.prototype = {
             target.isDead = true;
             target.tod = this.game.time.now;
             target.destroy();
+
+            // Notify the GameManager that the player is out so that it can notify the client.
+            GameManager.onPlayerOut(target.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
 
         // deduct points from players on hit
