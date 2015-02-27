@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:text="@string/start_game"
         android:id="@+id/play_button"
+        android:layout_marginBottom="30dp"
         android:drawableBottom="@drawable/ic_launcher"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
