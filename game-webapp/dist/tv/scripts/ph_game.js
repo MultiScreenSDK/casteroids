@@ -1,50 +1,45 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
-    this.NUM_PLAYERS = 2;
-    this.COLORS = [0x00FF00, 0xFFFF00];
     this.isMuted = false;
 };
-
 
 BasicGame.Game.prototype = {
     players: {},
 
-    player: function (pos, id, color) {
+    player: function (id, order, color) {
         // Here I setup the user controlled ship
         this.X_POSITIONS = [this.game.width/4, 3*(this.game.width/4)];
         this.Y_POSITIONS = [this.game.height/4, 3*(this.game.height/4)];
-        this.players[pos] = this.game.add.sprite(this.X_POSITIONS[pos], this.Y_POSITIONS[pos], 'ship');
-        this.players[pos].id = id;
-        this.players[pos].isThrusting = false;
-        this.players[pos].isFiring = false;
-        this.players[pos].tint = color;
-        this.players[pos].anchor.setTo(0.5);
-        this.physics.enable(this.players[pos], Phaser.Physics.ARCADE);
-        this.players[pos].body.drag.set(BasicGame.PLAYER_DRAG);
-        this.players[pos].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
+        this.players[id] = this.game.add.sprite(this.X_POSITIONS[order], this.Y_POSITIONS[order], 'ship');
+        this.players[id].id = id;
+        this.players[id].order = order;
+        this.players[id].isThrusting = false;
+        this.players[id].isFiring = false;
+        this.players[id].tint = color;
+        this.players[id].anchor.setTo(0.5);
+        this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
+        this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
+        this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
 
-        this.players[pos].hp = BasicGame.PLAYER_HP;
-        this.players[pos].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
-        this.players[pos].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
-        this.players[pos].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
+        this.players[id].hp = BasicGame.PLAYER_HP;
+        this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
+        this.players[id].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
+        this.players[id].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
 
         // Here I setup the bullets
-        this.players[pos].bullets = this.add.group();
-        this.players[pos].bullets.enableBody = true;
-        this.players[pos].bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        this.players[pos].bulletTime = 0;
+        this.players[id].bullets = this.add.group();
+        this.players[id].bullets.enableBody = true;
+        this.players[id].bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        this.players[id].bulletTime = 0;
 
-        this.players[pos].bullets.createMultiple(40, 'laser');
-        this.players[pos].bullets.setAll('anchor.x', 0.5);
-        this.players[pos].bullets.setAll('anchor.y', 0.5);
+        this.players[id].bullets.createMultiple(40, 'laser');
+        this.players[id].bullets.setAll('anchor.x', 0.5);
+        this.players[id].bullets.setAll('anchor.y', 0.5);
     },
 
     create: function () {
-        console.log('HERE: create! 1');
         this.setupSystem();
-        console.log('HERE: create! 2');
         this.setupPlayers();
-        console.log('HERE: create! 3');
         this.setupAlien();
         this.setupText();
         this.setupAudio();
@@ -66,7 +61,7 @@ BasicGame.Game.prototype = {
             // players lifecycle
             if(currentPlayer.isDead) {
                 if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    this.player(index, index, currentPlayer.tint);
+                    this.player(currentPlayer.id, currentPlayer.order, currentPlayer.tint);
                 }
             }
             // player control
@@ -119,10 +114,9 @@ BasicGame.Game.prototype = {
     },
 
     setupPlayers: function () {
-        console.log('HERE: setupPlayers! ');
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
-            if (!slot.isAvailable) {
+            if (!slot.available) {
                 this.addPlayer(slot.clientId, slot.name, slot.colorCode);
             }
         }
@@ -182,11 +176,13 @@ BasicGame.Game.prototype = {
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
         this.timerLabel = this.add.text(20, 20, "02:00", style);
         var style_score = { font: "14px Arial", fill: "#cccccc", align: "right" };
-        this.scores = [this.players.length];
-        this.scoreLabels = [this.players.length];
-        for (index = 0; index < this.players.length; index++) {
+        this.scores = [Object.keys(this.players).length];
+        this.scoreLabels = [Object.keys(this.players).length];
+
+        for (var index in this.players) {
+            var currentPlayer = this.players[index];
             this.scores[index] = 0;
-            this.scoreLabels[index] = this.add.text(this.game.width-100, 20*(index+1), "0", style_score);
+            this.scoreLabels[index] = this.add.text(this.game.width-100, 20*(currentPlayer.order+1), "0", style_score);
         }
     },
 
@@ -299,7 +295,7 @@ BasicGame.Game.prototype = {
     // Add a player to the game.
     addPlayer: function(clientId, name, colorCode) {
         if (this.game !== undefined) {
-        this.player(clientId, clientId, colorCode); // re-using the index as the id, it can be changed later on
+        this.player(clientId, Object.keys(this.players).length, colorCode);
        }
     },
 
@@ -315,23 +311,49 @@ BasicGame.Game.prototype = {
         // Map the 0 to 20 range strength value to a 100 to 400 range angular velocity value for the game.
         var velocity = ((strength * 400) / 20) + 100;
 
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null) {
+            return;
+        }
+
         // Update the angular velocity based on the rotate direction (right, left, or none).
         if(direction == 'left') {
-            this.players[clientId].body.angularVelocity = -velocity;
+            currentPlayer.body.angularVelocity = -velocity;
         } else if(direction == 'right') {
-            this.players[clientId].body.angularVelocity = velocity;
+            currentPlayer.body.angularVelocity = velocity;
         } else {
-            this.players[clientId].body.angularVelocity = 0;
+            currentPlayer.body.angularVelocity = 0;
         }
     },
 
     // Called to enable thrust on a specific player's spaceship.
     onThrust: function onThrust(clientId, thrustEnabled) {
-        this.players[clientId].isThrusting = thrustEnabled;
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null) {
+            return;
+        }
+
+        // Update the isThrusting flag.
+        currentPlayer.isThrusting = thrustEnabled;
     },
 
     // Called to enable firing on a specific player's spaceship.
     onFire: function(clientId, fireEnabled) {
-        this.players[clientId].isFiring = fireEnabled;
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null) {
+            return;
+        }
+
+        // Update the isFiring flag.
+        currentPlayer.isFiring = fireEnabled;
     }
 };
