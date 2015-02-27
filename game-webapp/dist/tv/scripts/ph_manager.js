@@ -106,7 +106,7 @@ $(GameManager = function(){
         slot.name = name;
 
         // Create add the Player object to the game
-        // TODO: gameState.addPlayer(clientId, name, slot.colorCode);
+        gameState.addPlayer(clientId, name, slot.colorCode);
 
         // Add the client id to slot mapping
         clientIdToSlotMap[clientId] = slot;
@@ -134,7 +134,7 @@ $(GameManager = function(){
         slot.name = null;
 
         // Remove the player from the game
-        // TODO: gameState.removePlayer(slot.clientId);
+        gameState.removePlayer(slot.clientId);
 
         // Remove client id to slot mapping
         delete clientIdToSlotMap[clientId];

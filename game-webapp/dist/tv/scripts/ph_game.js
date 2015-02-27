@@ -48,8 +48,8 @@ BasicGame.Game.prototype = {
     update: function () {
         //  Main Game Loop
 
-        for (var index in this.players) {
-            var currentPlayer = this.players[index];
+        for (var id in this.players) {
+            var currentPlayer = this.players[id];
 
             // screen wrapping
             this.screenWrap(currentPlayer);
