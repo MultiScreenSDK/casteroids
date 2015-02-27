@@ -155,17 +155,7 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
-        // Map the 0 to 20 range value from the message's data to a 100 to 400 range value for the game.
-        var velocity = ((strength * 400) / 20) + 100;
-
-        // Update the angular velocity based on the rotate direction (right, left, or none).
-        if(direction == 'left') {
-            //sprite.body.angularVelocity = -velocity;
-        } else if(direction == 'right') {
-            //sprite.body.angularVelocity = velocity;
-        } else {
-            //sprite.body.angularVelocity = 0;
-        }
+        gameState.onRotate(0, direction, strength);
     }
 
     // Enables thrust on a clients spaceship. Called when the client sends a thrust event.
@@ -179,6 +169,7 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
+        gameState.onThrust(0, thrustEnabled);
     }
 
     // Fires a bullet from the client's spaceship. Called when the client sends a fire event.
@@ -192,6 +183,7 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
+        gameState.onFire(0, fireEnabled);
     }
 
     //  Now start the Boot state.
