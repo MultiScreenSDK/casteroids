@@ -61,20 +61,19 @@ $(GameManager = function(){
 
     // Called by the MainMenu state when its performing the countdown to the game start.
     function onGameStart(countdown) {
-        // TODO: Check current state
-        // TODO: Update current state
+        // Notify the clients via the Connectivity manager.
         ConnectivityManager.onGameStart(countdown);
     }
 
     // Called by the Game state when a player is out (i.e. blown to smithereens)
     function sendPlayerOut(clientId, countdown) {
-        // TODO: The method should take a player info or something else and we should look up the client id from it.
+        // Notify the clients via the Connectivity manager.
         ConnectivityManager.onPlayerOut(clientId, countdown);
     }
 
     // Called by the Game state when the game is over.
     function sendGameOver() {
-        // TODO: Construct the scoreData. Does this method need data passed in to do so?
+        // Notify the clients via the Connectivity manager.
         var scoreData = null;
         ConnectivityManager.onGameOver(scoreData);
     }
@@ -155,46 +154,28 @@ $(GameManager = function(){
      * Player Control Methods
      */
 
-    // Rotate the client's spaceship. Called when a client sends a rotate command.
+    // If we are in the Game state request the Game state to rotate the client's spaceship otherwise ignore. Called
+    // by the ConnectivityManager when it receives rotate event from a client.
     function onRotate(clientId, direction, strength) {
-        // Look up the requested slot by the color name
-        var slot = clientIdToSlotMap[clientId];
-
-        // If the slot is null then the player has been removed or the given client id is invalid.
-        if (slot == null) {
-            return;
+        if (game.state.getCurrentState() == gameState) {
+            gameState.onRotate(clientId, direction, strength);
         }
-
-        // TODO: Make modifications on the player object on the slot object
-        gameState.onRotate(slot.clientId, direction, strength);
     }
 
-    // Enables thrust on a clients spaceship. Called when the client sends a thrust event.
+    // If we are in the Game state request the Game state to enable thrust on the client's spaceship otherwise ignore.
+    // Called by the ConnectivityManager when it receives thrust event from a client.
     function onThrust(clientId, thrustEnabled) {
-        // Look up the requested slot by the color name
-        var slot = clientIdToSlotMap[clientId];
-
-        // If the slot is null then the player has been removed or the given client id is invalid.
-        if (slot == null) {
-            return;
+        if (game.state.getCurrentState() == gameState) {
+            gameState.onThrust(clientId, thrustEnabled);
         }
-
-        // TODO: Make modifications on the player object on the slot object
-        gameState.onThrust(slot.clientId, thrustEnabled);
     }
 
-    // Fires a bullet from the client's spaceship. Called when the client sends a fire event.
+    // If we are in the Game state request the Game state to enable firing on the client's spaceship otherwise ignore.
+    // Called by the ConnectivityManager when it receives fire event from a client.
     function onFire(clientId, fireEnabled) {
-        // Look up the requested slot by the color name
-        var slot = clientIdToSlotMap[clientId];
-
-        // If the slot is null then the player has been removed or the given client id is invalid.
-        if (slot == null) {
-            return;
+        if (game.state.getCurrentState() == gameState) {
+            gameState.onFire(clientId, fireEnabled);
         }
-
-        // TODO: Make modifications on the player object on the slot object
-        gameState.onFire(slot.clientId, fireEnabled);
     }
 
     //  Now start the Boot state.
