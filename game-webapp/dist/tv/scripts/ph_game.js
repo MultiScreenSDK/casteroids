@@ -7,7 +7,7 @@ BasicGame.Game = function (game) {
 
 
 BasicGame.Game.prototype = {
-    players: [],
+    players: {},
 
     player: function (pos, id, color) {
         // Here I setup the user controlled ship
@@ -40,8 +40,11 @@ BasicGame.Game.prototype = {
     },
 
     create: function () {
+        console.log('HERE: create! 1');
         this.setupSystem();
+        console.log('HERE: create! 2');
         this.setupPlayers();
+        console.log('HERE: create! 3');
         this.setupAlien();
         this.setupText();
         this.setupAudio();
@@ -49,54 +52,38 @@ BasicGame.Game.prototype = {
 
     update: function () {
         //  Main Game Loop
-        for (index = 0; index < this.players.length; index++) {
+
+        for (var index in this.players) {
+            var currentPlayer = this.players[index];
+
             // screen wrapping
-            this.screenWrap(this.players[index]);
-            this.players[index].bullets.forEachExists(this.screenWrap, this);
+            this.screenWrap(currentPlayer);
+            currentPlayer.bullets.forEachExists(this.screenWrap, this);
             // collision detection
-            this.physics.arcade.overlap(this.players[index].bullets, this.alien, this.hit, null, this);
-            this.physics.arcade.overlap(this.alien.bullets, this.players[index], this.hit, null, this);
+            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
 
             // players lifecycle
-            if(this.players[index].isDead) {
-                if(this.game.time.now - this.players[index].tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    this.player(index, index, this.COLORS[index]);
+            if(currentPlayer.isDead) {
+                if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
+                    this.player(index, index, currentPlayer.tint);
                 }
-            } else {
-                // player control
-                if(index == 0) {
-                    if (this.players[index].isThrusting) {
-                        this.game.physics.arcade.accelerationFromRotation(this.players[0].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[0].body.acceleration);
-                    } else {
-                        this.players[0].body.acceleration.set(0);
-                    }
+            }
+            // player control
+            else {
+                if (currentPlayer.isThrusting) {
+                    this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+                } else {
+                    currentPlayer.body.acceleration.set(0);
+                }
 
-                    if (this.players[index].isFiring) {
-                        this.fire(this.players[index]);
-                    }
-                } else if(index == 1) {
-                    if (this.input.keyboard.isDown(Phaser.Keyboard.W))  {
-                        this.game.physics.arcade.accelerationFromRotation(this.players[index].rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, this.players[index].body.acceleration);
-                    } else {
-                        this.players[index].body.acceleration.set(0);
-                    }
-
-                    if (this.input.keyboard.isDown(Phaser.Keyboard.A)) {
-                        this.players[index].body.angularVelocity = -BasicGame.PLAYER_TURNING_SPEED;
-                    } else if (this.input.keyboard.isDown(Phaser.Keyboard.D)) {
-                        this.players[index].body.angularVelocity = BasicGame.PLAYER_TURNING_SPEED;
-                    } else {
-                        this.players[index].body.angularVelocity = 0;
-                    }
-
-                    if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-                        this.fire(this.players[index]);
-                    }
+                if (currentPlayer.isFiring) {
+                    this.fire(currentPlayer);
                 }
 
                 // replenish destroyed bullets
-                if(this.players[index].bullets.total < 40) {
-                    this.players[index].bullets.createMultiple(1, 'laser');
+                if(currentPlayer.bullets.total < 40) {
+                    currentPlayer.bullets.createMultiple(1, 'laser');
                 }
             }
         }
@@ -132,8 +119,12 @@ BasicGame.Game.prototype = {
     },
 
     setupPlayers: function () {
-        for (index = 0; index < this.NUM_PLAYERS; index++) {
-            this.player(index, index, this.COLORS[index]); // re-using the index as the id, it can be changed later on
+        console.log('HERE: setupPlayers! ');
+        for (var i in GameManager.slots) {
+            var slot = GameManager.slots[i];
+            if (!slot.isAvailable) {
+                this.addPlayer(slot.clientId, slot.name, slot.colorCode);
+            }
         }
     },
 
@@ -259,13 +250,13 @@ BasicGame.Game.prototype = {
         if(target.hp <= 0) {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
-            } 
+            }
             this.explode(target);
             target.isDead = true;
             target.tod = this.game.time.now;
             target.destroy();
         }
-        
+
         // deduct points from players on hit
         if(target != this.alien) {
             console.log(target);
@@ -275,7 +266,7 @@ BasicGame.Game.prototype = {
                 this.scoreLabels[target.id].setText(this.scores[target.id]);
             }
         }
-        
+
         // update score labels if shot is not from the alien
         if(bullet.source >= 0){
             this.scoreLabels[bullet.source].setText(this.scores[bullet.source]);
@@ -305,28 +296,42 @@ BasicGame.Game.prototype = {
         }
     },
 
+    // Add a player to the game.
+    addPlayer: function(clientId, name, colorCode) {
+        if (this.game !== undefined) {
+        this.player(clientId, clientId, colorCode); // re-using the index as the id, it can be changed later on
+       }
+    },
+
+    // Remove a player from the game.
+    removePlayer: function(clientId) {
+        if (this.game !== undefined) {
+            delete this.player[clientId];
+        }
+    },
+
     // Called to rotate a specific player's spaceship.
-    onRotate: function(playerId, direction, strength) {
+    onRotate: function(clientId, direction, strength) {
         // Map the 0 to 20 range strength value to a 100 to 400 range angular velocity value for the game.
         var velocity = ((strength * 400) / 20) + 100;
 
         // Update the angular velocity based on the rotate direction (right, left, or none).
         if(direction == 'left') {
-            this.players[0].body.angularVelocity = -velocity;
+            this.players[clientId].body.angularVelocity = -velocity;
         } else if(direction == 'right') {
-            this.players[0].body.angularVelocity = velocity;
+            this.players[clientId].body.angularVelocity = velocity;
         } else {
-            this.players[0].body.angularVelocity = 0;
+            this.players[clientId].body.angularVelocity = 0;
         }
     },
 
     // Called to enable thrust on a specific player's spaceship.
-    onThrust: function onThrust(playerId, thrustEnabled) {
-        this.players[0].isThrusting = thrustEnabled;
+    onThrust: function onThrust(clientId, thrustEnabled) {
+        this.players[clientId].isThrusting = thrustEnabled;
     },
 
     // Called to enable firing on a specific player's spaceship.
-    onFire: function(playerId, fireEnabled) {
-        this.players[0].isFiring = fireEnabled;
+    onFire: function(clientId, fireEnabled) {
+        this.players[clientId].isFiring = fireEnabled;
     }
 };

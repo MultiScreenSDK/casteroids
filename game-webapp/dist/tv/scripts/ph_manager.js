@@ -22,15 +22,15 @@ $(GameManager = function(){
     };
 
     //  A placeholder for one player in the gave
-    function Slot(playerPosition, color, colorCode) {
+    function Slot(color, colorCode) {
         // Whether or not this slot is available.
         this.available = true;
 
-        // The player position associated to this slot.
-        this.playerPosition = playerPosition;
-
         // The client id associated to this slot.
         this.clientId = null;
+
+        // The name associated to this slot.
+        this.name = null;
 
         // The color and color code associated to this slot.
         this.color = color || 'unknown';
@@ -38,10 +38,10 @@ $(GameManager = function(){
     }
 
     // The available slots in the game (4 players of different colors)
-    var slots = [ new Slot(0, 'red', 0xff0000),
-        new Slot(1, 'orange', 0xff8800),
-        new Slot(2, 'green', 0x00ff00),
-        new Slot(3, 'blue', 0x0000ff) ];
+    var slots = [ new Slot('red', 0xFF0000),
+        new Slot('orange', 0xFF8800),
+        new Slot('green', 0x00FF00),
+        new Slot('blue', 0x0000FF) ];
 
     // Store client id to slot mappings.
     var clientIdToSlotMap = {};
@@ -103,16 +103,16 @@ $(GameManager = function(){
         // Associate the client to the slot
         slot.available = false;
         slot.clientId = clientId;
+        slot.name = name;
 
-        // Create add the Player object to the game and slot.
-        // TODO: Create and add the player to the game and slot
-        menuState.onPlayerUpdate(1);
+        // Create add the Player object to the game
+        // TODO: gameState.addPlayer(clientId, name, slot.colorCode);
 
         // Add the client id to slot mapping
         clientIdToSlotMap[clientId] = slot;
 
-        // If the game was not already initiated then start the countdown!
-        // TODO: If the game was not already initiated then start the countdown!
+        // Notify the Menu state.
+        menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
 
         // Return the SUCCESS code
         return JoinResponseCode.SUCCESS;
@@ -131,13 +131,16 @@ $(GameManager = function(){
         // Un-associate the client with the slot
         slot.available = true;
         slot.clientId = null;
+        slot.name = null;
 
-        // Remove the player from the game and slot
-        // TODO: Remove the player from the game
-        menuState.onPlayerUpdate(0);
+        // Remove the player from the game
+        // TODO: gameState.removePlayer(slot.clientId);
 
         // Remove client id to slot mapping
         delete clientIdToSlotMap[clientId];
+
+        // Notify the Menu state.
+        menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
     }
 
     /******************************************************************************************************************
@@ -155,7 +158,7 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
-        gameState.onRotate(0, direction, strength);
+        gameState.onRotate(slot.clientId, direction, strength);
     }
 
     // Enables thrust on a clients spaceship. Called when the client sends a thrust event.
@@ -169,7 +172,7 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
-        gameState.onThrust(0, thrustEnabled);
+        gameState.onThrust(slot.clientId, thrustEnabled);
     }
 
     // Fires a bullet from the client's spaceship. Called when the client sends a fire event.
@@ -183,7 +186,7 @@ $(GameManager = function(){
         }
 
         // TODO: Make modifications on the player object on the slot object
-        gameState.onFire(0, fireEnabled);
+        gameState.onFire(slot.clientId, fireEnabled);
     }
 
     //  Now start the Boot state.
