@@ -263,8 +263,10 @@ BasicGame.Game.prototype = {
             target.tod = this.game.time.now;
             target.destroy();
 
-            // Notify the GameManager that the player is out so that it can notify the client.
-            GameManager.onPlayerOut(target.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+            // If this is a player, notify the GameManager that the player is out so that it can notify the client.
+            if(target != this.alien) {
+                GameManager.onPlayerOut(target.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+            }
         }
 
         // deduct points from players on hit
@@ -288,6 +290,11 @@ BasicGame.Game.prototype = {
         obj1.isDead = true;
         obj1.tod = this.game.time.now;
         obj1.destroy();
+
+        // If this is a player, notify the GameManager that the player is out so that it can notify the client.
+        if(obj1 != this.alien) {
+            GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+        }
     },
 
     explode: function (sprite) {
