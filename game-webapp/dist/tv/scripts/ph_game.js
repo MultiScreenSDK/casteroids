@@ -20,6 +20,7 @@ BasicGame.Game.prototype = {
         this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
         this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
         this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
+        this.players[id].body.setSize(BasicGame.PLAYER_HITBOX_WIDTH, BasicGame.PLAYER_HITBOX_HEIGHT, 0, 0);
 
         this.players[id].hp = BasicGame.PLAYER_HP;
         this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
@@ -138,7 +139,7 @@ BasicGame.Game.prototype = {
         this.alien.rotation = randRotation;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
-//        this.alien.body.setSize(BasicGame.ALIEN_HITBOX_WIDTH, BasicGame.ALIEN_HITBOX_HEIGHT, 0, 0);
+        this.alien.body.setSize(BasicGame.ALIEN_HITBOX_WIDTH, BasicGame.ALIEN_HITBOX_HEIGHT, 0, 0);
 
         this.alien.hp = BasicGame.ALIEN_HP;
         this.alien.bulletSpeed = BasicGame.ALIEN_BULLET_SPEED;
@@ -148,7 +149,6 @@ BasicGame.Game.prototype = {
         this.alien.bullets = this.add.group();
         this.alien.bullets.enableBody = true;
         this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-//        this.alien.bullets.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
         this.alien.bulletTime = 0;
 
         this.alien.bullets.createMultiple(40, 'laser');
@@ -180,6 +180,7 @@ BasicGame.Game.prototype = {
         this.timerLabel = this.add.text(20, 20, "02:00", style);
         this.timerLabel.font = 'Revalia';
         this.scores = { };
+        this.names = { };
         this.scoreLabels = { };
     },
 
@@ -204,25 +205,26 @@ BasicGame.Game.prototype = {
         //  Here you should destroy anything you no longer need.
         //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
         //  Then let's go back to the main menu.
-        this.state.state['GameOver'].scores = this.scores;
-        this.state.state['GameOver'].names = this.names;
+//        this.state.states['GameOver'].scores = this.scores;
+//        this.state.states['GameOver'].names = this.names;
         this.state.start('GameOver');
 
         // Notify the Game Manager that the game is over.
         GameManager.onGameOver();
     },
 
-    fire: function(player) {
-        if (this.game.time.now > player.bulletTime) {
-            player.bullet = player.bullets.getFirstExists(false);
-            player.bullet.source = player.id;
-            if (player.bullet) {
-                player.bullet.reset(player.body.x + 32, player.body.y + 32);
-                player.bullet.lifespan = player.bulletRange;;
-                player.bullet.rotation = player.rotation + BasicGame.ORIENTATION_CORRECTION;
-                this.game.physics.arcade.velocityFromRotation(player.rotation-BasicGame.ORIENTATION_CORRECTION, player.bulletSpeed, player.bullet.body.velocity);
-                player.bulletTime = this.game.time.now + player.bulletDelay;
-                player.bullet.tint = player.tint;
+    fire: function(origin) {
+        if (this.game.time.now > origin.bulletTime) {
+            origin.bullet = origin.bullets.getFirstExists(false);
+            origin.bullet.source = origin.id;
+            origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
+            if (origin.bullet) {
+                origin.bullet.reset(origin.body.x + 32, origin.body.y + 32);
+                origin.bullet.lifespan = origin.bulletRange;
+                origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
+                this.game.physics.arcade.velocityFromRotation(origin.rotation-BasicGame.ORIENTATION_CORRECTION, origin.bulletSpeed, origin.bullet.body.velocity);
+                origin.bulletTime = this.game.time.now + origin.bulletDelay;
+                origin.bullet.tint = origin.tint;
                 if(!this.isMuted) {
                     this.sfx.play('shot');
                 }
