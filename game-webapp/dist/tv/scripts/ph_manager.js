@@ -77,15 +77,23 @@ $(GameManager = function(){
     }
 
     // Called by the Game state when a player is out (i.e. blown to smithereens)
-    function sendPlayerOut(clientId, countdown) {
+    function onPlayerOut(clientId, countdown) {
         // Notify the clients via the Connectivity manager.
         ConnectivityManager.onPlayerOut(clientId, countdown);
     }
 
     // Called by the Game state when the game is over.
-    function sendGameOver() {
+    function onGameOver(scores) {
+        // Create a score data object consisting of the slot and scores objects.
+        var scoreData = [];
+        var index = 0;
+        for (var clientId in clientIdToSlotMap) {
+            var slot = clientIdToSlotMap[clientId];
+            var score = scores[clientId] || 0;
+            scoreData[index++] = { name : slot.name, color : slot.color, score: score};
+        }
+
         // Notify the clients via the Connectivity manager.
-        var scoreData = null;
         ConnectivityManager.onGameOver(scoreData);
     }
 
@@ -203,7 +211,7 @@ $(GameManager = function(){
         // Game State Methods
         onGameStart: function(countdown) { onGameStart(countdown); },
         onPlayerOut: function(clientId, countdown) { onPlayerOut(clientId, countdown); },
-        onGameOver: function() { onGameOver(); },
+        onGameOver: function(scores) { onGameOver(scores); },
 
         // Player Join/Quit Methods
         addPlayer: function(clientId, name, color) { return addPlayer(clientId, name, color); },

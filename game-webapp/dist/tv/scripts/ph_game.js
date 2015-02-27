@@ -210,7 +210,7 @@ BasicGame.Game.prototype = {
         this.state.start('GameOver');
 
         // Notify the Game Manager that the game is over.
-        GameManager.onGameOver();
+        GameManager.onGameOver(this.scores);
     },
 
     fire: function(origin) {
