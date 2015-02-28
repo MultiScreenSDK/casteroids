@@ -17,6 +17,9 @@ BasicGame.MainMenu.prototype = {
         var sprite = this.add.sprite(0, 0, 'titlepage');
         sprite.anchor.setTo(0, 0);
 
+        var anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
+        anim.start();
+
         this.style = { font: "3Opx", fill: "#cccccc"};
         this.loadingText = this.add.text(this.game.width / 2, this.game.height / 2 + 130, "Waiting for Players to join");
         //this.loadingText.style = this.style;
