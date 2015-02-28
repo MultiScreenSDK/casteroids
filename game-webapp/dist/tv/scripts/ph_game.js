@@ -326,7 +326,7 @@ BasicGame.Game.prototype = {
             var style_score = { font: "14px Arial", fill: "#cccccc", align: "right" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            this.scoreLabels[clientId] = this.add.text(this.game.width-100, 20*(order+1), "0", style_score);
+            this.scoreLabels[clientId] = this.add.text(this.game.width-100, 30*(order+1), "0", style_score);
             this.scoreLabels[clientId].font = 'Revalia';
        }
     },
