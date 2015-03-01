@@ -40,6 +40,7 @@ BasicGame.Preloader.prototype = {
         this.load.spritesheet('ship', 'assets/ship.png', 64, 64);
         this.load.spritesheet('ufo', 'assets/ufo.png', 64, 64);
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
+        this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
         this.load.spritesheet('player', 'assets/player.png', 64, 64);
         this.load.spritesheet('laser', 'assets/spr_bullet_strip02.png', 68, 68);
         this.load.audio('playerFire', ['assets/player-fire.ogg', 'assets/player-fire.wav']);

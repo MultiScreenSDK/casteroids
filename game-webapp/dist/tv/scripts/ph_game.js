@@ -58,12 +58,18 @@ BasicGame.Game.prototype = {
             // collision detection
             this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
             this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+
             this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
             this.physics.arcade.overlap(this.alien, currentPlayer, this.collide, null, this);
+
             for (var other_players_id in this.players) {
                 if(other_players_id != id) {
-                    var otherPlayer = this.players[other_players_id];
-                    this.physics.arcade.overlap(currentPlayer, this.otherPlayer, this.collide, null, this);
+                    //check for bullets
+                    this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                    //check for collisions. both die if there is a collision
+                    this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                    this.physics.arcade.overlap(this.players[other_players_id], currentPlayer, this.collide, null, this);
                 }
             }
 
@@ -118,7 +124,6 @@ BasicGame.Game.prototype = {
     setupSystem: function () {
         // Here I setup some general utilities
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.cursors = this.input.keyboard.createCursorKeys();
         this.game.time.events.loop(1000, this.updateTimer, this);
         this.background = this.add.tileSprite(0, 0, 1280, 800, 'space');
     },
@@ -127,7 +132,7 @@ BasicGame.Game.prototype = {
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
             if (!slot.available) {
-                this.addPlayer(slot.clientId, slot.name, slot.colorCode);
+                this.addPlayer(slot.clientId, slot.name, slot.colorCode, slot.hexColor);
             }
         }
     },
@@ -216,12 +221,15 @@ BasicGame.Game.prototype = {
         //  delete sprites, purge caches, free resources, all that good stuff.
         //  Then move on to the game over state.
         console.log(this);
-//        this.state.states['GameOver'].scores = this.scores;
-//        this.state.states['GameOver'].names = this.names;
-        this.state.start('GameOver');
+        this.state.states['GameOver'].scores = this.scores;
+        this.state.states['GameOver'].names = this.names;
 
         // Notify the Game Manager that the game is over.
         GameManager.onGameOver(this.scores);
+
+        this.state.start('GameOver');
+
+
     },
 
     fire: function(origin) {
@@ -249,6 +257,10 @@ BasicGame.Game.prototype = {
             this.sfx.play('boss hit');
         }
         target.hp -= BasicGame.HIT_POW;
+
+        //always show a regular explosion as a bullet hits the target
+        this.explode(target, 'explosion');
+
         if(target == this.alien) {
             this.scores[bullet.source] += BasicGame.ALIEN_HIT_SCORE;
         } else {
@@ -258,10 +270,12 @@ BasicGame.Game.prototype = {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
             }
-            this.explode(target);
             target.isDead = true;
             target.tod = this.game.time.now;
             target.destroy();
+
+            //resulted in death, show a massive explosion
+            this.explode(target, 'explosionBig');
 
             // If this is a player, notify the GameManager that the player is out so that it can notify the client.
             if(target != this.alien) {
@@ -286,7 +300,7 @@ BasicGame.Game.prototype = {
     },
     
     collide: function(obj1, obj2) {
-        this.explode(obj1);
+        this.explode(obj1, 'explosionBig'); //huge explosion
         obj1.isDead = true;
         obj1.tod = this.game.time.now;
         obj1.destroy();
@@ -297,12 +311,17 @@ BasicGame.Game.prototype = {
         }
     },
 
-    explode: function (sprite) {
-        var explosion = this.add.sprite(sprite.x, sprite.y, 'explosion');
+    /**
+     * Show an Explosion
+     *
+     * @param {sprite} sprite - the source sprite where to show the explosion
+     * @param {sprite} explosionSprite - Named explosion sprite. @see the preloader for the explosion sprites
+     */
+    explode: function (sprite,explosionSprite) {
+        var explosion = this.add.sprite(sprite.x, sprite.y, explosionSprite);
         explosion.anchor.setTo(0.5, 0.5);
         explosion.animations.add('boom');
         explosion.play('boom', 25, false, true);
-
     },
 
     screenWrap: function(sprite) {
@@ -321,7 +340,7 @@ BasicGame.Game.prototype = {
     },
 
     // Add a player to the game.
-    addPlayer: function(clientId, name, colorCode) {
+    addPlayer: function(clientId, name, colorCode,hexColor) {
         if (this.game !== undefined) {
             //  Determine the new player's order.
             var order = Object.keys(this.players).length;
@@ -330,7 +349,7 @@ BasicGame.Game.prototype = {
             this.player(clientId, order, colorCode);
 
             // Initialize the new player's text
-            var style_score = { font: "14px Arial", fill: "#cccccc", align: "right" };
+            var style_score = { font: "14px Arial", fill: hexColor, align: "right" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
             this.scoreLabels[clientId] = this.add.text(this.game.width-100, 30*(order+1), "0", style_score);
@@ -357,7 +376,7 @@ BasicGame.Game.prototype = {
 
     // Called to rotate a specific player's spaceship.
     onRotate: function(clientId, direction, strength) {
-        // Map the 0 to 20 range strength value to a 100 to 400 range angular velocity value for the game.
+        // Map the 0 to 20 range strength value to a 100 to 500 range angular velocity value for the game.
         var velocity = ((strength * 400) / 20) + 100;
 
         // Look up the player.
