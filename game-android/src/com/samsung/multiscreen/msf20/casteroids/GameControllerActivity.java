@@ -96,6 +96,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Whether user input is enabled */
     private boolean isEnabled = true;
 
+    /** Whether the current player out event has been processed */
+    private boolean processedPlayerOutEvent = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -400,10 +403,17 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
                 toast = Toast.makeText(this, getStyledString("You are out. Prepare to re-enter in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
+
+                if(!processedPlayerOutEvent) {
+                    vibrator.vibrate(300);
+                }
             }
 
             //Only 0 means we are in
             setUserInputEnabled(numSeconds == 0);
+            if(numSeconds == 0){
+                processedPlayerOutEvent = false; //get ready for the next player out
+            }
         }
     }
 
