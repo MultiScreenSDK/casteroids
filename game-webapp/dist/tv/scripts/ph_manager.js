@@ -201,10 +201,6 @@ $(GameManager = function(){
             gameState.onFire(clientId, fireEnabled);
         }
     }
-    
-    // TODO add implementation
-    function onGameOver() {
-    }
 
     //  Now start the Boot state.
     game.state.start('Boot');
