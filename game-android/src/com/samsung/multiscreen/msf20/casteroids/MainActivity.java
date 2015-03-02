@@ -182,7 +182,15 @@ public class MainActivity extends Activity implements ConnectivityListener {
         connectivityManager.unregisterConnectivityListener(this);
     }
 
-	private void onPlayButtonClick() {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        //disconnect
+        connectivityManager.disconnect();
+    }
+
+    private void onPlayButtonClick() {
 		// If we are connected to the application, move to the player info screen.
 		if (connectivityManager.isConnected()) {
 			launchIntent(PlayerInfoActivity.class);

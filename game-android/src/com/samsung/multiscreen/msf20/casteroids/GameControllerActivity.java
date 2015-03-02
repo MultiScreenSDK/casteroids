@@ -336,13 +336,12 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     }
 
     /**
-     * Sends a quit message to the game manager.
+     * Sends a quit message to the game manager. Does not disconnect however.
      *
      * @param view calling view
      */
     public void quitGame(View view) {
         gameConnectivityManager.sendQuitMessage();
-        gameConnectivityManager.disconnect();
         finish();
     }
 
