@@ -192,7 +192,7 @@ BasicGame.Game.prototype = {
     setupText: function () {
         // Here I setup the labels and other texts
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
-        this.timerLabel = this.add.text(20, 20, "02:00", style);
+        this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
         this.timerLabel.font = 'Wallpoet';
         this.scores = { };
         this.names = { };
@@ -286,13 +286,13 @@ BasicGame.Game.prototype = {
         // deduct points from players on hit
         if(target !== this.alien) {
             this.scores[target.id] -= BasicGame.PLAYER_HIT_DEDUCT;
-            this.scoreLabels[target.id].setText(this.scores[target.id]);
+            this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
         }
 
         // update score labels if shot is not from the alien
         var attacker = this.scoreLabels[bullet.source];
         if(attacker != undefined){
-            attacker.setText(this.scores[bullet.source]);
+            attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
         }
     },
     
@@ -346,10 +346,10 @@ BasicGame.Game.prototype = {
             this.player(clientId, order, colorCode);
 
             // Initialize the new player's text
-            var style_score = { font: "14px Arial", fill: hexColor, align: "right" };
+            var style_score = { font: "14px", fill: hexColor, align: "right" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            this.scoreLabels[clientId] = this.add.text(this.game.width-100, 30*(order+1), "0", style_score);
+            this.scoreLabels[clientId] = this.add.text(((this.game.width / this.names.length) * order), 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
        }
     },
