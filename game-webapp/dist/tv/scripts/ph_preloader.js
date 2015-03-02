@@ -34,6 +34,7 @@ BasicGame.Preloader.prototype = {
 
         //  Here we load the rest of the assets our game needs.
         this.load.image('titlepage', 'assets/casteroids.jpg');
+        this.load.image('gameover', 'assets/casteroids2.jpg');
         this.load.image('space', 'assets/deep-space.jpg');
         this.load.spritesheet('ship', 'assets/ship.png', 64, 64);
         this.load.spritesheet('ufo', 'assets/ufo.png', 64, 64);

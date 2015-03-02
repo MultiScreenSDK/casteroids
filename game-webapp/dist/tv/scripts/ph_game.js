@@ -38,6 +38,11 @@ BasicGame.Game.prototype = {
         this.players[id].bullets.setAll('anchor.y', 0.5);
     },
 
+    preload: function () {
+        //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
+        this.game.time.advancedTiming = true;
+    },
+
     create: function () {
         this.setupSystem();
         this.setupText();
@@ -118,6 +123,11 @@ BasicGame.Game.prototype = {
             this.alien.body.acceleration.set(BasicGame.ALIEN_MAX_SPEED);
             this.fire(this.alien);
         }
+    },
+
+    render: function() {
+        //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
+        this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
     },
 
     // Setup functions
@@ -428,9 +438,5 @@ BasicGame.Game.prototype = {
         // Update the isFiring flag.
         currentPlayer.isFiring = fireEnabled;
     },
-    
-    render: function() {
-//        this.game.debug.body(this.alien.bullet);
-//        this.game.debug.body(this.alien);
-    },
+
 };
