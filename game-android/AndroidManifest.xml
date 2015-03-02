@@ -50,6 +50,11 @@
             android:name=".PlayerInfoActivity"
             android:screenOrientation="landscape" >
         </activity>
+        <activity
+            android:name=".GameOverActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+
     </application>
 
 </manifest>
