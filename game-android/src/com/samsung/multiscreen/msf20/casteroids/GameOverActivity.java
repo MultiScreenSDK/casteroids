@@ -49,7 +49,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         //content view
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_game_over);
 
         // Get an instance of the ConnectivtyManager
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
