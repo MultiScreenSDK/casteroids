@@ -8,7 +8,7 @@ BasicGame.Preloader = function (game) {
 
         //  The Google Fonts we want to load (specify as many as you like in the array)
         google: {
-            families: ['Revalia']
+            families: ['Revalia', 'Wallpoet', 'Oswald']
         }
     };
 };

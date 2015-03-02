@@ -193,7 +193,7 @@ BasicGame.Game.prototype = {
         // Here I setup the labels and other texts
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
         this.timerLabel = this.add.text(20, 20, "02:00", style);
-        this.timerLabel.font = 'Revalia';
+        this.timerLabel.font = 'Wallpoet';
         this.scores = { };
         this.names = { };
         this.scoreLabels = { };
@@ -350,7 +350,7 @@ BasicGame.Game.prototype = {
             this.scores[clientId] = 0;
             this.names[clientId] = name;
             this.scoreLabels[clientId] = this.add.text(this.game.width-100, 30*(order+1), "0", style_score);
-            this.scoreLabels[clientId].font = 'Revalia';
+            this.scoreLabels[clientId].font = 'Wallpoet';
        }
     },
 
