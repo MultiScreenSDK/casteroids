@@ -21,7 +21,7 @@ BasicGame.Preloader.prototype = {
         this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
         //  Show the loading progress bar asset we loaded in boot.js
-        this.stage.backgroundColor = '#2d2d2d';
+        this.stage.backgroundColor = '#000000';
 
         this.preloadBar = this.add.sprite(this.game.width / 2 - 100, this.game.height / 2, 'preloaderBar');
         this.add.text(this.game.width / 2, this.game.height / 2 - 30, "Loading...", { font: "32px monospace", fill: "#fff" }).anchor.setTo(0.5, 0.5);
@@ -34,16 +34,13 @@ BasicGame.Preloader.prototype = {
 
         //  Here we load the rest of the assets our game needs.
         this.load.image('titlepage', 'assets/casteroids.jpg');
-        this.load.image('bullet', 'assets/bullets.png');
-//        this.load.image('background', 'assets/background.png');
         this.load.image('space', 'assets/deep-space.jpg');
         this.load.spritesheet('ship', 'assets/ship.png', 64, 64);
         this.load.spritesheet('ufo', 'assets/ufo.png', 64, 64);
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
         this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
-        this.load.spritesheet('player', 'assets/player.png', 64, 64);
         this.load.spritesheet('laser', 'assets/spr_bullet_strip02.png', 68, 68);
-        this.load.audio('playerFire', ['assets/player-fire.ogg', 'assets/player-fire.wav']);
+        this.load.audio('playerFire', ['assets/player-fire.ogg']);
         this.load.audio('sfx', 'assets/fx_mixdown.ogg');
         //  + lots of other required assets here
 
