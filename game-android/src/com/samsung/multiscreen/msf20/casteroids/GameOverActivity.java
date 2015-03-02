@@ -137,6 +137,10 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
 	}
 
     private void launchIntent(Class cls){
+        //don't keep us in the back stack
+        finish();
+
+        //launch the main screen
         Intent intent = new Intent();
         intent.setClass(this, cls);
         startActivity(intent);
