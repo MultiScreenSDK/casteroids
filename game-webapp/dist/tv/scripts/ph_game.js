@@ -346,10 +346,10 @@ BasicGame.Game.prototype = {
             this.player(clientId, order, colorCode);
 
             // Initialize the new player's text
-            var style_score = { font: "14px", fill: hexColor, align: "right" };
+            var style_score = { font: "12px", fill: hexColor, align: "right" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            this.scoreLabels[clientId] = this.add.text(((this.game.width / this.names.length) * order), 35, name + "\t\t0", style_score);
+            this.scoreLabels[clientId] = this.add.text(((this.game.width / this.names.length) * order), 25*(order+1), name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
        }
     },

@@ -2,6 +2,7 @@ package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -371,7 +372,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         }
         if(event.equals(Event.GAME_OVER.getName())){
             Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
-            quitGame(null); //FIXME:  Show the game results screen
+            quitGame(null);
+            Intent gameOverScreen = new Intent();
+            gameOverScreen.setClass(this, GameOverActivity.class);
+            //startActivity(gameOverScreen); //FIXME:  Not yet
         } else if (event.equals(Event.GAME_START.getName())){
             //show countdown
             int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
