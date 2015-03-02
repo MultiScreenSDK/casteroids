@@ -3,6 +3,11 @@ BasicGame.GameOver = function (game) {
 };
 
 BasicGame.GameOver.prototype = {
+    init: function (scores, names) {
+        this.scores = scores;
+        this.names = names;
+    },
+    
     create: function () {
         this.counter = 0;
         var gameOver_label = "GAME OVER";

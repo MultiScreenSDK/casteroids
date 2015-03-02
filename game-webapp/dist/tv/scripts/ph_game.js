@@ -220,14 +220,11 @@ BasicGame.Game.prototype = {
         //  Here you should destroy anything you no longer need.
         //  delete sprites, purge caches, free resources, all that good stuff.
         //  Then move on to the game over state.
-        console.log(this);
-        this.state.states['GameOver'].scores = this.scores;
-        this.state.states['GameOver'].names = this.names;
 
         // Notify the Game Manager that the game is over.
         GameManager.onGameOver(this.scores);
 
-        this.state.start('GameOver');
+        this.state.start('GameOver', true, false, this.scores, this.names);
 
 
     },
@@ -366,8 +363,8 @@ BasicGame.Game.prototype = {
             }
 
             // TODO: Adrian, please remove the player from the game.
-            //currentPlayer.destroy();
-            delete this.player[clientId];
+            currentPlayer.destroy();
+            delete currentPlayer;
         }
     },
 
