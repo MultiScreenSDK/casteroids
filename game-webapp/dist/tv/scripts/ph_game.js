@@ -284,18 +284,15 @@ BasicGame.Game.prototype = {
         }
 
         // deduct points from players on hit
-        if(target != this.alien) {
-            console.log(target);
-            console.log(this.scores);
-            if(this.scores[target.id] > 0) {
-                this.scores[target.id] -= BasicGame.HIT_DEDUCT;
-                this.scoreLabels[target.id].setText(this.scores[target.id]);
-            }
+        if(target !== this.alien) {
+            this.scores[target.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+            this.scoreLabels[target.id].setText(this.scores[target.id]);
         }
 
         // update score labels if shot is not from the alien
-        if(this.scoreLabels[bullet.source] != undefined){
-            this.scoreLabels[bullet.source].setText(this.scores[bullet.source]);
+        var attacker = this.scoreLabels[bullet.source];
+        if(attacker != undefined){
+            attacker.setText(this.scores[bullet.source]);
         }
     },
     
