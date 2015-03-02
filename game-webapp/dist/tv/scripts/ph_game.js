@@ -209,6 +209,13 @@ BasicGame.Game.prototype = {
         }
 
         this.timerLabel.setText(minutes+":"+seconds);
+        if(this.secondsLeft <= 10) {
+            this.timerLabel.fontSize = 38;
+            this.timerLabel.tint = 0xFF0000;
+            if(!this.isMuted) {
+                this.sfx.play("ping");
+            }
+        }
         if(this.secondsLeft == 0) {
             this.secondsLeft = BasicGame.GAME_LENGTH;
             this.quitGame();
@@ -273,6 +280,9 @@ BasicGame.Game.prototype = {
 
             //resulted in death, show a massive explosion
             this.explode(target, 'explosionBig');
+            if(!this.isMuted) {
+                this.sfx.play("death");
+            }
 
             // If this is a player, notify the GameManager that the player is out so that it can notify the client.
             if(target != this.alien) {
