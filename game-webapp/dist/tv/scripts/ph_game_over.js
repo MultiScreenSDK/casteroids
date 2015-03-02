@@ -9,6 +9,12 @@ BasicGame.GameOver.prototype = {
     },
     
     create: function () {
+        var sprite = this.add.sprite(0, 0, 'gameover');
+        sprite.anchor.setTo(0, 0);
+
+        var anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 10000, Phaser.Easing.Linear.None,  true, 50, -1, true);
+        anim.start();
+
         this.counter = 0;
         var gameOver_label = "GAME OVER";
         var prompt_label = "Game will restart in 5 seconds";
