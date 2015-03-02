@@ -8,9 +8,9 @@ BasicGame.Game.prototype = {
 
     player: function (id, order, color) {
         // Here I setup the user controlled ship
-        this.X_POSITIONS = [this.game.width/4, 3*(this.game.width/4), this.game.width/4, 3*(this.game.width/4)];
-        this.Y_POSITIONS = [this.game.height/4, 3*(this.game.height/4), 3*(this.game.height/4), this.game.height/4];
-        this.players[id] = this.game.add.sprite(this.X_POSITIONS[order], this.Y_POSITIONS[order], 'ship');
+        var randX = this.rnd.integerInRange(20, this.game.width - 20);
+        var randY = this.rnd.integerInRange(20, this.game.height - 20);
+        this.players[id] = this.game.add.sprite(randX, randX, 'ship');
         this.players[id].id = id;
         this.players[id].order = order;
         this.players[id].isThrusting = false;
