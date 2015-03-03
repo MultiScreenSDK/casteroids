@@ -1,6 +1,7 @@
 BasicGame.MainMenu = function (game) {
     this.secondsElapsed = 0; //initial
     this.playerTextHeightOffset = 150;
+    this.menuTimer = Phaser.TimerEvent;
 };
 
 BasicGame.MainMenu.prototype = {
@@ -89,10 +90,13 @@ BasicGame.MainMenu.prototype = {
         console.log("onPlayerUpdate " + count);
         this.updateConnectedPlayers(count);
         if (count > 0) {
-            this.game.time.events.repeat(Phaser.Timer.SECOND, BasicGame.GAME_COUNTDOWN_LENGTH + 1, this.updateTimer, this);
+            if (!this.menuTimer.running) {
+                this.menuTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, BasicGame.GAME_COUNTDOWN_LENGTH + 1, this.updateTimer, this);
+            }
+
         } else {
             //stop the countdown
-            this.game.time.events.stop(true);
+            this.game.time.events.remove(this.menuTimer);
 
             this.secondsElapsed = 0; //reset
             this.loadingText.setText("Waiting for Players to join")
