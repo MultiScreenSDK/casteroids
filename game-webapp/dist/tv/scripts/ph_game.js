@@ -386,7 +386,6 @@ BasicGame.Game.prototype = {
 
     // Remove a player from the game.
     removePlayer: function(clientId) {
-        console.log("onRemovePlayer: " +clientId);
         if (this.game !== undefined) {
             // Look up the player.
             var currentPlayer = this.players[clientId];
@@ -396,13 +395,13 @@ BasicGame.Game.prototype = {
                 return;
             }
 
-            // TODO: Adrian, please remove the player from the game.
-            console.log(this.players);
             this.players[clientId].destroy();
             delete this.players[clientId];
+            this.scoreLabels[clientId].destroy();
         }
         
-        if(this.players.length < 1) {
+        if($.isEmptyObject(this.players)) {
+            console.log("quitting since everyone left");
             this.quitGame();
         }
     },
