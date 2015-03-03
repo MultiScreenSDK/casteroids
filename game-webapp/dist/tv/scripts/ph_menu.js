@@ -33,6 +33,7 @@ BasicGame.MainMenu.prototype = {
 
     startGame: function () {
         GameManager.onGameStart(0);
+        this.secondsElapsed = 0; //reset
         this.state.start('Game');
     },
 
