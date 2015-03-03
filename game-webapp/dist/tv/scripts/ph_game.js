@@ -319,6 +319,12 @@ BasicGame.Game.prototype = {
         obj1.isDead = true;
         obj1.tod = this.game.time.now;
         obj1.destroy();
+        
+        // deduct points from players on hit
+        if(obj1 !== this.alien) {
+            this.scores[obj1.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+            this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
+        }
 
         // If this is a player, notify the GameManager that the player is out so that it can notify the client.
         if(obj1 != this.alien) {
@@ -384,8 +390,13 @@ BasicGame.Game.prototype = {
             }
 
             // TODO: Adrian, please remove the player from the game.
-            currentPlayer.destroy();
-            delete currentPlayer;
+            console.log(this.players);
+            this.players[clientId].destroy();
+            delete this.players[clientId];
+        }
+        
+        if(this.players.length < 1) {
+            this.quitGame();
         }
     },
 
