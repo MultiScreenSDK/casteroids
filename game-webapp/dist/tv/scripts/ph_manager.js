@@ -163,7 +163,7 @@ $(GameManager = function(){
         // If in the Game state, remove the player from the game.
         if (game.state.getCurrentState() === gameState) {
             console.log("onRemovePlayer at Game state");
-            gameState.removePlayer(slot.clientId);
+            gameState.removePlayer(clientId);
         }
 
         // Remove client id to slot mapping
