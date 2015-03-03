@@ -391,8 +391,8 @@ BasicGame.Game.prototype = {
 
     // Called to rotate a specific player's spaceship.
     onRotate: function(clientId, direction, strength) {
-        // Map the 0 to 20 range strength value to a 100 to 500 range angular velocity value for the game.
-        var velocity = ((strength * 400) / 20) + 100;
+        // Map the 0 to 20 range strength value to a 150 to (150+300=450) range angular velocity value for the game.
+        var velocity = ((strength * 300) / 20) + 150;
 
         // Look up the player.
         var currentPlayer = this.players[clientId];
