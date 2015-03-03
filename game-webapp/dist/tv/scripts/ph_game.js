@@ -386,6 +386,7 @@ BasicGame.Game.prototype = {
 
     // Remove a player from the game.
     removePlayer: function(clientId) {
+        console.log("onRemovePlayer: " +clientId);
         if (this.game !== undefined) {
             // Look up the player.
             var currentPlayer = this.players[clientId];
