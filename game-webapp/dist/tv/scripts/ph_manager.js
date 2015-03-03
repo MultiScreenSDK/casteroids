@@ -128,7 +128,7 @@ $(GameManager = function(){
         slot.name = name;
 
         // If in the Game state, add the Player to the game
-        if (game.state.getCurrentState() == gameState) {
+        if (game.state.getCurrentState() === gameState) {
             gameState.addPlayer(clientId, name, slot.colorCode);
         }
 
@@ -136,7 +136,7 @@ $(GameManager = function(){
         clientIdToSlotMap[clientId] = slot;
 
         // If in the Menu state, notify the Menu state.
-        if (game.state.getCurrentState() == menuState) {
+        if (game.state.getCurrentState() === menuState) {
             menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
         }
 
@@ -169,7 +169,7 @@ $(GameManager = function(){
         delete clientIdToSlotMap[clientId];
 
         // If in the Menu state, notify the Menu state.
-        if (game.state.getCurrentState() == menuState) {
+        if (game.state.getCurrentState() === menuState) {
             menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
         }
     }
@@ -181,7 +181,7 @@ $(GameManager = function(){
     // If we are in the Game state request the Game state to rotate the client's spaceship otherwise ignore. Called
     // by the ConnectivityManager when it receives rotate event from a client.
     function onRotate(clientId, direction, strength) {
-        if (game.state.getCurrentState() == gameState) {
+        if (game.state.getCurrentState() === gameState) {
             gameState.onRotate(clientId, direction, strength);
         }
     }
@@ -189,7 +189,7 @@ $(GameManager = function(){
     // If we are in the Game state request the Game state to enable thrust on the client's spaceship otherwise ignore.
     // Called by the ConnectivityManager when it receives thrust event from a client.
     function onThrust(clientId, thrustEnabled) {
-        if (game.state.getCurrentState() == gameState) {
+        if (game.state.getCurrentState() === gameState) {
             gameState.onThrust(clientId, thrustEnabled);
         }
     }
@@ -197,7 +197,7 @@ $(GameManager = function(){
     // If we are in the Game state request the Game state to enable firing on the client's spaceship otherwise ignore.
     // Called by the ConnectivityManager when it receives fire event from a client.
     function onFire(clientId, fireEnabled) {
-        if (game.state.getCurrentState() == gameState) {
+        if (game.state.getCurrentState() === gameState) {
             gameState.onFire(clientId, fireEnabled);
         }
     }
