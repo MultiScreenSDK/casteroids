@@ -160,12 +160,9 @@ $(GameManager = function(){
         slot.clientId = null;
         slot.name = null;
         
-        console.log("onRemovePlayer: " +clientId);
-        console.log(game.state.getCurrentState());
-        console.log("equal ? " + game.state.getCurrentState() == gameState);
-        console.log(gameState);
         // If in the Game state, remove the player from the game.
-        if (game.state.getCurrentState() == gameState) {
+        if (game.state.getCurrentState() === gameState) {
+            console.log("onRemovePlayer at Game state");
             gameState.removePlayer(slot.clientId);
         }
 
