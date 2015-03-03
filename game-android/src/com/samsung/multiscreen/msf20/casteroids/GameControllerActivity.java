@@ -375,7 +375,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             quitGame(null);
             Intent gameOverScreen = new Intent();
             gameOverScreen.setClass(this, GameOverActivity.class);
-            //startActivity(gameOverScreen); //FIXME:  Not yet
+            startActivity(gameOverScreen);
         } else if (event.equals(Event.GAME_START.getName())){
             //show countdown
             int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
