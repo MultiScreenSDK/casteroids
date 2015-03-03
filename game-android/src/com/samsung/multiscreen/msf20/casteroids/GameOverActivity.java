@@ -13,9 +13,16 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.GameState;
+import com.samsung.multiscreen.msf20.casteroids.model.ScoreData;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+
+import java.util.List;
 
 /**
  * GameOver page for the game. This screen shows the scores for the various players
@@ -37,6 +44,12 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
 
     /** Reference to the root view */
     private View rootView;
+
+    /** Reference to the game over label */
+    private TextView gameOverLabel;
+
+    /** Table that holds all the scores */
+    TableLayout tableLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +73,12 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
         //get a reference to the root view
         rootView = findViewById(R.id.root_view);
 
+        //reference to game over label
+        gameOverLabel = (TextView) findViewById(R.id.game_over_label);
+
+        //get a reference to the scores table
+        tableLayout = (TableLayout)findViewById(R.id.scores_table);
+
         // Initialize the play button
         mainScreenButton = (Button) findViewById(R.id.main_screen_button);
         mainScreenButton.setOnClickListener(new View.OnClickListener() {
@@ -69,10 +88,9 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
             }
         });
 
-
-
         //set the various buttons with the typeface
         mainScreenButton.setTypeface(customTypeface);
+        gameOverLabel.setTypeface(customTypeface);
 
         //if we are lollipop, do a custom animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -116,10 +134,42 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
 
 
     /**
-     * Hide and show buttons depending on the state of the connection.
+     * Show the game scores in the table layout.
      */
     private void bindViews(){
 
+        tableLayout.removeAllViews();
+
+        GameState gameState = connectivityManager.getGameState();
+        List<ScoreData> scoreDataList = gameState.getScoreData();
+        for (int i=0; i<scoreDataList.size(); i++){
+            TableRow tr = (TableRow)getLayoutInflater().inflate(R.layout.view_score, null);
+
+            ScoreData data = scoreDataList.get(i);
+
+            //get references to the various cells in the table row
+            TextView positionText = (TextView) tr.findViewById(R.id.position_text);
+            TextView nameText = (TextView) tr.findViewById(R.id.name_text);
+            TextView scoreText = (TextView) tr.findViewById(R.id.score_text);
+
+            //bind the color
+            int playerColor = data.getColor().getColorInt();
+            positionText.setTextColor(playerColor);
+            nameText.setTextColor(playerColor);
+            scoreText.setTextColor(playerColor);
+
+            //bind the font
+            positionText.setTypeface(customTypeface);
+            nameText.setTypeface(customTypeface);
+            scoreText.setTypeface(customTypeface);
+
+            //bind the values
+            positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
+            nameText.setText(data.getName());
+            scoreText.setText("" + data.getScore()); //number, hence the empty quotes for coercion to a string
+
+            tableLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        }
     }
 
     @Override
