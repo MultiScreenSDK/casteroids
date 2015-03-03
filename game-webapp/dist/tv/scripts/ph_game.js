@@ -66,7 +66,6 @@ BasicGame.Game.prototype = {
             this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
 
             this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-            this.physics.arcade.overlap(this.alien, currentPlayer, this.collide, null, this);
 
             for (var other_players_id in this.players) {
                 if(other_players_id != id) {
@@ -75,7 +74,6 @@ BasicGame.Game.prototype = {
 
                     //check for collisions. both die if there is a collision
                     this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-                    this.physics.arcade.overlap(this.players[other_players_id], currentPlayer, this.collide, null, this);
                 }
             }
 
@@ -315,15 +313,29 @@ BasicGame.Game.prototype = {
     },
     
     collide: function(obj1, obj2) {
-        this.explode(obj1, 'explosionBig'); //huge explosion
-        obj1.isDead = true;
-        obj1.tod = this.game.time.now;
-        obj1.destroy();
-
-        // If this is a player, notify the GameManager that the player is out so that it can notify the client.
-        if(obj1 != this.alien) {
+        // deduct points from players on hit
+        if(obj1 !== this.alien) {
+            this.scores[obj1.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+            this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
+            this.explode(obj1, 'explosionBig'); //huge explosion
+            obj1.isDead = true;
+            obj1.tod = this.game.time.now;
+            obj1.destroy();
+            // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
+        
+        if(obj2 !== this.alien) {
+            this.scores[obj2.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+            this.scoreLabels[obj2.id].setText(this.names[obj2.id] + "\t\t"+this.scores[obj2.id]);
+            this.explode(obj2, 'explosionBig'); //huge explosion
+            obj2.isDead = true;
+            obj2.tod = this.game.time.now;
+            obj2.destroy();
+            // notify the GameManager that the player is out so that it can notify the client.
+            GameManager.onPlayerOut(obj2.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+        }
+        this.sfx.play("death");
     },
 
     /**
@@ -384,8 +396,13 @@ BasicGame.Game.prototype = {
             }
 
             // TODO: Adrian, please remove the player from the game.
-            currentPlayer.destroy();
-            delete currentPlayer;
+            console.log(this.players);
+            this.players[clientId].destroy();
+            delete this.players[clientId];
+        }
+        
+        if(this.players.length < 1) {
+            this.quitGame();
         }
     },
 
