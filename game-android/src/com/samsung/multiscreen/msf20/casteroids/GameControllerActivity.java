@@ -162,6 +162,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             finish();
         }
 
+        //always start out with user input disabled because we only start playing when the server tells
+        //us that the game is on!
+        enableViews(false);
+
         //start the sensor listeners
         if(accelerometer != null) {
             sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
@@ -447,26 +451,45 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         return spannable;
     }
 
+    /**
+     * Sends messages to the server if user input is disabled
+     * and changes the UI state as well.
+     *
+     * @param enabled true if enabled
+     */
     private void setUserInputEnabled(boolean enabled){
+
         if(this.isEnabled != enabled){
+            //first go ahead and enable/disable/hide views.
+            enableViews(enabled);
+
             //toggle the setting
             this.isEnabled = enabled;
 
+            //then send messages to the server if needed
             if(!this.isEnabled) {
-                thrustButton.setEnabled(false);
-                fireButton.setEnabled(false);
-                compassView.setVisibility(View.INVISIBLE);
 
                 setFiring(false);
                 setThrusting(false);
                 setTurningRight(false, 0);
                 setTurningLeft(false, 0);
 
-            } else {
-                thrustButton.setEnabled(true);
-                fireButton.setEnabled(true);
-                compassView.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    /**
+     * Only affects the views. Does not send any messages to the server.
+     *
+     * @param enabled true if enabled
+     */
+    private void enableViews(boolean enabled) {
+        thrustButton.setEnabled(enabled);
+        fireButton.setEnabled(enabled);
+        if (enabled) {
+            compassView.setVisibility(View.VISIBLE);
+        } else {
+            compassView.setVisibility(View.INVISIBLE);
         }
     }
         
