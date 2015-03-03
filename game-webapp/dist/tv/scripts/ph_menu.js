@@ -1,9 +1,5 @@
 BasicGame.MainMenu = function (game) {
-    this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //initial
-    //  Create a Timer
-    this.timer = new Phaser.Timer(game);
-    //Set the timer to call back every 1 second
-    this.timer.loop(1000, this.updateTimer, this);
+    this.secondsElapsed = 0; //initial
 };
 
 BasicGame.MainMenu.prototype = {
@@ -40,30 +36,26 @@ BasicGame.MainMenu.prototype = {
         this.state.start('Game');
     },
 
-    updateTimer: function() {
-
-        console.log("Seconds Left " + this.secondsLeft);
-        if (this.secondsLeft == 0) {
+    updateTimer: function () {
+        var secondsToStart = BasicGame.GAME_COUNTDOWN_LENGTH - this.secondsElapsed;
+        this.loadingText.setText("Game starting in " + secondsToStart + (secondsToStart==1 ? " second" : " seconds"));
+        GameManager.onGameStart(secondsToStart);
+        if (this.secondsElapsed == BasicGame.GAME_COUNTDOWN_LENGTH) {
             this.startGame();
         }
-        this.loadingText.setText("Starting in " + this.secondsLeft);
-        GameManager.onGameStart(this.secondsLeft);
-        this.secondsLeft--;
+        this.secondsElapsed = this.secondsElapsed + 1;
     },
 
     onPlayerUpdate: function (count) {
         console.log("onPlayerUpdate " + count);
         if (count > 0) {
-            //FIXME
-            this.startGame();
-            //FIXME END
-
-            //start the countdown
-            this.timer.start();
+            console.log("Starting timer");
+            this.game.time.events.repeat(Phaser.Timer.SECOND, BasicGame.GAME_COUNTDOWN_LENGTH + 1, this.updateTimer, this);
         } else {
-            this.timer.stop();
             //stop the countdown
-            this.secondsLeft = BasicGame.GAME_COUNTDOWN_LENGTH; //reset
+            this.game.time.events.stop(true);
+
+            this.secondsElapsed = 0; //reset
             this.loadingText.setText("Waiting for Players to join")
         }
     }
