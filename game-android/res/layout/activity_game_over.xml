@@ -23,9 +23,17 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/game_over"
         android:id="@+id/game_over_label"
-        android:layout_marginTop="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:id="@+id/scores_table"
+        android:layout_margin="20dp"
+        android:layout_below="@+id/game_over_label"
+        android:layout_centerHorizontal="true"></TableLayout>
 
 
 </RelativeLayout>
