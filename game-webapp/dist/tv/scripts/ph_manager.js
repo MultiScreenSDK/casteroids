@@ -93,8 +93,9 @@ $(GameManager = function(){
         for (var clientId in clientIdToSlotMap) {
             var slot = clientIdToSlotMap[clientId];
             var score = scores[clientId] || 0;
-            scoreData[index++] = { name : slot.name, color : slot.color, score: score};
+            scoreData[index++] = { name : slot.name, color : slot.color, score: score, hexColor : slot.hexColor };
         }
+        overState.onGameOver(scoreData);
 
         // Notify the clients via the Connectivity manager.
         ConnectivityManager.onGameOver(scoreData);

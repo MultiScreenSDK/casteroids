@@ -456,6 +456,6 @@ BasicGame.Game.prototype = {
 
         // Update the isFiring flag.
         currentPlayer.isFiring = fireEnabled;
-    },
+    }
 
 };

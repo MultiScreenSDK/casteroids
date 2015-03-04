@@ -2,7 +2,10 @@ BasicGame.GameOver = function (game) {
     this.counter = 0;
 };
 
+BasicGame.GameOver.scores = [];
+
 BasicGame.GameOver.prototype = {
+
     init: function (scores, names) {
         this.scores = scores;
         this.names = names;
@@ -18,7 +21,6 @@ BasicGame.GameOver.prototype = {
         this.counter = 0;
         var gameOver_label = "GAME OVER";
         var prompt_label = "Game will restart in 5 seconds";
-        var score_label = "Scores coming soon";//: " + this.state.states['GameOver'].scores[0];
         var style = { font: "12px Arial", fill: "#cccccc", align: "left" };
         var style2 = { font: "18px Arial", fill: "#cccccc", align: "left" };
         var t = this.add.text(this.game.width / 2, this.game.height / 2 - 40, gameOver_label, style2);
@@ -27,9 +29,17 @@ BasicGame.GameOver.prototype = {
         var t2 = this.add.text(this.game.width / 2, this.game.height / 2 + 80, prompt_label, style);
         t2.anchor.setTo(0.5, 0.0);
         t2.font = 'Revalia';
-        var t3 = this.add.text(this.game.width / 2, this.game.height / 2 + 120, score_label, style);
-        t3.anchor.setTo(0.5, 0.0);
-        t3.font = 'Revalia';
+
+        var heightIncrement = 100;
+
+        var scores = BasicGame.GameOver.scores;
+        for (var i = 0; i < scores.length; i++) {
+            heightIncrement = heightIncrement + 20;
+            var scoreStyle = { font: "12px", fill: scores[i].hexColor, align: "left" };
+            var scoreText = this.add.text(this.game.width / 2, this.game.height / 2 + heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
+            scoreText.anchor.setTo(0.5, 0.0);
+            scoreText.font = 'Revalia';
+        }
     },
 
     update: function () {
@@ -48,5 +58,9 @@ BasicGame.GameOver.prototype = {
     back2Menu: function (pointer) {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');    
+    },
+
+    onGameOver: function(scores) {
+        BasicGame.GameOver.scores = scores;
     }
 };
