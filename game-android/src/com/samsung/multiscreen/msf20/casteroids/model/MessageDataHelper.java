@@ -216,6 +216,7 @@ public class MessageDataHelper {
 
 		// Sort the score data.
 		Collections.sort(scoreDataList);
+        Collections.reverse(scoreDataList);
 
 		// Return the sorted score data list.
 		return scoreDataList;
