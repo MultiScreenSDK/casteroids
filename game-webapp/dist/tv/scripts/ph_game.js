@@ -413,7 +413,7 @@ BasicGame.Game.prototype = {
             var style_score = { font: "12px", fill: "#fff", align: "right" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            this.scoreLabels[clientId] = this.add.text(20, 25*(position+1), name + "\t\t0", style_score);
+            this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
             this.scoreLabels[clientId].tint = colorCode;
        }
