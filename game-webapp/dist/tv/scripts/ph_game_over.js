@@ -23,20 +23,20 @@ BasicGame.GameOver.prototype = {
         var prompt_label = "Game will restart in 5 seconds";
         var style = { font: "12px Arial", fill: "#cccccc", align: "left" };
         var style2 = { font: "18px Arial", fill: "#cccccc", align: "left" };
-        var t = this.add.text(this.game.width / 2, this.game.height / 2 - 40, gameOver_label, style2);
+        var t = this.add.text(this.game.width / 2, this.game.height / 2, gameOver_label, style2);
         t.anchor.setTo(0.5, 0.0);
         t.font = 'Revalia';
-        var t2 = this.add.text(this.game.width / 2, this.game.height / 2 + 80, prompt_label, style);
+        var t2 = this.add.text(this.game.width / 2, this.game.height / 2 + 120, prompt_label, style);
         t2.anchor.setTo(0.5, 0.0);
         t2.font = 'Revalia';
 
-        var heightIncrement = 100;
+        var heightIncrement = 40;
 
         var scores = BasicGame.GameOver.scores;
         for (var i = 0; i < scores.length; i++) {
-            heightIncrement = heightIncrement + 20;
+            heightIncrement = heightIncrement + 60;
             var scoreStyle = { font: "12px", fill: scores[i].hexColor, align: "left" };
-            var scoreText = this.add.text(this.game.width / 2, this.game.height / 2 + heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
+            var scoreText = this.add.text(this.game.width / 2, heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
             scoreText.anchor.setTo(0.5, 0.0);
             scoreText.font = 'Revalia';
         }
