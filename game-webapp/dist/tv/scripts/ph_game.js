@@ -21,7 +21,6 @@ BasicGame.Game.prototype = {
         this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
         this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
         this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
-        this.players[id].body.setSize(BasicGame.PLAYER_HITBOX_WIDTH, BasicGame.PLAYER_HITBOX_HEIGHT, 0, 0);
 
         this.players[id].hp = BasicGame.PLAYER_HP;
         this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
@@ -173,7 +172,6 @@ BasicGame.Game.prototype = {
         this.alien.body.angularVelocity = randAngularVelocity;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
-        this.alien.body.setSize(BasicGame.ALIEN_HITBOX_WIDTH, BasicGame.ALIEN_HITBOX_HEIGHT, 0, 0);
 
         this.alien.hp = BasicGame.ALIEN_HP;
         this.alien.bulletSpeed = BasicGame.ALIEN_BULLET_SPEED;
