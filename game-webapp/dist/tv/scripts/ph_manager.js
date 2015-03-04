@@ -33,7 +33,7 @@ $(GameManager = function(){
     };
 
     //  A placeholder for one player in the gave
-    function Slot(color, colorCode, hexColor) {
+    function Slot(position, color, colorCode, hexColor) {
         // Whether or not this slot is available.
         this.available = true;
 
@@ -44,6 +44,7 @@ $(GameManager = function(){
         this.name = null;
 
         // The color and color code associated to this slot.
+        this.position = position;
         this.color = color || 'unknown';
         this.colorCode = colorCode || 0x000000;
         this.hexColor = hexColor || '#000000'
@@ -51,10 +52,10 @@ $(GameManager = function(){
 
     // The available slots in the game (4 players of different colors)
     var slots = [
-        new Slot('red', 0xFF0000, '#FF0000'),
-        new Slot('orange', 0xFF8800, '#FF8800'),
-        new Slot('green', 0x00FF00, '#00FF00'),
-        new Slot('cyan', 0x00b8d4, '#00b8d4')
+        new Slot(0,'red', 0xFF0000, '#FF0000'),
+        new Slot(1,'orange', 0xFF8800, '#FF8800'),
+        new Slot(2,'green', 0x00FF00, '#00FF00'),
+        new Slot(3,'cyan', 0x00b8d4, '#00b8d4')
     ];
 
     // Store client id to slot mappings.
@@ -131,7 +132,7 @@ $(GameManager = function(){
 
         // If in the Game state, add the Player to the game
         if (game.state.getCurrentState() === gameState) {
-            gameState.addPlayer(clientId, name, slot.colorCode);
+            gameState.addPlayer(slot.position, clientId, name, slot.colorCode);
         }
 
         // Add the client id to slot mapping
