@@ -69,6 +69,8 @@ $(GameManager = function(){
         colorToSlotMap[slot.color] = slot;
     }
 
+    var lastScoreData;
+
     /******************************************************************************************************************
      * Game State Methods
      */
@@ -88,17 +90,16 @@ $(GameManager = function(){
     // Called by the Game state when the game is over.
     function onGameOver(scores) {
         // Create a score data object consisting of the slot and scores objects.
-        var scoreData = [];
+        lastScoreData = [];
         var index = 0;
         for (var clientId in clientIdToSlotMap) {
             var slot = clientIdToSlotMap[clientId];
             var score = scores[clientId] || 0;
-            scoreData[index++] = { name : slot.name, color : slot.color, score: score, hexColor : slot.hexColor };
+            lastScoreData[index++] = { name : slot.name, color : slot.color, score: score, hexColor : slot.hexColor };
         }
-        overState.onGameOver(scoreData);
 
         // Notify the clients via the Connectivity manager.
-        ConnectivityManager.onGameOver(scoreData);
+        ConnectivityManager.onGameOver(lastScoreData);
     }
 
     /******************************************************************************************************************
@@ -224,7 +225,8 @@ $(GameManager = function(){
         // Player Control Methods
         onRotate: function(clientId, direction, strength) { onRotate(clientId, direction, strength); },
         onThrust: function(clientId, thrustEnabled) { onThrust(clientId, thrustEnabled); },
-        onFire: function(clientId, fireEnabled) { onFire(clientId, fireEnabled); }
+        onFire: function(clientId, fireEnabled) { onFire(clientId, fireEnabled); },
+        getLastScoreData: function() { return lastScoreData; }
     }
 
 }());

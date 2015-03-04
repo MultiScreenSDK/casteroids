@@ -2,12 +2,9 @@ BasicGame.GameOver = function (game) {
     this.counter = 0;
 };
 
-BasicGame.GameOver.scores = [];
-
 BasicGame.GameOver.prototype = {
 
     init: function (scores, names) {
-        this.scores = scores;
         this.names = names;
     },
     
@@ -32,7 +29,7 @@ BasicGame.GameOver.prototype = {
 
         var heightIncrement = 40;
 
-        var scores = BasicGame.GameOver.scores;
+        var scores = GameManager.getLastScoreData();
         for (var i = 0; i < scores.length; i++) {
             heightIncrement = heightIncrement + 60;
             var scoreStyle = { font: "12px", fill: scores[i].hexColor, align: "left" };
@@ -52,15 +49,10 @@ BasicGame.GameOver.prototype = {
             this.back2Menu();
         }
 
-
     },
 
     back2Menu: function (pointer) {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');    
-    },
-
-    onGameOver: function(scores) {
-        BasicGame.GameOver.scores = scores;
     }
 };
