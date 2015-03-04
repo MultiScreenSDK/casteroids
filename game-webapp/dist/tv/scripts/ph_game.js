@@ -92,6 +92,7 @@ BasicGame.Game.prototype = {
                 if (currentPlayer.isThrusting) {
                     this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
                 } else {
+                    // TODO fix null body
                     currentPlayer.body.acceleration.set(0);
                 }
 
@@ -122,6 +123,15 @@ BasicGame.Game.prototype = {
             this.alien.body.acceleration.set(BasicGame.ALIEN_MAX_SPEED);
             this.fire(this.alien);
         }
+        
+        // check for points prompt expiring
+        if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
+            this.pointsPrompt.destroy();
+        }
+        // check for points prompt expiring
+        if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
+            this.pointsUpPrompt.destroy();
+        }
     },
 
     render: function() {
@@ -134,7 +144,7 @@ BasicGame.Game.prototype = {
         // Here I setup some general utilities
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.time.events.loop(1000, this.updateTimer, this);
-        this.background = this.add.tileSprite(0, 0, 1280, 800, 'space');
+        this.background = this.add.tileSprite(0, 0, 1280, 800, 'starfield');
     },
 
     setupPlayers: function () {
@@ -154,10 +164,10 @@ BasicGame.Game.prototype = {
         var randAngularVelocity = this.rnd.integerInRange(100, 200);
 
         this.alien = this.game.add.sprite(randX, randY, 'ufo');
-        this.alien.tint = BasicGame.ALIEN_COLOR;
+//        this.alien.tint = BasicGame.ALIEN_COLOR;
         this.alien.anchor.setTo(0.5);
-        this.alien.animations.add('fly', [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 100, true);
-        this.alien.play('fly');
+//        this.alien.animations.add('fly', [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 100, true);
+//        this.alien.play('fly');
         this.physics.enable(this.alien, Phaser.Physics.ARCADE);
         this.alien.rotation = randRotation;
         this.alien.body.angularVelocity = randAngularVelocity;
@@ -278,10 +288,14 @@ BasicGame.Game.prototype = {
             this.scores[bullet.source] += BasicGame.ALIEN_HIT_SCORE;
         } else {
             this.scores[bullet.source] += BasicGame.PLAYER_HIT_SCORE;
+            if(this.players[bullet.source] != undefined){
+                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players[bullet.source].tint);
+            }
         }
         if(target.hp <= 0) {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
+                this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].tint);
             }
             target.isDead = true;
             target.tod = this.game.time.now;
@@ -303,6 +317,8 @@ BasicGame.Game.prototype = {
         if(target !== this.alien) {
             this.scores[target.id] -= BasicGame.PLAYER_HIT_DEDUCT;
             this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
+            var player = this.players[target.id];
+            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
         }
 
         // update score labels if shot is not from the alien
@@ -316,6 +332,8 @@ BasicGame.Game.prototype = {
         // deduct points from players on hit
         if(obj1 !== this.alien) {
             this.scores[obj1.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+            var player = this.players[obj1.id];
+            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
             this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
             this.explode(obj1, 'explosionBig'); //huge explosion
             obj1.isDead = true;
@@ -327,6 +345,8 @@ BasicGame.Game.prototype = {
         
         if(obj2 !== this.alien) {
             this.scores[obj2.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+            var player = this.players[obj2.id];
+            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y+(player.height/2), player.tint);
             this.scoreLabels[obj2.id].setText(this.names[obj2.id] + "\t\t"+this.scores[obj2.id]);
             this.explode(obj2, 'explosionBig'); //huge explosion
             obj2.isDead = true;
@@ -349,6 +369,24 @@ BasicGame.Game.prototype = {
         explosion.anchor.setTo(0.5, 0.5);
         explosion.animations.add('boom');
         explosion.play('boom', 25, false, true);
+    },
+    
+    showPoints: function (points, x, y, color) {
+        var sign = "+";
+        if(points < 0) {
+            sign = "";
+            this.pointsPrompt = this.add.text( x-40, y, sign + points,
+                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
+            this.pointsPrompt.tint = color;
+            this.pointsPrompt.anchor.setTo(0.5, 0.5);
+            this.pointsExpire = this.time.now + 800;
+        } else {
+            this.pointsUpPrompt = this.add.text( x+48, y, sign + points,
+                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
+            this.pointsUpPrompt.tint = color;
+            this.pointsUpPrompt.anchor.setTo(0.5, 0.5);
+            this.pointsUpExpire = this.time.now + 800;
+        }
     },
 
     screenWrap: function(sprite) {
@@ -409,7 +447,7 @@ BasicGame.Game.prototype = {
     // Called to rotate a specific player's spaceship.
     onRotate: function(clientId, direction, strength) {
         // Map the 0 to 20 range strength value to a 150 to (150+300=450) range angular velocity value for the game.
-        var velocity = ((strength * 300) / 20) + 150;
+        var velocity = ((strength * 300) / 10) + 150;
 
         // Look up the player.
         var currentPlayer = this.players[clientId];
