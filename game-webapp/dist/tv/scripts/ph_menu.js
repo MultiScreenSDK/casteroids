@@ -1,6 +1,6 @@
 BasicGame.MainMenu = function (game) {
     this.secondsElapsed = 0; //initial
-    this.playerTextHeightOffset = 150;
+    this.playerTextHeightOffset = 0;
     this.menuTimer = Phaser.TimerEvent;
 };
 
