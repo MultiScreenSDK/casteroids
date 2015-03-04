@@ -17,7 +17,7 @@ BasicGame.Game.prototype = {
         this.players[id].isThrusting = false;
         this.players[id].isFiring = false;
         this.players[id].tint = color;
-        this.players[id].anchor.setTo(0.5);
+        this.players[id].anchor.set(0.5);
         this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
         this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
         this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
@@ -260,7 +260,7 @@ BasicGame.Game.prototype = {
             origin.bullet = origin.bullets.getFirstExists(false);
             origin.bullet.source = origin.id;
             if (origin.bullet) {
-                origin.bullet.reset(origin.body.x + 32, origin.body.y + 32);
+                origin.bullet.reset(origin.body.x + 16, origin.body.y + 12);
                 origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                 origin.bullet.lifespan = origin.bulletRange;
                 origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
