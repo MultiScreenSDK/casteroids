@@ -337,17 +337,29 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
     @Override
     public void onBackPressed() {
-        quitGame(null);
+        sendQuitMessage(true); //send quit game message and disconnect.
     }
 
     /**
-     * Sends a quit message to the game manager. Does not disconnect however.
+     * Sends a quit message to the game manager and disconnects.
      *
      * @param view calling view
      */
     public void quitGame(View view) {
+        sendQuitMessage(true);
+    }
+
+    /**
+     * Sends a quit message to the game manager and optionally disconnects.
+     *
+     * @param disconnect disconnect flag
+     */
+    private void sendQuitMessage(boolean disconnect) {
         gameConnectivityManager.sendQuitMessage();
         finish();
+        if(disconnect) {
+            gameConnectivityManager.disconnect();
+        }
     }
 
     @Override
@@ -376,7 +388,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         }
         if(event.equals(Event.GAME_OVER.getName())){
             Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
-            quitGame(null);
+            sendQuitMessage(false); //quit, but do not disconnect on game over
             Intent gameOverScreen = new Intent();
             gameOverScreen.setClass(this, GameOverActivity.class);
             startActivity(gameOverScreen);
