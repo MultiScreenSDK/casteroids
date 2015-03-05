@@ -150,7 +150,7 @@ BasicGame.Game.prototype = {
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
             if (!slot.available) {
-                this.addPlayer(slot.clientId, slot.name, slot.colorCode, slot.hexColor);
+                this.addPlayer(slot.position, slot.clientId, slot.name, slot.colorCode, slot.hexColor);
             }
         }
     },
@@ -403,20 +403,19 @@ BasicGame.Game.prototype = {
     },
 
     // Add a player to the game.
-    addPlayer: function(clientId, name, colorCode,hexColor) {
+    addPlayer: function(position, clientId, name, colorCode, hexColor) {
+        console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
-            //  Determine the new player's order.
-            var order = Object.keys(this.players).length;
-
             // Initialize the new player
-            this.player(clientId, order, colorCode);
+            this.player(clientId, position, colorCode);
 
             // Initialize the new player's text
-            var style_score = { font: "12px", fill: hexColor, align: "right" };
+            var style_score = { font: "12px", fill: "#fff", align: "right" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            this.scoreLabels[clientId] = this.add.text(((this.game.width / this.names.length) * order), 25*(order+1), name + "\t\t0", style_score);
+            this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
+            this.scoreLabels[clientId].tint = colorCode;
        }
     },
 
