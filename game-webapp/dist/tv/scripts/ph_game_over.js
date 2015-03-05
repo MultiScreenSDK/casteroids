@@ -1,5 +1,4 @@
 BasicGame.GameOver = function (game) {
-    this.counter = 0;
 };
 
 BasicGame.GameOver.prototype = {
@@ -15,7 +14,6 @@ BasicGame.GameOver.prototype = {
         var anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 10000, Phaser.Easing.Linear.None,  true, 50, -1, true);
         anim.start();
 
-        this.counter = 0;
         var gameOver_label = "GAME OVER";
         var prompt_label = "Game will restart in 5 seconds";
         var style = { font: "12px Arial", fill: "#cccccc", align: "left" };
@@ -37,21 +35,16 @@ BasicGame.GameOver.prototype = {
             scoreText.anchor.setTo(0.5, 0.0);
             scoreText.font = 'Revalia';
         }
+
+        this.game.time.events.add(Phaser.Timer.SECOND * 5, this.gotoMainMenu, this);
     },
 
     update: function () {
-        this.counter++;
 
-        //FIXME:  Use a timer
-        // wait for some time or check for something else before restarting
-        //if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-        if(this.counter > 300){
-            this.back2Menu();
-        }
 
     },
 
-    back2Menu: function (pointer) {
+    gotoMainMenu: function () {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');    
     }
