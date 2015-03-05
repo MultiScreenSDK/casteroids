@@ -34,7 +34,7 @@ BasicGame.Preloader.prototype = {
         this.load.image('starfield', 'assets/starfield.png');
         this.load.image('bullets', 'assets/bullets.png');
         this.load.image('ship', 'assets/ship.png');
-        this.load.spritesheet('ufo', 'assets/ufo.png', 64, 64);
+        this.load.image('ufo', 'assets/ufo.png');
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
         this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
         this.load.audio('playerFire', ['assets/player-fire.ogg']);
