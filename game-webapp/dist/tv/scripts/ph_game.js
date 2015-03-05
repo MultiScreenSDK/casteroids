@@ -34,7 +34,7 @@ BasicGame.Game.prototype = {
         this.players[id].bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.players[id].bulletTime = 0;
 
-        this.players[id].bullets.createMultiple(40, 'bullets');
+        this.players[id].bullets.createMultiple(20, 'bullets');
         this.players[id].bullets.setAll('anchor.x', 0.5);
         this.players[id].bullets.setAll('anchor.y', 0.5);
     },
@@ -101,9 +101,9 @@ BasicGame.Game.prototype = {
                 }
 
                 // replenish destroyed bullets
-                if(currentPlayer.bullets.total < 40) {
-                    currentPlayer.bullets.createMultiple(1, 'bullets');
-                }
+//                if(currentPlayer.bullets.total < 40) {
+//                    currentPlayer.bullets.createMultiple(1, 'bullets');
+//                }
             }
         }
 
@@ -120,7 +120,8 @@ BasicGame.Game.prototype = {
                 this.setupAlien();
             }
         } else {
-            this.alien.body.acceleration.set(BasicGame.ALIEN_MAX_SPEED);
+            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED, 
+                this.alien.body.acceleration);
             this.fire(this.alien);
         }
         
@@ -170,7 +171,7 @@ BasicGame.Game.prototype = {
 //        this.alien.play('fly');
         this.physics.enable(this.alien, Phaser.Physics.ARCADE);
         this.alien.rotation = randRotation;
-        this.alien.body.angularVelocity = randAngularVelocity;
+//        this.alien.body.angularVelocity = randAngularVelocity;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
 
@@ -184,7 +185,7 @@ BasicGame.Game.prototype = {
         this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.alien.bulletTime = 0;
 
-        this.alien.bullets.createMultiple(40, 'bullets');
+        this.alien.bullets.createMultiple(20, 'bullets');
         this.alien.bullets.setAll('anchor.x', 0.5);
         this.alien.bullets.setAll('anchor.y', 0.5);
     },
@@ -257,9 +258,11 @@ BasicGame.Game.prototype = {
     fire: function(origin) {
         if (this.game.time.now > origin.bulletTime) {
             origin.bullet = origin.bullets.getFirstExists(false);
-            origin.bullet.source = origin.id;
             if (origin.bullet) {
+                origin.bullet.source = origin.id;
                 origin.bullet.reset(origin.body.x + this.halfShipDimens, origin.body.y + this.halfShipDimens);
+                origin.bullet.visible = true;
+                origin.bullet.body.enabled = true;
                 origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                 origin.bullet.lifespan = origin.bulletRange;
                 origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
@@ -274,7 +277,8 @@ BasicGame.Game.prototype = {
     },
 
     hit: function(target, bullet) {
-        bullet.destroy();
+        bullet.visible = false;
+        bullet.body.enabled = false;
         if(!this.isMuted) {
             this.sfx.play('boss hit');
         }
@@ -375,6 +379,11 @@ BasicGame.Game.prototype = {
     showPoints: function (points, x, y, color) {
         var sign = "+";
         if(points < 0) {
+            console.log("showPoints prompt is coming");
+            console.log(this.pointsPrompt);
+            if(this.pointsPrompt != null || this.pointsPrompt != undefined) {
+                this.pointsPrompt.destroy();
+            }
             sign = "";
             this.pointsPrompt = this.add.text( x-40, y, sign + points,
                 { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
@@ -382,6 +391,9 @@ BasicGame.Game.prototype = {
             this.pointsPrompt.anchor.setTo(0.5, 0.5);
             this.pointsExpire = this.time.now + 800;
         } else {
+            if(this.pointsUpPrompt != null || this.pointsUpPrompt != undefined) {
+                this.pointsUpPrompt.destroy();
+            }
             this.pointsUpPrompt = this.add.text( x+48, y, sign + points,
                 { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
             this.pointsUpPrompt.tint = color;
