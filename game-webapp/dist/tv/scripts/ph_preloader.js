@@ -26,30 +26,25 @@ BasicGame.Preloader.prototype = {
         this.preloadBar = this.add.sprite(this.game.width / 2 - 100, this.game.height / 2, 'preloaderBar');
         this.add.text(this.game.width / 2, this.game.height / 2 - 30, "Loading...", { font: "32px monospace", fill: "#fff" }).anchor.setTo(0.5, 0.5);
 
-
-        //  This sets the preloadBar sprite as a loader sprite.
-        //  What that does is automatically crop the sprite from 0 to full-width
-        //  as the files below are loaded in.
         this.load.setPreloadSprite(this.preloadBar);
 
         //  Here we load the rest of the assets our game needs.
         this.load.image('titlepage', 'assets/casteroids.jpg');
         this.load.image('gameover', 'assets/casteroids2.jpg');
-        this.load.image('space', 'assets/deep-space.jpg');
-        this.load.spritesheet('ship', 'assets/ship.png', 64, 64);
-        this.load.spritesheet('ufo', 'assets/ufo.png', 64, 64);
+        this.load.image('starfield', 'assets/starfield.png');
+        this.load.image('bullets', 'assets/bullets.png');
+        this.load.image('ship', 'assets/ship.png');
+        this.load.image('ufo', 'assets/ufo.png');
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
         this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
-        this.load.spritesheet('laser', 'assets/spr_bullet_strip02.png', 68, 68);
         this.load.audio('playerFire', ['assets/player-fire.ogg']);
         this.load.audio('sfx', 'assets/fx_mixdown.ogg');
-        //  + lots of other required assets here
 
     },
 
     create: function () {
 
-        //  Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
+        //  Once the load has finished we disable the crop
         this.preloadBar.cropEnabled = false;
 
     },

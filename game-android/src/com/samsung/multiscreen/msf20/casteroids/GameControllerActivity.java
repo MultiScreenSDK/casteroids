@@ -202,7 +202,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         }
 
         int threshold = 5;
-        int strength = getStrength(threshold, pitch);
+        //strength value ranging from 0 to 20 based on the given threshold and pitch.
+        int strength = (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
         
         if(pitch > -threshold && pitch < threshold) {
             if(turningRight) {
@@ -218,11 +219,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         }
     }
 
-    private int getStrength(int threshold, float pitch) {
-    	// Creates and returns a strength value ranging from 0 to 20 based on the given threshold and pitch.
-    	return (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
-    }
-    
     private void setOnTouchListeners() {
 
         int[] buttons = new int[] { R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button };
@@ -268,12 +264,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
     private void handleEvent(int viewId, boolean value) {
         switch (viewId) {
-            case R.id.left_button:
-                setTurningLeft(value, 45);
-                break;
-            case R.id.right_button:
-                setTurningRight(value, 45);
-                break;
             case R.id.thrust_button:
                 setThrusting(value);
                 break;
@@ -500,6 +490,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         fireButton.setEnabled(enabled);
         if (enabled) {
             compassView.setVisibility(View.VISIBLE);
+            setThrusting(thrustButton.isPressed());
+            setFiring(fireButton.isPressed());
         } else {
             compassView.setVisibility(View.INVISIBLE);
         }
