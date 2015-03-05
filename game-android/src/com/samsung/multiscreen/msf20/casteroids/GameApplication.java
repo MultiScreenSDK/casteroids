@@ -49,7 +49,7 @@ public class GameApplication extends Application {
      *
      */
     private void createCustomTypefaces() {
-        customTypeface = Typeface.createFromAsset(getAssets(), "fonts/halo.ttf");
+        customTypeface = Typeface.createFromAsset(getAssets(), "fonts/typodermic_neuropolx.ttf");
         customTypeface2 = Typeface.createFromAsset(getAssets(), "fonts/desdemona.ttf");
     }
 

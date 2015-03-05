@@ -1,6 +1,6 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
-    this.isMuted = false;
+    this.isMuted = true;
     this.shipDimens = 48;
     this.halfShipDimens = this.shipDimens/2;
 };
@@ -354,7 +354,9 @@ BasicGame.Game.prototype = {
             // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj2.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
-        this.sfx.play("death");
+        if(!this.isMuted) {
+            this.sfx.play("death");
+        }
     },
 
     /**
