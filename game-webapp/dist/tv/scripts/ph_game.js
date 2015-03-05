@@ -1,6 +1,7 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
     this.isMuted = false;
+    this.shipDimensions = 48;
 };
 
 BasicGame.Game.prototype = {
@@ -8,9 +9,8 @@ BasicGame.Game.prototype = {
 
     player: function (id, order, color) {
         // Here I setup the user controlled ship
-        var shipDimensions = 64; //in pixels
-        var randX = this.rnd.integerInRange(shipDimensions, this.game.width - (shipDimensions*2));
-        var randY = this.rnd.integerInRange(shipDimensions, this.game.height - (shipDimensions*2));
+        var randX = this.rnd.integerInRange(this.shipDimensions, this.game.width - (this.shipDimensions*2));
+        var randY = this.rnd.integerInRange(this.shipDimensions, this.game.height - (this.shipDimensions*2));
         this.players[id] = this.game.add.sprite(randX, randY, 'ship');
         this.players[id].id = id;
         this.players[id].order = order;
@@ -33,7 +33,7 @@ BasicGame.Game.prototype = {
         this.players[id].bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.players[id].bulletTime = 0;
 
-        this.players[id].bullets.createMultiple(40, 'laser');
+        this.players[id].bullets.createMultiple(40, 'bullets');
         this.players[id].bullets.setAll('anchor.x', 0.5);
         this.players[id].bullets.setAll('anchor.y', 0.5);
     },
@@ -101,7 +101,7 @@ BasicGame.Game.prototype = {
 
                 // replenish destroyed bullets
                 if(currentPlayer.bullets.total < 40) {
-                    currentPlayer.bullets.createMultiple(1, 'laser');
+                    currentPlayer.bullets.createMultiple(1, 'bullets');
                 }
             }
         }
@@ -183,7 +183,7 @@ BasicGame.Game.prototype = {
         this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.alien.bulletTime = 0;
 
-        this.alien.bullets.createMultiple(40, 'laser');
+        this.alien.bullets.createMultiple(40, 'bullets');
         this.alien.bullets.setAll('anchor.x', 0.5);
         this.alien.bullets.setAll('anchor.y', 0.5);
     },
@@ -258,7 +258,7 @@ BasicGame.Game.prototype = {
             origin.bullet = origin.bullets.getFirstExists(false);
             origin.bullet.source = origin.id;
             if (origin.bullet) {
-                origin.bullet.reset(origin.body.x + 16, origin.body.y + 12);
+                origin.bullet.reset(origin.body.x + this.shipDimensions/2, origin.body.y + this.shipDimensions/2);
                 origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                 origin.bullet.lifespan = origin.bulletRange;
                 origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
