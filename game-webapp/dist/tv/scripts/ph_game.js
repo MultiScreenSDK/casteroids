@@ -1,7 +1,8 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
     this.isMuted = false;
-    this.shipDimensions = 48;
+    this.shipDimens = 48;
+    this.halfShipDimens = this.shipDimens/2;
 };
 
 BasicGame.Game.prototype = {
@@ -9,8 +10,8 @@ BasicGame.Game.prototype = {
 
     player: function (id, order, color) {
         // Here I setup the user controlled ship
-        var randX = this.rnd.integerInRange(this.shipDimensions, this.game.width - (this.shipDimensions*2));
-        var randY = this.rnd.integerInRange(this.shipDimensions, this.game.height - (this.shipDimensions*2));
+        var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+        var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
         this.players[id] = this.game.add.sprite(randX, randY, 'ship');
         this.players[id].id = id;
         this.players[id].order = order;
@@ -258,7 +259,7 @@ BasicGame.Game.prototype = {
             origin.bullet = origin.bullets.getFirstExists(false);
             origin.bullet.source = origin.id;
             if (origin.bullet) {
-                origin.bullet.reset(origin.body.x + this.shipDimensions/2, origin.body.y + this.shipDimensions/2);
+                origin.bullet.reset(origin.body.x + this.halfShipDimens, origin.body.y + this.halfShipDimens);
                 origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                 origin.bullet.lifespan = origin.bulletRange;
                 origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
