@@ -61,10 +61,10 @@ BasicGame.MainMenu.prototype = {
 
             for (var i = 0; i < count; i++) {
                 var playerTextHorizontalPosition = (this.game.width / count / 2) * (i + 1);
-                var playerTextStyle = { font: "12px", fill: activeSlots[i].hexColor, align: "right" };
+                var playerTextStyle = { font: "12px", fill: activeSlots[i].hexColor, align: "center" };
                 var playerText = this.add.text(playerTextHorizontalPosition, this.playerTextHeightOffset, activeSlots[i].name, playerTextStyle);
                 playerText.anchor.setTo(-0.5, -0.5);
-                playerText.font = 'Revalia';
+                playerText.font = 'Wallpoet';
                 playerText.stroke = '#000000';
                 playerText.strokeThickness = 2;
                 playerText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
