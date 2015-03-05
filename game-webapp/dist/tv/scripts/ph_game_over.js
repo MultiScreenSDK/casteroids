@@ -1,4 +1,5 @@
 BasicGame.GameOver = function (game) {
+    this.secondsElapsed = 0; //initial
 };
 
 BasicGame.GameOver.prototype = {
@@ -21,9 +22,9 @@ BasicGame.GameOver.prototype = {
         var t = this.add.text(this.game.width / 2, this.game.height / 2, gameOver_label, style2);
         t.anchor.setTo(0.5, 0.0);
         t.font = 'Revalia';
-        var t2 = this.add.text(this.game.width / 2, this.game.height / 2 + 120, prompt_label, style);
-        t2.anchor.setTo(0.5, 0.0);
-        t2.font = 'Revalia';
+        this.gameOverText = this.add.text(this.game.width / 2, this.game.height / 2 + 120, prompt_label, style);
+        this.gameOverText.anchor.setTo(0.5, 0.0);
+        this.gameOverText.font = 'Revalia';
 
         var heightIncrement = 40;
 
@@ -36,12 +37,23 @@ BasicGame.GameOver.prototype = {
             scoreText.font = 'Revalia';
         }
 
-        this.game.time.events.add(Phaser.Timer.SECOND * 5, this.gotoMainMenu, this);
+        this.gameOverScreenTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, 6, this.updateTimer, this);
+
+        //this.game.time.events.add(Phaser.Timer.SECOND * 5, this.gotoMainMenu, this);
     },
 
     update: function () {
 
 
+    },
+
+    updateTimer: function () {
+        var secondsToStart = 5 - this.secondsElapsed;
+        this.gameOverText.setText("Game will restart in " + secondsToStart + (secondsToStart==1 ? " second" : " seconds"));
+        if (this.secondsElapsed == 5) {
+            this.gotoMainMenu();
+        }
+        this.secondsElapsed = this.secondsElapsed + 1;
     },
 
     gotoMainMenu: function () {
