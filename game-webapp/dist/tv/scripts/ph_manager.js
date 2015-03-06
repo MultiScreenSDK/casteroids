@@ -15,7 +15,7 @@ $(GameManager = function(){
     "use strict";
 
     // Create the Game object.
-    var game = new Phaser.Game(1280, 800, Phaser.AUTO, 'casteroids');
+    var game = new Phaser.Game(1280, 800, Phaser.CANVAS, 'casteroids');
 
     //Add States to the Game object.
     //the first argument is the name of the state and the second is the name of the function to call inside such state.
