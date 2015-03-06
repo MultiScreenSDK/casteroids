@@ -241,7 +241,7 @@ BasicGame.Game.prototype = {
         this.timerLabel.setText(minutes+":"+seconds);
         if(this.secondsLeft <= 10) {
             this.timerLabel.fontSize = 38;
-            this.timerLabel.tint = 0xFF0000;
+//            this.timerLabel.tint = 0xFF0000;
             if(!this.isMuted) {
                 this.sfx.play("ping");
             }
@@ -450,6 +450,7 @@ BasicGame.Game.prototype = {
         
         for (var id in this.players) {
             this.players[id].destroy();
+            this.scoreLabels[id].destroy();
         }
         this.players = {};
 
@@ -508,7 +509,7 @@ BasicGame.Game.prototype = {
             this.names[clientId] = name;
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
-            this.scoreLabels[clientId].tint = colorCode;
+//            this.scoreLabels[clientId].tint = colorCode;
         }
     },
 
