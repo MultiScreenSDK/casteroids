@@ -52,6 +52,22 @@ BasicGame.Game.prototype = {
         this.setupAlien();
 //        this.setupAsteroid();
         this.setupAudio();
+
+        // collision detection
+        this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+        this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+
+        this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+
+        for (var other_players_id in this.players) {
+            if(other_players_id != id) {
+                //check for bullets
+                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                //check for collisions. both die if there is a collision
+                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+            }
+        }
     },
 
     update: function () {
@@ -86,21 +102,6 @@ BasicGame.Game.prototype = {
                 // screen wrapping
                 this.screenWrap(currentPlayer);
                 currentPlayer.bullets.forEachExists(this.screenWrap, this);
-                // collision detection
-                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-
-                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-
-                for (var other_players_id in this.players) {
-                    if(other_players_id != id) {
-                        //check for bullets
-                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                        //check for collisions. both die if there is a collision
-                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-                    }
-                }
             }
         }
 
