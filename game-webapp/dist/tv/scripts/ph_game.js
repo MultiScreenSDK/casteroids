@@ -90,7 +90,7 @@ BasicGame.Game.prototype = {
 
                 this.alien.x = randX;
                 this.alien.y = randY;
-                this.alien.revive(BasicGame.PLAYER_HP);
+                this.alien.revive(BasicGame.ALIEN_HP);
             }
         } else {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
