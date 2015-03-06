@@ -401,8 +401,6 @@ BasicGame.Game.prototype = {
     showPoints: function (points, x, y, color) {
         var sign = "+";
         if(points < 0) {
-            console.log("showPoints prompt is coming");
-            console.log(this.pointsPrompt);
             if(this.pointsPrompt != null || this.pointsPrompt != undefined) {
                 this.pointsPrompt.destroy();
             }
@@ -509,13 +507,20 @@ BasicGame.Game.prototype = {
             this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
-            var style_score = { font: "12px", fill: "#fff", align: "right" };
+            var style_score = { font: "12px", fill: "#fff", align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
+            console.log("game.addPlayer.position");
+            console.log(position);
+            console.log("game.addPlayer.scoreLabels");
+            console.log(this.scoreLabels);
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
 //            this.scoreLabels[clientId].tint = colorCode;
+            console.log("game.addPlayer.hexColor");
+            console.log(hexColor);
             this.scoreLabels[clientId].fill = hexColor;
+            console.log(this.scoreLabels[clientId]);
         }
     },
 

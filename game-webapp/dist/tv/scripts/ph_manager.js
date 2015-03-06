@@ -132,7 +132,7 @@ $(GameManager = function(){
 
         // If in the Game state, add the Player to the game
         if (game.state.getCurrentState() === gameState) {
-            gameState.addPlayer(slot.position, clientId, name, slot.colorCode);
+            gameState.addPlayer(slot.position, clientId, name, slot.colorCode, slot.hexColor);
         }
 
         // Add the client id to slot mapping
