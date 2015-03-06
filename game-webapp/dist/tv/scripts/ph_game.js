@@ -434,10 +434,10 @@ BasicGame.Game.prototype = {
 
             this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
             this.players[clientId].id = clientId;
-            this.players[clientId].order = order;
+            this.players[clientId].order = position;
             this.players[clientId].isThrusting = false;
             this.players[clientId].isFiring = false;
-            this.players[clientId].tint = color;
+            this.players[clientId].tint = colorCode;
             this.players[clientId].anchor.set(0.5);
             this.physics.enable(this.players[clientId], Phaser.Physics.ARCADE);
             this.players[clientId].body.drag.set(BasicGame.PLAYER_DRAG);
