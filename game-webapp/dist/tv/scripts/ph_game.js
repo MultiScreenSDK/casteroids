@@ -6,8 +6,13 @@ BasicGame.Game = function (game) {
 };
 
 BasicGame.Game.prototype = {
+    /////////////////////////////////////////////////////////////
+    // Instance var
     players: {},
 
+    /////////////////////////////////////////////////////////////
+    // phaser base functions
+    
     preload: function () {
         //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
         this.game.time.advancedTiming = true;
@@ -21,6 +26,11 @@ BasicGame.Game.prototype = {
         this.setupAlien();
 //        this.setupAsteroid();
         this.setupAudio();
+    },
+    
+    render: function() {
+        //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
+        this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
     },
 
     update: function () {
@@ -120,11 +130,7 @@ BasicGame.Game.prototype = {
         }
     },
 
-    render: function() {
-        //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
-        this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
-    },
-
+    ////////////////////////////////////////////////////////////////
     // Setup functions
     setupSystem: function () {
         // Here I setup some general utilities
@@ -150,13 +156,9 @@ BasicGame.Game.prototype = {
         var randAngularVelocity = this.rnd.integerInRange(100, 200);
 
         this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
-//        this.alien.tint = BasicGame.ALIEN_COLOR;
         this.alien.anchor.setTo(0.5);
-//        this.alien.animations.add('fly', [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 100, true);
-//        this.alien.play('fly');
         this.physics.enable(this.alien, Phaser.Physics.ARCADE);
         this.alien.rotation = randRotation;
-//        this.alien.body.angularVelocity = randAngularVelocity;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
 
@@ -169,7 +171,7 @@ BasicGame.Game.prototype = {
         this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.alien.bulletTime = 0;
 
-        this.alien.bullets.createMultiple(20, 'bullets');
+        this.alien.bullets.createMultiple(BasicGame.ALIEN_BULLET_MAXNUM, 'bullets');
         this.alien.bullets.setAll('anchor.x', 0.5);
         this.alien.bullets.setAll('anchor.y', 0.5);
     },
@@ -220,7 +222,14 @@ BasicGame.Game.prototype = {
         this.scoreLabels = { };
     },
 
-    // Miscellaneous functions
+    ////////////////////////////////////////////////////////
+    // Miscellaneous game functions
+    
+    /*
+     * Keeps track of the game countdown timer and handles last-10-seconds alert
+     * with a sound, red tint and increased size.
+     *
+     */
     updateTimer: function updateTimer() {
         this.secondsLeft--;
         var minutes = Math.floor(this.secondsLeft/60);
@@ -243,20 +252,11 @@ BasicGame.Game.prototype = {
         }
     },
 
-    quitGame: function (pointer) {
-
-        //  Here you should destroy anything you no longer need.
-        //  delete sprites, purge caches, free resources, all that good stuff.
-        //  Then move on to the game over state.
-
-        // Notify the Game Manager that the game is over.
-        GameManager.onGameOver(this.scores);
-
-        this.state.start('GameOver', true, false, this.scores, this.names);
-
-
-    },
-
+    /*
+     * shows a bullet and set it on it's path based on its parent
+     *
+     *
+     */
     fire: function(origin) {
         if (this.game.time.now > origin.bulletTime) {
             origin.bullet = origin.bullets.getFirstExists(false);
@@ -278,15 +278,11 @@ BasicGame.Game.prototype = {
         }
     },
 
+    /*
+     * handle the collision between a bullet and a target
+     *
+     */
     hit: function(target, bullet) {
-//        if(!bullet.body.enabled) {
-//            return;
-//        }
-//        // "detroy"
-//        bullet.visible = false;
-//        bullet.body.enabled = false;
-        bullet.kill();
-
         if(!this.isMuted) {
             this.sfx.play('boss hit');
         }
@@ -335,8 +331,15 @@ BasicGame.Game.prototype = {
         if(attacker != undefined){
             attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
         }
+        
+        bullet.kill();
     },
 
+    
+    /*
+     * handle the collision between a two objects 
+     *
+     */
     collide: function(obj1, obj2) {
         if(!obj1.body.enabled || !obj2.body.enabled){
             return;
@@ -381,6 +384,15 @@ BasicGame.Game.prototype = {
         explosion.play('boom', 25, false, true);
     },
 
+    /**
+     * Display a text on the screen indicating points scored at a position with a given color,
+     * the class automatically determines a + or - sign depending on the actual int value
+     *
+     * @param {points} -
+     * @param {x} -
+     * @param {y} -
+     * @param {color} -
+     */
     showPoints: function (points, x, y, color) {
         var sign = "+";
         if(points < 0) {
@@ -407,6 +419,10 @@ BasicGame.Game.prototype = {
         }
     },
 
+    /*
+     * Wraps sprites from one edge to the opposite
+     *
+     */
     screenWrap: function(sprite) {
         if(sprite.x < 0) {
             sprite.x = this.game.width;
@@ -421,6 +437,35 @@ BasicGame.Game.prototype = {
             sprite.y = 0;
         }
     },
+    
+    /**
+     * Ends the current game and relases resources
+     *
+     */
+    quitGame: function (pointer) {
+
+        //  Here you should destroy anything you no longer need.
+        //  delete sprites, purge caches, free resources, all that good stuff.
+        //  Then move on to the game over state.
+        
+        for (var id in this.players) {
+            this.players[id].destroy();
+        }
+        this.players = {};
+
+        // Notify the Game Manager that the game is over.
+        GameManager.onGameOver(this.scores);
+
+        this.state.start('GameOver', true, false, this.scores, this.names);
+
+
+    },
+    
+    
+    /*
+    *
+    *   Game callbacks
+    **/
 
     // Add a player to the game.
     addPlayer: function(position, clientId, name, colorCode, hexColor) {
