@@ -97,10 +97,12 @@ BasicGame.Game.prototype = {
             if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
                 var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
                 var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
+                var randAngle = this.rnd.integerInRange(0, 100)
 
                 this.alien.x = randX;
                 this.alien.y = randY;
                 this.alien.revive(BasicGame.ALIEN_HP);
+                this.alien.angle = randAngle;
             }
         } else {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
@@ -152,13 +154,12 @@ BasicGame.Game.prototype = {
         // Here I setup the computer controlled ship
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
-        var randRotation = this.rnd.integerInRange(0, 360);
-        var randAngularVelocity = this.rnd.integerInRange(100, 200);
+        var randAngle = this.rnd.integerInRange(0, 100);
 
         this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
         this.alien.anchor.setTo(0.5);
         this.physics.enable(this.alien, Phaser.Physics.ARCADE);
-        this.alien.rotation = randRotation;
+        this.alien.angle = randAngle;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
 
@@ -242,8 +243,13 @@ BasicGame.Game.prototype = {
         if(this.secondsLeft <= 10) {
             this.timerLabel.fontSize = 38;
 //            this.timerLabel.tint = 0xFF0000;
+            this.timerLabel.fill = '#FFFF00';
             if(!this.isMuted) {
                 this.sfx.play("ping");
+            }
+            if(this.secondsLeft <= 3) {
+                this.timerLabel.fontSize = 46;
+                this.timerLabel.fill = '#FF0000';
             }
         }
         if(this.secondsLeft == 0) {
@@ -254,7 +260,6 @@ BasicGame.Game.prototype = {
 
     /*
      * shows a bullet and set it on it's path based on its parent
-     *
      *
      */
     fire: function(origin) {
@@ -510,6 +515,7 @@ BasicGame.Game.prototype = {
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
 //            this.scoreLabels[clientId].tint = colorCode;
+            this.scoreLabels[clientId].fill = hexColor;
         }
     },
 
