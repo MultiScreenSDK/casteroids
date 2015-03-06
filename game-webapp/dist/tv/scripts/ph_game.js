@@ -64,7 +64,12 @@ BasicGame.Game.prototype = {
             if(!currentPlayer.alive) {
                 // If its time to respawn the player...
                 if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    this.player(currentPlayer.id, currentPlayer.order, currentPlayer.tint);
+                    var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+                    var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
+
+                    currentPlayer.x = randX;
+                    currentPlayer.y = randY;
+                    currentPlayer.revive(BasicGame.PLAYER_HP);
 
                     // Notify the GameManager that the player is back in so that it can notify the client.
                     GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
@@ -111,7 +116,12 @@ BasicGame.Game.prototype = {
         // alien lifecycle
         if(!this.alien.alive) {
             if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                this.setupAlien();
+                var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+                var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
+
+                this.alien.x = randX;
+                this.alien.y = randY;
+                this.alien.revive(BasicGame.PLAYER_HP);
             }
         } else {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
