@@ -12,7 +12,8 @@ BasicGame.Game.prototype = {
         // Here I setup the user controlled ship
         var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
         var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-        this.players[id] = this.game.add.sprite(randX, randY, 'ship');
+        
+        this.players[id].reset(randX, randY, BasicGame.PLAYER_HP);
         this.players[id].id = id;
         this.players[id].order = order;
         this.players[id].isThrusting = false;
@@ -23,7 +24,6 @@ BasicGame.Game.prototype = {
         this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
         this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
 
-        this.players[id].hp = BasicGame.PLAYER_HP;
         this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
         this.players[id].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
         this.players[id].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
@@ -48,7 +48,9 @@ BasicGame.Game.prototype = {
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
+        this.alien = this.game.add.sprite(0, 0, 'ufo');
         this.setupAlien();
+//        this.setupAsteroid();
         this.setupAudio();
     },
 
@@ -57,28 +59,9 @@ BasicGame.Game.prototype = {
 
         for (var id in this.players) {
             var currentPlayer = this.players[id];
-
-            // screen wrapping
-            this.screenWrap(currentPlayer);
-            currentPlayer.bullets.forEachExists(this.screenWrap, this);
-            // collision detection
-            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-
-            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-
-            for (var other_players_id in this.players) {
-                if(other_players_id != id) {
-                    //check for bullets
-                    this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                    //check for collisions. both die if there is a collision
-                    this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-                }
-            }
-
+            
             // players lifecycle
-            if(currentPlayer.isDead) {
+            if(!currentPlayer.alive) {
                 // If its time to respawn the player...
                 if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
                     this.player(currentPlayer.id, currentPlayer.order, currentPlayer.tint);
@@ -87,7 +70,7 @@ BasicGame.Game.prototype = {
                     GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
                 }
             }
-            // player control
+            // player is alive
             else {
                 if (currentPlayer.isThrusting) {
                     this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
@@ -99,11 +82,25 @@ BasicGame.Game.prototype = {
                 if (currentPlayer.isFiring) {
                     this.fire(currentPlayer);
                 }
+                
+                // screen wrapping
+                this.screenWrap(currentPlayer);
+                currentPlayer.bullets.forEachExists(this.screenWrap, this);
+                // collision detection
+                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
 
-                // replenish destroyed bullets
-//                if(currentPlayer.bullets.total < 40) {
-//                    currentPlayer.bullets.createMultiple(1, 'bullets');
-//                }
+                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+
+                for (var other_players_id in this.players) {
+                    if(other_players_id != id) {
+                        //check for bullets
+                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                        //check for collisions. both die if there is a collision
+                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                    }
+                }
             }
         }
 
@@ -111,11 +108,8 @@ BasicGame.Game.prototype = {
             this.isMuted = !this.isMuted;
         }
 
-        this.screenWrap(this.alien);
-        this.alien.bullets.forEachExists(this.screenWrap, this);
-
         // alien lifecycle
-        if(this.alien.isDead) {
+        if(!this.alien.alive) {
             if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
                 this.setupAlien();
             }
@@ -123,7 +117,19 @@ BasicGame.Game.prototype = {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED, 
                 this.alien.body.acceleration);
             this.fire(this.alien);
+            this.screenWrap(this.alien);
+            this.alien.bullets.forEachExists(this.screenWrap, this);
         }
+        
+//        // asteroid lifecycle
+//        if(this.asteroid.isDead) {
+//            if(this.game.time.now - this.asteroid.tod > BasicGame.ASTEROID_RESPAWN_DELAY) {
+//                this.setupAsteroid();
+//            }
+//        } else {
+//            this.game.physics.arcade.accelerationFromRotation(this.asteroid.body.rotation, BasicGame.ASTEROID_MAX_SPEED, 
+//                this.asteroid.body.acceleration);
+//        }
         
         // check for points prompt expiring
         if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
@@ -164,7 +170,7 @@ BasicGame.Game.prototype = {
         var randRotation = this.rnd.integerInRange(0, 360);
         var randAngularVelocity = this.rnd.integerInRange(100, 200);
 
-        this.alien = this.game.add.sprite(randX, randY, 'ufo');
+        this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
 //        this.alien.tint = BasicGame.ALIEN_COLOR;
         this.alien.anchor.setTo(0.5);
 //        this.alien.animations.add('fly', [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 100, true);
@@ -175,7 +181,6 @@ BasicGame.Game.prototype = {
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
 
-        this.alien.hp = BasicGame.ALIEN_HP;
         this.alien.bulletSpeed = BasicGame.ALIEN_BULLET_SPEED;
         this.alien.bulletRange = BasicGame.ALIEN_FIRE_RANGE;
         this.alien.bulletDelay = BasicGame.ALIEN_FIRE_DELAY;
@@ -188,6 +193,24 @@ BasicGame.Game.prototype = {
         this.alien.bullets.createMultiple(20, 'bullets');
         this.alien.bullets.setAll('anchor.x', 0.5);
         this.alien.bullets.setAll('anchor.y', 0.5);
+    },
+    
+    setupAsteroid: function () {
+        // Here I setup the computer controlled ship
+        var randX = this.rnd.integerInRange(20, this.game.width - 20);
+        var randY = this.rnd.integerInRange(20, this.game.height - 20);
+        var randRotation = this.rnd.integerInRange(0, 360);
+        var randAngularVelocity = this.rnd.integerInRange(100, 200);
+
+        this.asteroid = this.game.add.sprite(randX, randY, 'asteroid');
+        this.asteroid.tint = 0x999999;
+        this.asteroid.anchor.setTo(0.5);
+        this.physics.enable(this.asteroid, Phaser.Physics.ARCADE);
+//        this.asteroid.rotation = randRotation;
+        this.asteroid.body.angularVelocity = randAngularVelocity;
+        this.asteroid.body.maxVelocity.set(BasicGame.ASTEROID_MAX_SPEED);
+
+        this.asteroid.hp = BasicGame.ASTEROID_HP;
     },
 
     setupAudio: function () {
@@ -277,12 +300,18 @@ BasicGame.Game.prototype = {
     },
 
     hit: function(target, bullet) {
-        bullet.visible = false;
-        bullet.body.enabled = false;
+//        if(!bullet.body.enabled) {
+//            return;
+//        }
+//        // "detroy"
+//        bullet.visible = false;
+//        bullet.body.enabled = false;
+        bullet.kill();
+        
         if(!this.isMuted) {
             this.sfx.play('boss hit');
         }
-        target.hp -= BasicGame.HIT_POW;
+        target.damage(BasicGame.HIT_POW);
 
         //always show a regular explosion as a bullet hits the target
         this.explode(target, 'explosion');
@@ -295,16 +324,14 @@ BasicGame.Game.prototype = {
                 this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players[bullet.source].tint);
             }
         }
-        if(target.hp <= 0) {
+        if(target.health <= 0) {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
                 this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].tint);
             }
-            target.isDead = true;
-            target.tod = this.game.time.now;
-            target.destroy();
 
             //resulted in death, show a massive explosion
+            target.tod = this.game.time.now;
             this.explode(target, 'explosionBig');
             if(!this.isMuted) {
                 this.sfx.play("death");
@@ -332,16 +359,17 @@ BasicGame.Game.prototype = {
     },
     
     collide: function(obj1, obj2) {
+        if(!obj1.body.enabled || !obj2.body.enabled){
+            return;
+        }
         // deduct points from players on hit
         if(obj1 !== this.alien) {
             this.scores[obj1.id] -= BasicGame.PLAYER_HIT_DEDUCT;
             var player = this.players[obj1.id];
             this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
             this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
-            this.explode(obj1, 'explosionBig'); //huge explosion
-            obj1.isDead = true;
             obj1.tod = this.game.time.now;
-            obj1.destroy();
+            this.explode(obj1, 'explosionBig'); //huge explosion
             // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
@@ -351,10 +379,8 @@ BasicGame.Game.prototype = {
             var player = this.players[obj2.id];
             this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y+(player.height/2), player.tint);
             this.scoreLabels[obj2.id].setText(this.names[obj2.id] + "\t\t"+this.scores[obj2.id]);
-            this.explode(obj2, 'explosionBig'); //huge explosion
-            obj2.isDead = true;
             obj2.tod = this.game.time.now;
-            obj2.destroy();
+            this.explode(obj2, 'explosionBig'); //huge explosion
             // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj2.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
@@ -422,6 +448,7 @@ BasicGame.Game.prototype = {
         console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
             // Initialize the new player
+            this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
             this.player(clientId, position, colorCode);
 
             // Initialize the new player's text
@@ -459,7 +486,7 @@ BasicGame.Game.prototype = {
     // Called to rotate a specific player's spaceship.
     onRotate: function(clientId, direction, strength) {
         // Map the 0 to 20 range strength value to a 150 to (150+300=450) range angular velocity value for the game.
-        var velocity = ((strength * 300) / 10) + 150;
+        var velocity = ((strength * 300) / 20) + 150;
 
         // Look up the player.
         var currentPlayer = this.players[clientId];
