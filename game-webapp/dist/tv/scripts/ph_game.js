@@ -8,37 +8,6 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
     players: {},
 
-    player: function (id, order, color) {
-        // Here I setup the user controlled ship
-        var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
-        var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-
-        this.players[id].reset(randX, randY, BasicGame.PLAYER_HP);
-        this.players[id].id = id;
-        this.players[id].order = order;
-        this.players[id].isThrusting = false;
-        this.players[id].isFiring = false;
-        this.players[id].tint = color;
-        this.players[id].anchor.set(0.5);
-        this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
-        this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
-        this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
-
-        this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
-        this.players[id].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
-        this.players[id].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
-
-        // Here I setup the bullets
-        this.players[id].bullets = this.add.group();
-        this.players[id].bullets.enableBody = true;
-        this.players[id].bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        this.players[id].bulletTime = 0;
-
-        this.players[id].bullets.createMultiple(20, 'bullets');
-        this.players[id].bullets.setAll('anchor.x', 0.5);
-        this.players[id].bullets.setAll('anchor.y', 0.5);
-    },
-
     preload: function () {
         //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
         this.game.time.advancedTiming = true;
@@ -459,7 +428,34 @@ BasicGame.Game.prototype = {
         if (this.game !== undefined) {
             // Initialize the new player
             this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
-            this.player(clientId, position, colorCode);
+            // Here I setup the user controlled ship
+            var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+            var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
+
+            this.players[id].reset(randX, randY, BasicGame.PLAYER_HP);
+            this.players[id].id = id;
+            this.players[id].order = order;
+            this.players[id].isThrusting = false;
+            this.players[id].isFiring = false;
+            this.players[id].tint = color;
+            this.players[id].anchor.set(0.5);
+            this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
+            this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
+            this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
+
+            this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
+            this.players[id].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
+            this.players[id].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
+
+            // Here I setup the bullets
+            this.players[id].bullets = this.add.group();
+            this.players[id].bullets.enableBody = true;
+            this.players[id].bullets.physicsBodyType = Phaser.Physics.ARCADE;
+            this.players[id].bulletTime = 0;
+
+            this.players[id].bullets.createMultiple(20, 'bullets');
+            this.players[id].bullets.setAll('anchor.x', 0.5);
+            this.players[id].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
             var style_score = { font: "12px", fill: "#fff", align: "right" };
