@@ -164,7 +164,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
             scoreText.setTypeface(customTypeface);
 
             //bind the values
-            positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
+            //positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
             nameText.setText(data.getName());
             scoreText.setText("" + data.getScore()); //number, hence the empty quotes for coercion to a string
 
