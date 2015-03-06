@@ -432,30 +432,30 @@ BasicGame.Game.prototype = {
             var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
             var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
 
-            this.players[id].reset(randX, randY, BasicGame.PLAYER_HP);
-            this.players[id].id = id;
-            this.players[id].order = order;
-            this.players[id].isThrusting = false;
-            this.players[id].isFiring = false;
-            this.players[id].tint = color;
-            this.players[id].anchor.set(0.5);
-            this.physics.enable(this.players[id], Phaser.Physics.ARCADE);
-            this.players[id].body.drag.set(BasicGame.PLAYER_DRAG);
-            this.players[id].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
+            this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
+            this.players[clientId].id = clientId;
+            this.players[clientId].order = order;
+            this.players[clientId].isThrusting = false;
+            this.players[clientId].isFiring = false;
+            this.players[clientId].tint = color;
+            this.players[clientId].anchor.set(0.5);
+            this.physics.enable(this.players[clientId], Phaser.Physics.ARCADE);
+            this.players[clientId].body.drag.set(BasicGame.PLAYER_DRAG);
+            this.players[clientId].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
 
-            this.players[id].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
-            this.players[id].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
-            this.players[id].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
+            this.players[clientId].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
+            this.players[clientId].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
+            this.players[clientId].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
 
             // Here I setup the bullets
-            this.players[id].bullets = this.add.group();
-            this.players[id].bullets.enableBody = true;
-            this.players[id].bullets.physicsBodyType = Phaser.Physics.ARCADE;
-            this.players[id].bulletTime = 0;
+            this.players[clientId].bullets = this.add.group();
+            this.players[clientId].bullets.enableBody = true;
+            this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
+            this.players[clientId].bulletTime = 0;
 
-            this.players[id].bullets.createMultiple(20, 'bullets');
-            this.players[id].bullets.setAll('anchor.x', 0.5);
-            this.players[id].bullets.setAll('anchor.y', 0.5);
+            this.players[clientId].bullets.createMultiple(20, 'bullets');
+            this.players[clientId].bullets.setAll('anchor.x', 0.5);
+            this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
             var style_score = { font: "12px", fill: "#fff", align: "right" };
