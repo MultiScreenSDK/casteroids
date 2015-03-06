@@ -12,7 +12,7 @@ BasicGame.Game.prototype = {
         // Here I setup the user controlled ship
         var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
         var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-        
+
         this.players[id].reset(randX, randY, BasicGame.PLAYER_HP);
         this.players[id].id = id;
         this.players[id].order = order;
@@ -52,22 +52,6 @@ BasicGame.Game.prototype = {
         this.setupAlien();
 //        this.setupAsteroid();
         this.setupAudio();
-
-        // collision detection
-        this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-        this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-
-        this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-
-        for (var other_players_id in this.players) {
-            if(other_players_id != id) {
-                //check for bullets
-                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                //check for collisions. both die if there is a collision
-                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-            }
-        }
     },
 
     update: function () {
@@ -75,7 +59,7 @@ BasicGame.Game.prototype = {
 
         for (var id in this.players) {
             var currentPlayer = this.players[id];
-            
+
             // players lifecycle
             if(!currentPlayer.alive) {
                 // If its time to respawn the player...
@@ -98,10 +82,25 @@ BasicGame.Game.prototype = {
                 if (currentPlayer.isFiring) {
                     this.fire(currentPlayer);
                 }
-                
+
                 // screen wrapping
                 this.screenWrap(currentPlayer);
                 currentPlayer.bullets.forEachExists(this.screenWrap, this);
+                // collision detection
+                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+
+                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+
+                for (var other_players_id in this.players) {
+                    if(other_players_id != id) {
+                        //check for bullets
+                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                        //check for collisions. both die if there is a collision
+                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                    }
+                }
             }
         }
 
@@ -115,13 +114,13 @@ BasicGame.Game.prototype = {
                 this.setupAlien();
             }
         } else {
-            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED, 
+            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
                 this.alien.body.acceleration);
             this.fire(this.alien);
             this.screenWrap(this.alien);
             this.alien.bullets.forEachExists(this.screenWrap, this);
         }
-        
+
 //        // asteroid lifecycle
 //        if(this.asteroid.isDead) {
 //            if(this.game.time.now - this.asteroid.tod > BasicGame.ASTEROID_RESPAWN_DELAY) {
@@ -131,7 +130,7 @@ BasicGame.Game.prototype = {
 //            this.game.physics.arcade.accelerationFromRotation(this.asteroid.body.rotation, BasicGame.ASTEROID_MAX_SPEED, 
 //                this.asteroid.body.acceleration);
 //        }
-        
+
         // check for points prompt expiring
         if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
             this.pointsPrompt.destroy();
@@ -195,7 +194,7 @@ BasicGame.Game.prototype = {
         this.alien.bullets.setAll('anchor.x', 0.5);
         this.alien.bullets.setAll('anchor.y', 0.5);
     },
-    
+
     setupAsteroid: function () {
         // Here I setup the computer controlled ship
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
@@ -308,7 +307,7 @@ BasicGame.Game.prototype = {
 //        bullet.visible = false;
 //        bullet.body.enabled = false;
         bullet.kill();
-        
+
         if(!this.isMuted) {
             this.sfx.play('boss hit');
         }
@@ -358,7 +357,7 @@ BasicGame.Game.prototype = {
             attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
         }
     },
-    
+
     collide: function(obj1, obj2) {
         if(!obj1.body.enabled || !obj2.body.enabled){
             return;
@@ -374,7 +373,7 @@ BasicGame.Game.prototype = {
             // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
-        
+
         if(obj2 !== this.alien) {
             this.scores[obj2.id] -= BasicGame.PLAYER_HIT_DEDUCT;
             var player = this.players[obj2.id];
@@ -402,7 +401,7 @@ BasicGame.Game.prototype = {
         explosion.animations.add('boom');
         explosion.play('boom', 25, false, true);
     },
-    
+
     showPoints: function (points, x, y, color) {
         var sign = "+";
         if(points < 0) {
@@ -459,7 +458,7 @@ BasicGame.Game.prototype = {
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
             this.scoreLabels[clientId].tint = colorCode;
-       }
+        }
     },
 
     // Remove a player from the game.
@@ -477,7 +476,7 @@ BasicGame.Game.prototype = {
             delete this.players[clientId];
             this.scoreLabels[clientId].destroy();
         }
-        
+
         if($.isEmptyObject(this.players)) {
             console.log("quitting since everyone left");
             this.quitGame();
