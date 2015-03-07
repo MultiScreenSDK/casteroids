@@ -1,5 +1,6 @@
 BasicGame.GameOver = function (game) {
     this.secondsElapsed = 0; //initial
+    this.gameOverScreenTimer = Phaser.TimerEvent;
 };
 
 BasicGame.GameOver.prototype = {
@@ -37,6 +38,7 @@ BasicGame.GameOver.prototype = {
             scoreText.font = 'Revalia';
         }
 
+        this.secondsElapsed = 0;
         this.gameOverScreenTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, 6, this.updateTimer, this);
 
         //this.game.time.events.add(Phaser.Timer.SECOND * 5, this.gotoMainMenu, this);
