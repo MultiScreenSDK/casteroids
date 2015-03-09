@@ -509,7 +509,6 @@ BasicGame.Game.prototype = {
 
     // Add a player to the game.
     addPlayer: function(position, clientId, name, colorCode, hexColor) {
-        console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
             // Initialize the new player
             this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
@@ -548,17 +547,9 @@ BasicGame.Game.prototype = {
             var style_score = { font: "12px", fill: "#fff", align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            console.log("game.addPlayer.position");
-            console.log(position);
-            console.log("game.addPlayer.scoreLabels");
-            console.log(this.scoreLabels);
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
-            //            this.scoreLabels[clientId].tint = colorCode;
-            console.log("game.addPlayer.hexColor");
-            console.log(hexColor);
             this.scoreLabels[clientId].fill = hexColor;
-            console.log(this.scoreLabels[clientId]);
         }
     },
 
