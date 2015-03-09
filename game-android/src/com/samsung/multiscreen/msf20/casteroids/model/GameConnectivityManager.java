@@ -3,6 +3,7 @@ package com.samsung.multiscreen.msf20.casteroids.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.samsung.multiscreen.Message;
 import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
@@ -22,7 +23,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	private static GameConnectivityManager instance = null;
 
 	// The URL where the TV application lives
-	//private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
+	// private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
 	private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
@@ -114,11 +115,8 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 */
 	public void sendRotateMessage(Rotate rotate, int strength) {
 		String data = MessageDataHelper.encodeRotateData(rotate, strength);
-
 		if (data != null) {
 			sendMessage(Event.ROTATE.getName(), data);
-		} else {
-			Log.e(TAG, "Failed to create ROTATE data using rotate='" + rotate + "' and strength=" + strength + ".");
 		}
 	}
 
@@ -146,10 +144,12 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 * @param configTypeMap
 	 */
 	public void sendConfigUpdate(ConfigTypeMap configTypeMap) {
-		// TODO: Implement
-		//sendMessage(Event.CONFIG_UPDATE.getName(), configTypeMap);
+		String data = MessageDataHelper.encodeConfigUpdateData(configTypeMap);
+		if (data != null) {
+			sendMessage(Event.CONFIG_UPDATE.getName(), data, Message.TARGET_ALL);
+		}
 	}
-	
+
 	/**
 	 * Registers the given listener for message updates.
 	 * 
@@ -227,8 +227,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 				gameState.onPlayerOut(MessageDataHelper.decodePlayerOutCountDownSeconds(data));
 				break;
 			case CONFIG_UPDATE:
-				// TODO: Implement
-				//gameState.onConfigUpdate(MessageDataHelper.decodeConfigUpdateData(data));
+				gameState.onConfigUpdate(MessageDataHelper.decodeConfigUpdateData(data));
 				break;
 			default:
 				// Ignore.
