@@ -22,7 +22,7 @@ BasicGame.Game.prototype = {
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
-//        this.setupAlien();
+        this.setupAlien();
         //this.setupAsteroid();
         this.setupAudio();
     },
