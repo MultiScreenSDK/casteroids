@@ -102,10 +102,11 @@ BasicGame.Game.prototype = {
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
         // collision detection
-        this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-        this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-
-        this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+        if(this.alien) {
+            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+        }
 
         for (var other_players_id in this.players) {
             if(other_players_id != currentPlayer.id) {
@@ -119,7 +120,6 @@ BasicGame.Game.prototype = {
     },
 
     updateAlien: function() {
-        console.log(this.alien);
         if(this.alien) {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
                                                           this.alien.body.acceleration);
