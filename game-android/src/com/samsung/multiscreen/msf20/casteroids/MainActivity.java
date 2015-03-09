@@ -3,6 +3,8 @@ package com.samsung.multiscreen.msf20.casteroids;
 import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+
+import java.util.Arrays;
 
 /**
  * Landing page for the game. Depending on the connectivity manager, it shows a
@@ -34,7 +38,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
     private GameConnectivityManager connectivityManager = null;
 
     /** References to buttons on the screen */
-    private Button playButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
+    private Button playButton, settingsButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
@@ -73,6 +77,16 @@ public class MainActivity extends Activity implements ConnectivityListener {
             }
         });
 
+        // Initialize the how to play button
+        settingsButton = (Button) findViewById(R.id.game_settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGameSettings();
+            }
+        });
+
+
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +116,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         //set the various buttons with the typeface
         howToPlayButton.setTypeface(customTypeface);
+        settingsButton.setTypeface(customTypeface);
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
@@ -215,6 +230,46 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
     private void showHowToPlay() {
         launchIntent(HowToPlayActivity.class);
+    }
+
+    private void showGameSettings() {
+        //Initialize the Alert Dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //TODO:  Dan will give me a way to derive this
+        final CharSequence[] gameOptions = {"Collision detection","Alien","Sound","Spaceship tinting","Bullet tinting","Game text", "Points text", "Background image"};
+        final boolean[] selectedOptions = new boolean[gameOptions.length];
+        Arrays.fill(selectedOptions, true);
+
+        // Set the dialog title
+        builder.setTitle("Game Options")
+                .setMultiChoiceItems(gameOptions, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        selectedOptions[which] = isChecked;
+                    }
+                })
+
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        //TODO:  Dan will give me a way to save this
+                        //save(gameOptions, selectedOptions)
+
+                        Toast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     private void showSelectTVScreen() {
