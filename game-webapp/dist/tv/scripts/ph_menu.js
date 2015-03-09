@@ -11,6 +11,10 @@ BasicGame.MainMenu.prototype = {
     },
 
     create: function () {
+        // Settings to make the app full screen
+        this.game.scale.parentIsWindow = true;
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
         //  This is the preparation screen where players have time to join the game
         var sprite = this.add.sprite(0, 0, 'titlepage');
         sprite.anchor.setTo(0, 0);
