@@ -3,6 +3,7 @@ package com.samsung.multiscreen.msf20.casteroids.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.samsung.multiscreen.Message;
 import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
@@ -47,7 +48,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 
 		// Register for Events that this class is interested in anytime we are connected to the application.
 		registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.GAME_START, Event.GAME_OVER,
-		        Event.PLAYER_OUT);
+		        Event.PLAYER_OUT, Event.CONFIG_UPDATE);
 
 	}
 
@@ -114,11 +115,8 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 */
 	public void sendRotateMessage(Rotate rotate, int strength) {
 		String data = MessageDataHelper.encodeRotateData(rotate, strength);
-
 		if (data != null) {
 			sendMessage(Event.ROTATE.getName(), data);
-		} else {
-			Log.e(TAG, "Failed to create ROTATE data using rotate='" + rotate + "' and strength=" + strength + ".");
 		}
 	}
 
@@ -138,6 +136,18 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 */
 	public void sendFireMessage(Fire fire) {
 		sendMessage(Event.FIRE.getName(), fire.getName());
+	}
+
+	/**
+	 * Sends a CONFIG_UPDATE message to the TV application.
+	 * 
+	 * @param configTypeMap
+	 */
+	public void sendConfigUpdate(ConfigTypeMap configTypeMap) {
+		String data = MessageDataHelper.encodeConfigUpdateData(configTypeMap);
+		if (data != null) {
+			sendMessage(Event.CONFIG_UPDATE.getName(), data, Message.TARGET_ALL);
+		}
 	}
 
 	/**
@@ -215,6 +225,9 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 				break;
 			case PLAYER_OUT:
 				gameState.onPlayerOut(MessageDataHelper.decodePlayerOutCountDownSeconds(data));
+				break;
+			case CONFIG_UPDATE:
+				gameState.onConfigUpdate(MessageDataHelper.decodeConfigUpdateData(data));
 				break;
 			default:
 				// Ignore.
