@@ -27,6 +27,10 @@ public enum Event {
 	// Event sent to have the spacecraft fire a bullet.
 	FIRE("fire", true),
 
+	// Event sent to enabled/disable different features of the game. This was added to assist in the performance tuning of
+	// the TV Application.
+	CONFIG_UPDATE("config_update", true),
+
 	/**
 	 * Events that the Client receives from the TV Application.
 	 */

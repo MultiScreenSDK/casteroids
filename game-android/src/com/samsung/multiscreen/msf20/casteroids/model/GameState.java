@@ -29,6 +29,10 @@ public class GameState {
 	// The current player out count down seconds received from the TV application.
 	private int playerOutCountDownSeconds = -1;
 
+	// The ConfifTypeMap used to enable/disable game features. This was added to assist in the performance tuning of the
+	// TV Application.
+	private ConfigTypeMap configTypeMap = new ConfigTypeMap();
+
 	/**
 	 * Constructor
 	 */
@@ -46,7 +50,7 @@ public class GameState {
 		// Reset the SlotData.
 		initializeSlotData();
 	}
-	
+
 	/**
 	 * Called when the game is connected to an application.
 	 */
@@ -54,7 +58,7 @@ public class GameState {
 		// Reset the SlotData.
 		initializeSlotData();
 	}
-	
+
 	/**
 	 * Called when updated slot data is received.
 	 * 
@@ -97,6 +101,16 @@ public class GameState {
 	}
 
 	/**
+	 * Called when the configuration update was sent out by another client. This was added to assist in the performance
+	 * tuning of the TV Application.
+	 * 
+	 * @param configTypeMap
+	 */
+	protected void onConfigUpdate(ConfigTypeMap configTypeMap) {
+		this.configTypeMap = configTypeMap;
+	}
+
+	/**
 	 * Called when the player's space craft was blown to smithereens (i.e. destroyed) and is out of the game.
 	 * 
 	 * @param playerOutCountDownSeconds
@@ -121,6 +135,17 @@ public class GameState {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Initialize the SlotData list by defaulting everything on. It will be updated as soon as the application connects
+	 * with the TV Application.
+	 */
+	private void initializeSlotData() {
+		slotDataList = new ArrayList<SlotData>();
+		for (Color color : Color.values()) {
+			slotDataList.add(new SlotData(true, color));
+		}
 	}
 
 	/**
@@ -208,19 +233,19 @@ public class GameState {
 	}
 
 	/**
-	 * Initialize the SlotData list by defaulting everything on. It will be updated as soon as the application connects
-	 * with the TV Application.
+	 * Returns ConfifTypeMap used to enable/disable game features. This was added to assist in the performance tuning of
+	 * the TV Application.
+	 * 
+	 * @return
 	 */
-	private void initializeSlotData() {
-		slotDataList = new ArrayList<SlotData>();
-		for (Color color : Color.values()) {
-			slotDataList.add(new SlotData(true, color));
-		}
+	public ConfigTypeMap getConfigTypeMap() {
+		return configTypeMap;
 	}
 
 	@Override
 	public String toString() {
-		return "GameState [slotData=" + slotDataList + ", gameStartCountDownSeconds=" + gameStartCountDownSeconds
-		        + ", scoreData=" + scoreDataList + ", playerOutCountDownSeconds=" + playerOutCountDownSeconds + "]";
+		return "GameState [slotDataList=" + slotDataList + ", joinResponseData=" + joinResponseData
+		        + ", gameStartCountDownSeconds=" + gameStartCountDownSeconds + ", scoreDataList=" + scoreDataList
+		        + ", playerOutCountDownSeconds=" + playerOutCountDownSeconds + ", configTypeMap=" + configTypeMap + "]";
 	}
 }

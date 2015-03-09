@@ -22,7 +22,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	private static GameConnectivityManager instance = null;
 
 	// The URL where the TV application lives
-	// private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
+	//private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
 	private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
@@ -47,7 +47,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 
 		// Register for Events that this class is interested in anytime we are connected to the application.
 		registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.GAME_START, Event.GAME_OVER,
-		        Event.PLAYER_OUT);
+		        Event.PLAYER_OUT, Event.CONFIG_UPDATE);
 
 	}
 
@@ -141,6 +141,16 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	}
 
 	/**
+	 * Sends a CONFIG_UPDATE message to the TV application.
+	 * 
+	 * @param configTypeMap
+	 */
+	public void sendConfigUpdate(ConfigTypeMap configTypeMap) {
+		// TODO: Implement
+		//sendMessage(Event.CONFIG_UPDATE.getName(), configTypeMap);
+	}
+	
+	/**
 	 * Registers the given listener for message updates.
 	 * 
 	 * @param listener
@@ -215,6 +225,10 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 				break;
 			case PLAYER_OUT:
 				gameState.onPlayerOut(MessageDataHelper.decodePlayerOutCountDownSeconds(data));
+				break;
+			case CONFIG_UPDATE:
+				// TODO: Implement
+				//gameState.onConfigUpdate(MessageDataHelper.decodeConfigUpdateData(data));
 				break;
 			default:
 				// Ignore.
