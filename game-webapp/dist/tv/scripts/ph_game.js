@@ -1,6 +1,6 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
-    this.isMuted = true;
+    this.isMuted = false;
     this.shipDimens = 48;
     this.halfShipDimens = this.shipDimens/2;
 };
