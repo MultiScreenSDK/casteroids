@@ -12,7 +12,7 @@ BasicGame.Game.prototype = {
 
     /////////////////////////////////////////////////////////////
     // phaser base functions
-    
+
     preload: function () {
         //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
         this.game.time.advancedTiming = true;
@@ -24,10 +24,10 @@ BasicGame.Game.prototype = {
         this.setupPlayers();
         this.alien = this.game.add.sprite(0, 0, 'ufo');
         this.setupAlien();
-//        this.setupAsteroid();
+        //        this.setupAsteroid();
         this.setupAudio();
     },
-    
+
     render: function() {
         //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
         this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
@@ -36,19 +36,16 @@ BasicGame.Game.prototype = {
     update: function () {
         //  Main Game Loop
 
+        //
+        // players lifecycle
         for (var id in this.players) {
             var currentPlayer = this.players[id];
-
-            // players lifecycle
+            //
+            // player is dead
             if(!currentPlayer.alive) {
                 // If its time to respawn the player...
                 if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
-                    var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-
-                    currentPlayer.x = randX;
-                    currentPlayer.y = randY;
-                    currentPlayer.revive(BasicGame.PLAYER_HP);
+                    this.resetPlayer(currentPlayer);
 
                     // Notify the GameManager that the player is back in so that it can notify the client.
                     GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
@@ -56,71 +53,23 @@ BasicGame.Game.prototype = {
             }
             // player is alive
             else {
-                if (currentPlayer.isThrusting) {
-                    this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION, BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
-                } else {
-                    // TODO fix null body
-                    currentPlayer.body.acceleration.set(0);
-                }
-
-                if (currentPlayer.isFiring) {
-                    this.fire(currentPlayer);
-                }
-
-                // screen wrapping
-                this.screenWrap(currentPlayer);
-                currentPlayer.bullets.forEachExists(this.screenWrap, this);
-                // collision detection
-                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-
-                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-
-                for (var other_players_id in this.players) {
-                    if(other_players_id != id) {
-                        //check for bullets
-                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                        //check for collisions. both die if there is a collision
-                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-                    }
-                }
+                this.updatePlayer(currentPlayer);
             }
         }
 
-        if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
-            this.isMuted = !this.isMuted;
-        }
-
+        //
         // alien lifecycle
+        //
+        // alien is dead
         if(!this.alien.alive) {
             if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
-                var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-                var randAngle = this.rnd.integerInRange(0, 100)
-
-                this.alien.x = randX;
-                this.alien.y = randY;
-                this.alien.revive(BasicGame.ALIEN_HP);
-                this.alien.angle = randAngle;
+                this.resetAlien(this.alien);
             }
-        } else {
-            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
-                this.alien.body.acceleration);
-            this.fire(this.alien);
-            this.screenWrap(this.alien);
-            this.alien.bullets.forEachExists(this.screenWrap, this);
         }
-
-//        // asteroid lifecycle
-//        if(this.asteroid.isDead) {
-//            if(this.game.time.now - this.asteroid.tod > BasicGame.ASTEROID_RESPAWN_DELAY) {
-//                this.setupAsteroid();
-//            }
-//        } else {
-//            this.game.physics.arcade.accelerationFromRotation(this.asteroid.body.rotation, BasicGame.ASTEROID_MAX_SPEED, 
-//                this.asteroid.body.acceleration);
-//        }
+        // alien is alive
+        else {
+            this.updateAlien();
+        }
 
         // check for points prompt expiring
         if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
@@ -130,7 +79,56 @@ BasicGame.Game.prototype = {
         if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
             this.pointsUpPrompt.destroy();
         }
+
+        // Check for Mute with ESC Keyboard (debugging)
+        if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
+            this.isMuted = !this.isMuted;
+        }
     },
+
+    // derivative update functions for main game elements
+
+    updatePlayer: function (currentPlayer) {
+        if (currentPlayer.isThrusting) {
+            this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
+                                                              BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+        } else {
+            // TODO fix null body
+            currentPlayer.body.acceleration.set(0);
+        }
+
+        if (currentPlayer.isFiring) {
+            this.fire(currentPlayer);
+        }
+
+        // screen wrapping
+        this.screenWrap(currentPlayer);
+        currentPlayer.bullets.forEachExists(this.screenWrap, this);
+        // collision detection
+        this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+        this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+
+        this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+
+        for (var other_players_id in this.players) {
+            if(other_players_id != id) {
+                //check for bullets
+                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                //check for collisions. both die if there is a collision
+                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+            }
+        }
+    },
+
+    updateAlien: function() {
+        this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
+                                                          this.alien.body.acceleration);
+        this.fire(this.alien);
+        this.screenWrap(this.alien);
+        this.alien.bullets.forEachExists(this.screenWrap, this);
+    },
+
 
     ////////////////////////////////////////////////////////////////
     // Setup functions
@@ -188,7 +186,7 @@ BasicGame.Game.prototype = {
         this.asteroid.tint = 0x999999;
         this.asteroid.anchor.setTo(0.5);
         this.physics.enable(this.asteroid, Phaser.Physics.ARCADE);
-//        this.asteroid.rotation = randRotation;
+        //        this.asteroid.rotation = randRotation;
         this.asteroid.body.angularVelocity = randAngularVelocity;
         this.asteroid.body.maxVelocity.set(BasicGame.ASTEROID_MAX_SPEED);
 
@@ -225,7 +223,7 @@ BasicGame.Game.prototype = {
 
     ////////////////////////////////////////////////////////
     // Miscellaneous game functions
-    
+
     /*
      * Keeps track of the game countdown timer and handles last-10-seconds alert
      * with a sound, red tint and increased size.
@@ -242,7 +240,7 @@ BasicGame.Game.prototype = {
         this.timerLabel.setText(minutes+":"+seconds);
         if(this.secondsLeft <= 10) {
             this.timerLabel.fontSize = 38;
-//            this.timerLabel.tint = 0xFF0000;
+            //            this.timerLabel.tint = 0xFF0000;
             this.timerLabel.fill = '#FFFF00';
             if(!this.isMuted) {
                 this.sfx.play("ping");
@@ -336,11 +334,11 @@ BasicGame.Game.prototype = {
         if(attacker != undefined){
             attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
         }
-        
+
         bullet.kill();
     },
 
-    
+
     /*
      * handle the collision between a two objects 
      *
@@ -406,7 +404,7 @@ BasicGame.Game.prototype = {
             }
             sign = "";
             this.pointsPrompt = this.add.text( x-40, y, sign + points,
-                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
+                                              { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
             this.pointsPrompt.tint = color;
             this.pointsPrompt.anchor.setTo(0.5, 0.5);
             this.pointsExpire = this.time.now + 800;
@@ -415,7 +413,7 @@ BasicGame.Game.prototype = {
                 this.pointsUpPrompt.destroy();
             }
             this.pointsUpPrompt = this.add.text( x+48, y, sign + points,
-                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
+                                                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
             this.pointsUpPrompt.tint = color;
             this.pointsUpPrompt.anchor.setTo(0.5, 0.5);
             this.pointsUpExpire = this.time.now + 800;
@@ -440,7 +438,35 @@ BasicGame.Game.prototype = {
             sprite.y = 0;
         }
     },
-    
+
+    /**
+     *  Resets a player ship to a random position in the screen with the starting health points
+     *
+     */
+    resetPlayer: function (player){
+        var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+        var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
+
+        player.x = randX;
+        player.y = randY;
+        player.revive(BasicGame.PLAYER_HP);
+    },
+
+    /**
+     *  Resets an alien ship to a random position in the screen, facing a random  with the starting health points
+     *
+     */
+    resetAlien: function (){
+        var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+        var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
+        var randAngle = this.rnd.integerInRange(0, 360)
+
+        this.alien.x = randX;
+        this.alien.y = randY;
+        this.alien.revive(BasicGame.ALIEN_HP);
+        this.alien.angle = randAngle;
+    },
+
     /**
      * Ends the current game and relases resources
      *
@@ -450,7 +476,7 @@ BasicGame.Game.prototype = {
         //  Here you should destroy anything you no longer need.
         //  delete sprites, purge caches, free resources, all that good stuff.
         //  Then move on to the game over state.
-        
+
         for (var id in this.players) {
             this.players[id].destroy();
             this.scoreLabels[id].destroy();
@@ -464,8 +490,8 @@ BasicGame.Game.prototype = {
 
 
     },
-    
-    
+
+
     /*
     *
     *   Game callbacks
@@ -516,7 +542,7 @@ BasicGame.Game.prototype = {
             console.log(this.scoreLabels);
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
-//            this.scoreLabels[clientId].tint = colorCode;
+            //            this.scoreLabels[clientId].tint = colorCode;
             console.log("game.addPlayer.hexColor");
             console.log(hexColor);
             this.scoreLabels[clientId].fill = hexColor;
