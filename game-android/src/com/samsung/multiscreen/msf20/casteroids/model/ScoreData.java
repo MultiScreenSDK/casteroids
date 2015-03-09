@@ -67,6 +67,6 @@ public class ScoreData implements Comparable<ScoreData> {
 
 	@Override
 	public int compareTo(ScoreData another) {
-		return (getScore() - another.getScore());
+		return (another.getScore() - getScore());
 	}
 }
