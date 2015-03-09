@@ -51,7 +51,7 @@ public class MessageDataHelper {
 	/**
 	 * Returns the JSON encoded ROTATE message data in the TV application defined JSON format:<br>
 	 * <code>
-	 *     { "rotate": "left", strength: 50 }
+	 *     { "rotate": "left", "strength": 50 }
 	 * </code>
 	 * 
 	 * @param rotate
@@ -68,6 +68,30 @@ public class MessageDataHelper {
 			jsonObject.put("strength", (rotate != Rotate.NONE ? strength : 0));
 		} catch (JSONException e) {
 			Log.e(TAG, "Faled to JSON encode ROTATE message data. rotate=" + rotate + ", strength=" + strength, e);
+			return null;
+		}
+
+		return jsonObject.toString();
+	}
+
+	/**
+	 * Returns the JSON encoded CONFIG_UPDATE message data in the TV application defined JSON format:<br>
+	 * <code>
+	 *     { "isCollisionDetectionEnabled": true, "isAlienEnabled": false, ... }
+	 * </code>
+	 * 
+	 * @param configTypeMap
+	 * @return
+	 */
+	public static String encodeConfigUpdateData(ConfigTypeMap configTypeMap) {
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			for (ConfigType type : configTypeMap.getConfigTypes()) {
+				jsonObject.put(type.getDescription(), configTypeMap.isEnabled(type));
+			}
+		} catch (JSONException e) {
+			Log.e(TAG, "Faled to JSON encode CONFIG_UPDATE message data. configTypeMap=" + configTypeMap, e);
 			return null;
 		}
 
@@ -219,6 +243,36 @@ public class MessageDataHelper {
 
 		// Return the sorted score data list.
 		return scoreDataList;
+	}
+
+	/**
+	 * Returns the JSON decoded CONFIG_UPDATE message data in the TV application defined JSON format:<br>
+	 * <code>
+	 *     { "isCollisionDetectionEnabled": true, "isAlienEnabled": false, ... }
+	 * </code>
+	 * 
+	 * @param data
+	 *            The string data from the CONFIG_UPDATE message.
+	 * @return
+	 */
+	public static ConfigTypeMap decodeConfigUpdateData(String data) {
+		ConfigTypeMap configTypeMap = new ConfigTypeMap();
+
+		try {
+			// Initialize a JSON Object with the given data object
+			JSONObject jsonObject = new JSONObject(data);
+
+			for (ConfigType type : configTypeMap.getConfigTypes()) {
+				boolean isEnabled = jsonObject.optBoolean(type.getDescription(), type.getDefaultValue());
+				configTypeMap.setIsEnabled(type, isEnabled);
+			}
+
+		} catch (JSONException e) {
+			Log.e(TAG, "Failed to decode the CONFIG_UPDATE message data. configTypeMap=" + configTypeMap, e);
+		}
+
+		// Return the sorted score data list.
+		return configTypeMap;
 	}
 
 	/******************************************************************************************************************
