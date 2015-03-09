@@ -111,7 +111,7 @@ BasicGame.Game.prototype = {
         this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
 
         for (var other_players_id in this.players) {
-            if(other_players_id != id) {
+            if(other_players_id != currentPlayer.id) {
                 //check for bullets
                 this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
 
