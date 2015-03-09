@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.samsung.multiscreen.msf20.casteroids.BuildConfig;
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
@@ -15,13 +16,13 @@ import com.samsung.multiscreen.msf20.connectivity.MessageListener;
  * @author Dan McCafferty
  * 
  */
-public class GameConnectivityManager extends ConnectivityManager implements MessageListener {
+public class GameConnectivityManager extends ConnectivityManager implements ConnectivityListener, MessageListener {
 
 	// An singleton instance of this class
 	private static GameConnectivityManager instance = null;
 
 	// The URL where the TV application lives
-	//private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
+	// private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
 	private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
@@ -41,9 +42,13 @@ public class GameConnectivityManager extends ConnectivityManager implements Mess
 	private GameConnectivityManager(Context context, String url, String channelId, long discoveryTimeoutMillis) {
 		super(context, url, channelId, discoveryTimeoutMillis);
 
+		// Register for connectivity updates
+		registerConnectivityListener(this);
+
 		// Register for Events that this class is interested in anytime we are connected to the application.
 		registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.GAME_START, Event.GAME_OVER,
 		        Event.PLAYER_OUT);
+
 	}
 
 	/**
@@ -156,6 +161,24 @@ public class GameConnectivityManager extends ConnectivityManager implements Mess
 	public void unregisterMessageListener(MessageListener listener, Event... events) {
 		for (Event event : events) {
 			unregisterMessageListener(listener, event.getName());
+		}
+	}
+
+	@Override
+	public void onConnectivityUpdate(int eventId) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Received connectivity update '" + eventId + "'.");
+		}
+
+		switch (eventId) {
+			case APPLICATION_CONNECTED:
+				gameState.onConnected();
+				break;
+			case APPLICATION_DISCONNECTED:
+				gameState.onDisconnected();
+				break;
+			default:
+				// Ignore.
 		}
 	}
 
