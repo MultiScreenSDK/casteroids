@@ -38,7 +38,6 @@ BasicGame.Preloader.prototype = {
         this.load.image('ufo', 'assets/ufo.png');
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
         this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
-        this.load.audio('playerFire', ['assets/player-fire.ogg']);
         this.load.audio('sfx', 'assets/fx_mixdown.ogg');
 
     },

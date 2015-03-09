@@ -22,9 +22,8 @@ BasicGame.Game.prototype = {
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
-        this.alien = this.game.add.sprite(0, 0, 'ufo');
-        this.setupAlien();
-        //        this.setupAsteroid();
+        //this.setupAlien();
+        //this.setupAsteroid();
         this.setupAudio();
     },
 
@@ -40,13 +39,11 @@ BasicGame.Game.prototype = {
         // players lifecycle
         for (var id in this.players) {
             var currentPlayer = this.players[id];
-            //
             // player is dead
             if(!currentPlayer.alive) {
                 // If its time to respawn the player...
                 if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
                     this.resetPlayer(currentPlayer);
-
                     // Notify the GameManager that the player is back in so that it can notify the client.
                     GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
                 }
@@ -60,8 +57,8 @@ BasicGame.Game.prototype = {
         //
         // alien lifecycle
         //
-        // alien is dead
-        if(!this.alien.alive) {
+        // alien exists but is dead
+        if(this.alien && !this.alien.alive) {
             if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
                 this.resetAlien(this.alien);
             }
@@ -122,11 +119,14 @@ BasicGame.Game.prototype = {
     },
 
     updateAlien: function() {
-        this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
+        console.log(this.alien);
+        if(this.alien) {
+            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
                                                           this.alien.body.acceleration);
-        this.fire(this.alien);
-        this.screenWrap(this.alien);
-        this.alien.bullets.forEachExists(this.screenWrap, this);
+            this.fire(this.alien);
+            this.screenWrap(this.alien);
+            this.alien.bullets.forEachExists(this.screenWrap, this);
+        }
     },
 
 
@@ -150,6 +150,8 @@ BasicGame.Game.prototype = {
 
     setupAlien: function () {
         // Here I setup the computer controlled ship
+        this.alien = this.game.add.sprite(0, 0, 'ufo');
+        
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
         var randAngle = this.rnd.integerInRange(0, 100);
@@ -242,7 +244,7 @@ BasicGame.Game.prototype = {
             this.timerLabel.fontSize = 38;
             //            this.timerLabel.tint = 0xFF0000;
             this.timerLabel.fill = '#FFFF00';
-            if(!this.isMuted) {
+            if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
                 this.sfx.play("ping");
             }
             if(this.secondsLeft <= 3) {
