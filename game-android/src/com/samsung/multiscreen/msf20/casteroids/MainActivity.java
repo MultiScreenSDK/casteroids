@@ -17,6 +17,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.samsung.multiscreen.msf20.casteroids.model.ConfigType;
+import com.samsung.multiscreen.msf20.casteroids.model.ConfigTypeMap;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
@@ -236,16 +238,31 @@ public class MainActivity extends Activity implements ConnectivityListener {
         //Initialize the Alert Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        //TODO:  Dan will give me a way to derive this
-        final CharSequence[] gameOptions = {"Collision detection","Alien","Sound","Spaceship tinting","Bullet tinting","Game text", "Points text", "Background image"};
-        final boolean[] selectedOptions = new boolean[gameOptions.length];
-        Arrays.fill(selectedOptions, true);
+        //Get the info from the model
+        final ConfigTypeMap configTypeMap = connectivityManager.getGameState().getConfigTypeMap();
+        final ConfigType[] configTypes = configTypeMap.getConfigTypes();
+
+        //Now massage the data in a way that the dialog understands
+        final CharSequence[] gameOptions = new CharSequence[configTypes.length];
+        final boolean[] selectedOptions = new boolean[configTypes.length];
+
+        for(int i=0; i< configTypes.length; i++) {
+            ConfigType type = configTypes[i];
+            gameOptions[i] = type.getDescription();
+            selectedOptions[i] = configTypeMap.isEnabled(type);
+        }
+
+        //a java oddity here to enable an inner class to have a reference to a final variable
+        final boolean[] isModified = new boolean[]{false};
+
 
         // Set the dialog title
         builder.setTitle("Game Options")
                 .setMultiChoiceItems(gameOptions, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        isModified[0] = true;
                         selectedOptions[which] = isChecked;
                     }
                 })
@@ -253,10 +270,18 @@ public class MainActivity extends Activity implements ConnectivityListener {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        //TODO:  Dan will give me a way to save this
-                        //save(gameOptions, selectedOptions)
+                        if (isModified[0]) {
+                            for (int i = 0; i < configTypes.length; i++) {
+                                ConfigType type = configTypes[i];
+                                //get the value from the array
+                                configTypeMap.setIsEnabled(type, selectedOptions[i]);
+                            }
 
-                        Toast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
+                            //save the configuration
+                            connectivityManager.sendConfigUpdate(configTypeMap);
+                            Toast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
+                        }
+
                         dialog.dismiss();
                     }
                 })
