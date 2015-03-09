@@ -22,7 +22,7 @@ BasicGame.Game.prototype = {
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
-        //this.setupAlien();
+//        this.setupAlien();
         //this.setupAsteroid();
         this.setupAudio();
     },
@@ -197,7 +197,6 @@ BasicGame.Game.prototype = {
 
     setupAudio: function () {
         // Here I setup audio
-        this.audio_fire = this.game.add.audio("playerFire");
         this.sfx = this.game.add.audio("sfx");
         this.sfx.allowMultiple = true;
 
