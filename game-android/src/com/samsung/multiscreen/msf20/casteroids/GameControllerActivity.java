@@ -162,9 +162,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             finish();
         }
 
-        //always start out with user input disabled because we only start playing when the server tells
-        //us that the game is on!
-        //enableViews(false); //TODO: Removing for now, because it doesnt allow you to join late into a game
+        //determine if the user input should be enabled or disabled based on whether or not the game is on!
+        boolean hasGameStarted = (gameConnectivityManager.getGameState().getGameStartCountDownSeconds() == 0);
+        enableViews(hasGameStarted);
 
         //start the sensor listeners
         if(accelerometer != null) {
