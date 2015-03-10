@@ -1,7 +1,8 @@
 package com.samsung.multiscreen.msf20.casteroids.model;
 
 /**
- * Enumeration of all the TV application defined configuration types.<br>
+ * Enumeration of all the TV application defined configuration types. Adding an additional enum will automatically
+ * display it in the UI and send it to the client.<br>
  * <br>
  * These configuration types are used to enabled/disable different features of the game. This was added to assist in the
  * performance tuning of the TV Application.
@@ -23,11 +24,11 @@ public enum ConfigType {
 	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", true),
 	PHYSICS("isPhysicsEnabled", "Physics", true),
 	FPS("isFpsEnabled", "FPS", true);
-	
-	// The TV application defined name for the ConfigType
+
+	// The TV application defined name for the ConfigType. This field is as the key when sending the data to the client.
 	private final String name;
 
-	// A String description of the ConfigType.
+	// A String description of the ConfigType. This field is used by the UI layer when displaying the options to the user.
 	private final String description;
 	
 	// The default value for the ConfigType.
@@ -40,7 +41,8 @@ public enum ConfigType {
 	}
 
 	/**
-	 * Returns the TV application defined name for the ConfigType.
+	 * Returns the TV application defined name for the ConfigType. This field is as the key when sending the data to the
+	 * client.
 	 * 
 	 * @return
 	 */
@@ -49,7 +51,8 @@ public enum ConfigType {
 	}
 
 	/**
-	 * Returns a String description of the ConfigType. s
+	 * Returns a String description of the ConfigType. This field is used by the UI layer when displaying the options to
+	 * the user.
 	 * 
 	 * @return
 	 */
