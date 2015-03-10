@@ -6,7 +6,6 @@ BasicGame.Game = function (game) {
 
     this.ticks = 0;
 
-    this.isPhysics = true;
     this.isAlien = true;
     this.isPlayersTinting = true;
     this.isBulletTinting = true;
@@ -334,10 +333,6 @@ BasicGame.Game.prototype = {
      *
      */
     hit: function(target, bullet) {
-
-        if(!this.isPhysics) {
-            return;
-        }
         if(!this.isMuted) {
             this.sfx.play('boss hit');
         }
@@ -402,7 +397,7 @@ BasicGame.Game.prototype = {
      *
      */
     collide: function(obj1, obj2) {
-        if(!obj1.body.enabled || !obj2.body.enabled || !this.isPhysics){
+        if(!obj1.body.enabled || !obj2.body.enabled){
             return;
         }
         // deduct points from players on hit
