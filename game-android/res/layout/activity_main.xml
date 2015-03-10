@@ -15,17 +15,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp" />
 
-    <Button
-        style="@style/AppButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/game_settings_button"
-        android:text="Game Settings"
-        android:layout_alignTop="@+id/how_to_play_button"
-        android:layout_toLeftOf="@+id/how_to_play_button"
-        android:layout_toStartOf="@+id/how_to_play_button"
-        android:layout_marginRight="10dp"
-         />
 
     <Button
         style="@style/AppButton"
