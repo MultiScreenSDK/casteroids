@@ -4,6 +4,8 @@ BasicGame.Game = function (game) {
     this.shipDimens = 48;
     this.halfShipDimens = this.shipDimens/2;
 
+    this.ticks = 0;
+
     this.isPhysics = true;
     this.isAlien = true;
     this.isPlayersTinting = true;
@@ -11,6 +13,9 @@ BasicGame.Game = function (game) {
     this.isGameText = true;
     this.isPointsText = true;
     this.isBackground = true;
+    this.isRespawnOptimize = true;
+    this.isCollisionsOptimize = true;
+    this.isFPSdebug = true;
 };
 
 BasicGame.Game.prototype = {
@@ -56,7 +61,9 @@ BasicGame.Game.prototype = {
 
     render: function() {
         //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
-        this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
+        if(this.isFPSdebug) {
+            this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
+        }
     },
 
     update: function () {
@@ -64,35 +71,22 @@ BasicGame.Game.prototype = {
 
         //
         // players lifecycle
-        for (var id in this.players) {
-            var currentPlayer = this.players[id];
-            // player is dead
-            if(!currentPlayer.alive) {
-                // If its time to respawn the player...
-                if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    this.resetPlayer(currentPlayer);
-                    // Notify the GameManager that the player is back in so that it can notify the client.
-                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
-                }
+        if(this.isRespawnOptimize) {
+            if(this.ticks % 16 == 0) {
+                this.playerLifecycle();
             }
-            // player is alive
-            else {
-                this.updatePlayer(currentPlayer);
-            }
+        } else {
+            this.playerLifecycle();
         }
 
         //
         // alien lifecycle
-        //
-        // alien exists but is dead
-        if(this.alien && !this.alien.alive) {
-            if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                this.resetAlien(this.alien);
+        if(this.isRespawnOptimize) {
+            if(this.ticks % 16 == 0) {
+                this.alienLifecycle();
             }
-        }
-        // alien is alive
-        else {
-            this.updateAlien();
+        } else {
+            this.alienLifecycle();
         }
 
         // check for points prompt expiring
@@ -108,6 +102,8 @@ BasicGame.Game.prototype = {
         if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
             this.isMuted = !this.isMuted;
         }
+
+        this.ticks++;
     },
 
     // derivative update functions for main game elements
@@ -236,7 +232,47 @@ BasicGame.Game.prototype = {
     ////////////////////////////////////////////////////////
     // Miscellaneous game functions
 
-    /*
+    /**
+     * Checks the player status and respawn if necessary
+     *
+     */
+    playerLifecycle: function() {
+        for (var id in this.players) {
+            var currentPlayer = this.players[id];
+            // player is dead
+            if(!currentPlayer.alive) {
+                // If its time to respawn the player...
+                if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
+                    this.resetPlayer(currentPlayer);
+                    // Notify the GameManager that the player is back in so that it can notify the client.
+                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
+                }
+            }
+            // player is alive
+            else {
+                this.updatePlayer(currentPlayer);
+            }
+        }
+    },
+
+    /**
+     * Checks the alien status and respawn if necessary
+     *
+     */
+    alienLifecycle: function() {
+        // alien exists but is dead
+        if(this.alien && !this.alien.alive) {
+            if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
+                this.resetAlien(this.alien);
+            }
+        }
+        // alien is alive
+        else {
+            this.updateAlien();
+        }
+    },
+
+    /**
      * Keeps track of the game countdown timer and handles last-10-seconds alert
      * with a sound, red tint and increased size.
      *
@@ -666,35 +702,5 @@ BasicGame.Game.prototype = {
         // Update the isFiring flag.
         currentPlayer.isFiring = fireEnabled;
     },
-
-    onPhysicsEnabled: function(isEnabled){
-        this.isPhysics = isEnabled;
-    },
-
-    onAlienEnabled: function(isEnabled){
-        this.isAlien = isEnabled;
-        this.setupAlien();
-    },
-
-    onSpaceshipTintingEnabled: function(isEnabled){
-        this.isPlayersTinting = isEnabled;
-    },
-
-    onBulletTintingEnabled: function(isEnabled){
-        this.isBulletTinting = isEnabled;
-    },
-
-    onGameTextEnabled: function(isEnabled){
-        this.isGameText = isEnabled;
-    },
-
-    onPointsTextEnabled: function(isEnabled){
-        this.isPointsText = isEnabled;
-    },
-
-    onBackgroudEnabled: function(isEnabled){
-        this.isBackground = isEnabled;
-    },
-
 
 };
