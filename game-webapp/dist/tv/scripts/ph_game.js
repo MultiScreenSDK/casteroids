@@ -82,12 +82,6 @@ BasicGame.Game.prototype = {
         if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
             this.pointsUpPrompt.destroy();
         }
-
-        // Check for Mute with ESC Keyboard (debugging)
-        if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
-            this.isMuted = !this.isMuted;
-        }
-
         this.ticks++;
     },
 
