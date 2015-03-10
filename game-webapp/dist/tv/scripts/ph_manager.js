@@ -75,7 +75,7 @@ $(GameManager = function(){
 
     // Configurations to enabled/disable different features of the game. This was added to assist in the performance
     // tuning of this TV Application.
-    var config = {};
+    var config;
 
     /******************************************************************************************************************
      * Game State Methods
