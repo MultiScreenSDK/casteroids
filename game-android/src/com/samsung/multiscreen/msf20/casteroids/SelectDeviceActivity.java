@@ -34,6 +34,10 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
     private ArrayAdapter<String> avblServices = null;
 
 
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,27 +64,39 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
         bindList();
     }
 
-    /**
-     * Binds the list view with the discovered services.
-     */
-    private void bindList() {
-        if (connectivityManager.hasDiscoveredService()) {
-            String[] services = connectivityManager.getDiscoveredServiceNames();
-            if ((services != null) && (services.length > 0)) {
-                //bind the list view with the services
-                avblServices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-                avblServices.addAll(services);
-
-                tvList.setAdapter(avblServices);
-            }
-        }
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
         connectivityManager.unregisterConnectivityListener(this);
     }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(avblServices != null) {
+            try {
+                String service = avblServices.getItem(position);
+                //connect to the service
+                connectivityManager.connect(service);
+                setReturnValue(Activity.RESULT_OK);
+            } catch (Exception ex) {
+                setReturnValue(Activity.RESULT_CANCELED);
+            }
+        }
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setReturnValue(Activity.RESULT_OK);
+        finish();
+    }
+
+
+    /******************************************************************************************************************
+     * Connectivity and Game Message Listeners
+     */
+
 
     @Override
     public void onConnectivityUpdate(int eventId) {
@@ -119,25 +135,26 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if(avblServices != null) {
-            try {
-                String service = avblServices.getItem(position);
-                //connect to the service
-                connectivityManager.connect(service);
-                setReturnValue(Activity.RESULT_OK);
-            } catch (Exception ex) {
-                setReturnValue(Activity.RESULT_CANCELED);
+
+    /******************************************************************************************************************
+     * Private methods
+     */
+
+
+    /**
+     * Binds the list view with the discovered services.
+     */
+    private void bindList() {
+        if (connectivityManager.hasDiscoveredService()) {
+            String[] services = connectivityManager.getDiscoveredServiceNames();
+            if ((services != null) && (services.length > 0)) {
+                //bind the list view with the services
+                avblServices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+                avblServices.addAll(services);
+
+                tvList.setAdapter(avblServices);
             }
         }
-        finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        setReturnValue(Activity.RESULT_OK);
-        finish();
     }
 
     private void setReturnValue(int result){

@@ -65,6 +65,11 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Reference to an ARGB animation evaluator that is cached for performance reasons */
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
+
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,6 +160,42 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE);
     }
 
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+
+        switch (viewId) {
+            case R.id.color1_button:
+                selectColorForSlot((SlotData) color1Button.getTag());
+                break;
+            case R.id.color2_button:
+                selectColorForSlot((SlotData) color2Button.getTag());
+                break;
+            case R.id.color3_button:
+                selectColorForSlot((SlotData) color3Button.getTag());
+                break;
+            case R.id.color4_button:
+                selectColorForSlot((SlotData) color4Button.getTag());
+                break;
+            case R.id.play_button:
+                if(checkUserSelections()) {
+                    connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
+                }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        connectivityManager.disconnect();
+        super.onBackPressed();
+    }
+
+
+    /******************************************************************************************************************
+     * Connectivity and Game Message Listeners
+     */
 
     @Override
     public void onConnectivityUpdate(int eventId) {
@@ -193,37 +234,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
 
-        switch (viewId) {
-            case R.id.color1_button:
-                selectColorForSlot((SlotData) color1Button.getTag());
-                break;
-            case R.id.color2_button:
-                selectColorForSlot((SlotData) color2Button.getTag());
-                break;
-            case R.id.color3_button:
-                selectColorForSlot((SlotData) color3Button.getTag());
-                break;
-            case R.id.color4_button:
-                selectColorForSlot((SlotData) color4Button.getTag());
-                break;
-            case R.id.play_button:
-                if(checkUserSelections()) {
-                    connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
-                }
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        connectivityManager.disconnect();
-        super.onBackPressed();
-    }
+    /******************************************************************************************************************
+     * Private methods
+     */
 
     private void selectColorForSlot(SlotData slotData) {
 
@@ -291,7 +305,6 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             Toast.makeText(this, "You must choose a color", Toast.LENGTH_SHORT).show();
             return false;
         }
-
 
         return true;
     }

@@ -27,6 +27,11 @@ public class HowToPlayActivity extends Activity {
     /** Page Adapter instantiates and destroys the how to play instruction screens */
     private HowToPlayPageAdapter viewPagerAdapter;
 
+
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
