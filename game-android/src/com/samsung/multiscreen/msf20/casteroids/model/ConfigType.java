@@ -13,7 +13,7 @@ public enum ConfigType {
 
 	COLLISION_DETECTION("isCollisionDetectionEnabled", "Collision Detection", true),
 	OPTIMIZED_COLLISION_DETECTION("isOptimizedCollisionDetectionEnabled", "Optimized Collision Detection", true),
-	OPTIMIZED_RESPAWN("isOptimizedCollisionDetectionEnabled", "Optimized Respawn", true),
+	OPTIMIZED_RESPAWN("isOptimizedRespawnEnabled", "Optimized Respawn", true),
 	ALIEN("isAlienEnabled", "Alien", true),
 	SOUND("isSoundEnabled", "Sound", true),
 	SPACESHIP_TINTING("isSpaceshipTintingEnabled", "Spaceship Tinting", true),
@@ -21,7 +21,8 @@ public enum ConfigType {
 	GAME_TEXT("isGameTextEnabled", "Game Text", true),
 	POINTS_TEXT("isPointsTextEnabled", "Points Text", true),
 	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", true),
-	FPS("isBackgroundImageEnabled", "FPS", true);
+	PHYSICS("isPhysicsEnabled", "Physics", true),
+	FPS("isFpsEnabled", "FPS", true);
 	
 	// The TV application defined name for the ConfigType
 	private final String name;
