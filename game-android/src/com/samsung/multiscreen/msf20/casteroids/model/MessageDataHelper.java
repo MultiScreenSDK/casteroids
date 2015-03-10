@@ -88,7 +88,7 @@ public class MessageDataHelper {
 
 		try {
 			for (ConfigType type : configTypeMap.getConfigTypes()) {
-				jsonObject.put(type.getDescription(), configTypeMap.isEnabled(type));
+				jsonObject.put(type.getName(), configTypeMap.isEnabled(type));
 			}
 		} catch (JSONException e) {
 			Log.e(TAG, "Faled to JSON encode CONFIG_UPDATE message data. configTypeMap=" + configTypeMap, e);
@@ -263,7 +263,7 @@ public class MessageDataHelper {
 			JSONObject jsonObject = new JSONObject(data);
 
 			for (ConfigType type : configTypeMap.getConfigTypes()) {
-				boolean isEnabled = jsonObject.optBoolean(type.getDescription(), type.getDefaultValue());
+				boolean isEnabled = jsonObject.optBoolean(type.getName(), type.getDefaultValue());
 				configTypeMap.setIsEnabled(type, isEnabled);
 			}
 
