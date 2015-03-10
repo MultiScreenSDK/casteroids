@@ -15,6 +15,10 @@ BasicGame.Preloader = function (game) {
 
 BasicGame.Preloader.prototype = {
 
+    /******************************************************************************************************************
+     * Phaser Lifecycle functions
+     */
+
     preload: function () {
 
         //  Load the Google WebFont Loader script

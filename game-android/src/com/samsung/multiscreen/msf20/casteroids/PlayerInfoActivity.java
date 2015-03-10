@@ -3,7 +3,10 @@ package com.samsung.multiscreen.msf20.casteroids;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -18,6 +21,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.Color;
+import com.samsung.multiscreen.msf20.casteroids.model.ConfigType;
+import com.samsung.multiscreen.msf20.casteroids.model.ConfigTypeMap;
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.model.JoinResponseData;
@@ -48,7 +53,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     private int rootViewDefaultBackgoundColor;
 
     /** References to buttons on the screen */
-    private Button playButton, color1Button, color2Button, color3Button, color4Button;
+    private Button playButton, settingsButton, color1Button, color2Button, color3Button, color4Button;
 
     /** Reference to the name EditText */
     private EditText nameText;
@@ -64,6 +69,14 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     /** Reference to an ARGB animation evaluator that is cached for performance reasons */
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
+    /** Reference to the game config gameConfigDialog */
+    private Dialog gameConfigDialog;
+
+
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +108,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //Get references to the buttons
         playButton = (Button) findViewById(R.id.play_button);
+
+        // Initialize the how to play button
+        settingsButton = (Button) findViewById(R.id.game_settings_button);
         color1Button = (Button) findViewById(R.id.color1_button);
         color2Button = (Button) findViewById(R.id.color2_button);
         color3Button = (Button) findViewById(R.id.color3_button);
@@ -110,14 +126,17 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color3Button.setTypeface(customTypeface);
         color4Button.setTypeface(customTypeface);
         playButton.setTypeface(customTypeface);
+        settingsButton.setTypeface(customTypeface);
         nameText.setTypeface(customTypeface);
 
         //attach listeners
         playButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(this);
         color1Button.setOnClickListener(this);
         color2Button.setOnClickListener(this);
         color3Button.setOnClickListener(this);
         color4Button.setOnClickListener(this);
+
 
     }
 
@@ -134,7 +153,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.registerConnectivityListener(this);
 
         //register for SLOT changes
-        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE);
+        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
 
         //rebind the data
         bindAvailableSlots();
@@ -152,9 +171,49 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.unregisterConnectivityListener(this);
 
         //unregister for SLOT changes
-        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE);
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
     }
 
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+
+        switch (viewId) {
+            case R.id.color1_button:
+                selectColorForSlot((SlotData) color1Button.getTag());
+                break;
+            case R.id.color2_button:
+                selectColorForSlot((SlotData) color2Button.getTag());
+                break;
+            case R.id.color3_button:
+                selectColorForSlot((SlotData) color3Button.getTag());
+                break;
+            case R.id.color4_button:
+                selectColorForSlot((SlotData) color4Button.getTag());
+                break;
+            case R.id.play_button:
+                if(checkUserSelections()) {
+                    connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
+                }
+                break;
+            case R.id.game_settings_button:
+                showGameSettings();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        connectivityManager.disconnect();
+        super.onBackPressed();
+    }
+
+
+    /******************************************************************************************************************
+     * Connectivity and Game Message Listeners
+     */
 
     @Override
     public void onConnectivityUpdate(int eventId) {
@@ -190,40 +249,18 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             }
         } else if (event.equals(Event.SLOT_UPDATE.getName())){
             bindAvailableSlots();
+        } else  if(event.equals(Event.CONFIG_UPDATE.getName())){
+            if(gameConfigDialog != null && gameConfigDialog.isShowing()) {
+                Toast.makeText(this, "Another player edited the game configuration", Toast.LENGTH_SHORT).show();
+                gameConfigDialog.dismiss();
+            }
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
 
-        switch (viewId) {
-            case R.id.color1_button:
-                selectColorForSlot((SlotData) color1Button.getTag());
-                break;
-            case R.id.color2_button:
-                selectColorForSlot((SlotData) color2Button.getTag());
-                break;
-            case R.id.color3_button:
-                selectColorForSlot((SlotData) color3Button.getTag());
-                break;
-            case R.id.color4_button:
-                selectColorForSlot((SlotData) color4Button.getTag());
-                break;
-            case R.id.play_button:
-                if(checkUserSelections()) {
-                    connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
-                }
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        connectivityManager.disconnect();
-        super.onBackPressed();
-    }
+    /******************************************************************************************************************
+     * Private methods
+     */
 
     private void selectColorForSlot(SlotData slotData) {
 
@@ -292,7 +329,6 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             return false;
         }
 
-
         return true;
     }
 
@@ -317,6 +353,69 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     private String getPlayerNameFromPreferences(){
         return prefs.getString("name", "");
+    }
+
+    private void showGameSettings() {
+        //Initialize the Alert Dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //Get the info from the model
+        final ConfigTypeMap configTypeMap = connectivityManager.getGameState().getConfigTypeMap();
+        final ConfigType[] configTypes = configTypeMap.getConfigTypes();
+
+        //Now massage the data in a way that the gameConfigDialog understands
+        final CharSequence[] gameOptions = new CharSequence[configTypes.length];
+        final boolean[] selectedOptions = new boolean[configTypes.length];
+
+        for(int i=0; i< configTypes.length; i++) {
+            ConfigType type = configTypes[i];
+            gameOptions[i] = type.getDescription();
+            selectedOptions[i] = configTypeMap.isEnabled(type);
+        }
+
+        //a java oddity here to enable an inner class to have a reference to a final variable
+        final boolean[] isModified = new boolean[]{false};
+
+
+        // Set the gameConfigDialog title
+        builder.setTitle("Game Settings")
+                .setMultiChoiceItems(gameOptions, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        isModified[0] = true;
+                        selectedOptions[which] = isChecked;
+                    }
+                })
+
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (isModified[0]) {
+                            for (int i = 0; i < configTypes.length; i++) {
+                                ConfigType type = configTypes[i];
+                                //get the value from the array
+                                configTypeMap.setIsEnabled(type, selectedOptions[i]);
+                            }
+
+                            //save the configuration
+                            connectivityManager.sendConfigUpdate(configTypeMap);
+                            Toast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
+                        }
+
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+        gameConfigDialog = builder.create();
+        gameConfigDialog.show();
+
     }
 
 

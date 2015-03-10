@@ -5,6 +5,10 @@ BasicGame.GameOver = function (game) {
 
 BasicGame.GameOver.prototype = {
 
+    /******************************************************************************************************************
+     * Phaser Lifecycle functions
+     */
+
     init: function (scores, names) {
         this.names = names;
     },
@@ -48,6 +52,11 @@ BasicGame.GameOver.prototype = {
 
 
     },
+
+
+    /******************************************************************************************************************
+     * Private functions
+     */
 
     updateTimer: function () {
         var secondsToStart = 5 - this.secondsElapsed;

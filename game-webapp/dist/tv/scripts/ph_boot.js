@@ -46,6 +46,10 @@ BasicGame.Boot = function (game) {
 
 BasicGame.Boot.prototype = {
 
+    /******************************************************************************************************************
+     * Phaser Lifecycle functions
+     */
+
     init: function () {
         //  We re not using multi-touch so it's recommended setting this to 1
         this.input.maxPointers = 1;

@@ -70,7 +70,12 @@ $(GameManager = function(){
         colorToSlotMap[slot.color] = slot;
     }
 
+    // The last score data object from the last game
     var lastScoreData;
+
+    // Configurations to enabled/disable different features of the game. This was added to assist in the performance
+    // tuning of this TV Application.
+    var config;
 
     /******************************************************************************************************************
      * Game State Methods
@@ -219,6 +224,7 @@ $(GameManager = function(){
         onGameStart: function(countdown) { onGameStart(countdown); },
         onPlayerOut: function(clientId, countdown) { onPlayerOut(clientId, countdown); },
         onGameOver: function(scores) { onGameOver(scores); },
+        getLastScoreData: function() { return lastScoreData; },
 
         // Player Join/Quit Methods
         addPlayer: function(clientId, name, color) { return addPlayer(clientId, name, color); },
@@ -228,7 +234,10 @@ $(GameManager = function(){
         onRotate: function(clientId, direction, strength) { onRotate(clientId, direction, strength); },
         onThrust: function(clientId, thrustEnabled) { onThrust(clientId, thrustEnabled); },
         onFire: function(clientId, fireEnabled) { onFire(clientId, fireEnabled); },
-        getLastScoreData: function() { return lastScoreData; }
+
+        // Configuration Methods.
+        setConfig: function(newConfig) { config = newConfig; },
+        getConfig: function() { return config; }
     }
 
 }());

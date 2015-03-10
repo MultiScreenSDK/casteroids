@@ -100,6 +100,12 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Whether the current player out event has been processed */
     private boolean processedPlayerOutEvent = false;
 
+
+
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -187,48 +193,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         sensorManager.unregisterListener(sensorEventListener);
     }
 
-    /**
-     * Updates the internal state of the device as well as sends the message
-     * over the the Compass View.
-     *
-     * @param pitch the current pitch of the device.
-     */
-    private void updateOrientation(float pitch) {
-        this.pitch = pitch;
-
-        if (compassView!= null) {
-            compassView.setPitch(pitch);
-            compassView.invalidate();
-        }
-
-        int threshold = 5;
-        //strength value ranging from 0 to 20 based on the given threshold and pitch.
-        int strength = (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
-        
-        if(pitch > -threshold && pitch < threshold) {
-            if(turningRight) {
-                setTurningRight(false, 0);
-            }
-            if(turningLeft) {
-                setTurningLeft(false, 0);
-            }
-        } else if (pitch <= -threshold && (!turningRight || strengthRight != strength)) {
-            setTurningRight(true, strength);
-        } else if(pitch >= threshold && (!turningLeft || strengthLeft != strength)) {
-            setTurningLeft(true, strength);
-        }
-    }
-
-    private void setOnTouchListeners() {
-
-        int[] buttons = new int[] { R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button };
-
-        for (int i = 0; i < buttons.length; i++) {
-            int buttonId = buttons[i];
-
-            View button = findViewById(buttonId);
-            button.setOnTouchListener(this);
-        }
+    @Override
+    public void onBackPressed() {
+        sendQuitMessage(true); //send quit game message and disconnect.
     }
 
     @Override
@@ -248,109 +215,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         return false;
     }
 
-    private void handleDown(int id) {
 
-        handleEvent(id, /** Down */
-        true);
-        Log.v(TAG, toString());
-    }
-
-    private void handleUp(int id) {
-
-        handleEvent(id, /** Down */
-        false);
-        Log.v(TAG, toString());
-    }
-
-    private void handleEvent(int viewId, boolean value) {
-        switch (viewId) {
-            case R.id.thrust_button:
-                setThrusting(value);
-                break;
-            case R.id.fire_button:
-                setFiring(value);
-                break;
-            default:
-                break;
-        }
-        Log.v(TAG, toString());
-    }
-
-    private void setTurningLeft(boolean value, int strength) {
-        turningLeft = value;
-        strengthLeft = strength;
-
-        if (value) {
-            gameConnectivityManager.sendRotateMessage(Rotate.LEFT, strength);
-        } else {
-            gameConnectivityManager.sendRotateMessage(Rotate.NONE, 0);
-        }
-    }
-
-    private void setTurningRight(boolean value, int strength) {
-        turningRight = value;
-        strengthRight = strength;
-
-        if (value) {
-            gameConnectivityManager.sendRotateMessage(Rotate.RIGHT, strength);
-        } else {
-            gameConnectivityManager.sendRotateMessage(Rotate.NONE, 0);
-        }
-    }
-
-    private void setThrusting(boolean value) {
-        thrusting = value;
-
-        if (value) {
-            gameConnectivityManager.sendThrustMessage(Thrust.ON);
-        } else {
-            gameConnectivityManager.sendThrustMessage(Thrust.OFF);
-        }
-    }
-
-    private void setFiring(boolean value) {
-        firing = value;
-
-        if (value) {
-            gameConnectivityManager.sendFireMessage(Fire.ON);
-            vibrator.vibrate(10);
-        } else {
-            gameConnectivityManager.sendFireMessage(Fire.OFF);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "GameControllerActivity{" + "turningLeft=" + turningLeft + ", turningRight=" + turningRight + ", thrusting="
-                + thrusting + ", firing=" + firing + '}';
-    }
-
-    @Override
-    public void onBackPressed() {
-        sendQuitMessage(true); //send quit game message and disconnect.
-    }
-
-    /**
-     * Sends a quit message to the game manager and disconnects.
-     *
-     * @param view calling view
+    /******************************************************************************************************************
+     * Connectivity and Game Message Listeners
      */
-    public void quitGame(View view) {
-        sendQuitMessage(true);
-    }
-
-    /**
-     * Sends a quit message to the game manager and optionally disconnects.
-     *
-     * @param disconnect disconnect flag
-     */
-    private void sendQuitMessage(boolean disconnect) {
-        gameConnectivityManager.sendQuitMessage();
-        finish();
-        if(disconnect) {
-            gameConnectivityManager.disconnect();
-        }
-    }
 
     @Override
     public void onConnectivityUpdate(int eventId) {
@@ -426,6 +294,152 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         }
     }
 
+
+    /******************************************************************************************************************
+     * Private methods
+     */
+
+    /**
+     * Updates the internal state of the device as well as sends the message
+     * over the the Compass View.
+     *
+     * @param pitch the current pitch of the device.
+     */
+    private void updateOrientation(float pitch) {
+        this.pitch = pitch;
+
+        if (compassView!= null) {
+            compassView.setPitch(pitch);
+            compassView.invalidate();
+        }
+
+        int threshold = 5;
+        //strength value ranging from 0 to 20 based on the given threshold and pitch.
+        int strength = (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
+        
+        if(pitch > -threshold && pitch < threshold) {
+            if(turningRight) {
+                setTurningRight(false, 0);
+            }
+            if(turningLeft) {
+                setTurningLeft(false, 0);
+            }
+        } else if (pitch <= -threshold && (!turningRight || strengthRight != strength)) {
+            setTurningRight(true, strength);
+        } else if(pitch >= threshold && (!turningLeft || strengthLeft != strength)) {
+            setTurningLeft(true, strength);
+        }
+    }
+
+    private void setOnTouchListeners() {
+
+        int[] buttons = new int[] { R.id.left_button, R.id.right_button, R.id.thrust_button, R.id.fire_button };
+
+        for (int i = 0; i < buttons.length; i++) {
+            int buttonId = buttons[i];
+
+            View button = findViewById(buttonId);
+            button.setOnTouchListener(this);
+        }
+    }
+
+
+
+    private void handleDown(int id) {
+
+        handleEvent(id, /** Down */
+        true);
+        Log.v(TAG, toString());
+    }
+
+    private void handleUp(int id) {
+
+        handleEvent(id, /** Down */
+        false);
+        Log.v(TAG, toString());
+    }
+
+    private void handleEvent(int viewId, boolean value) {
+        switch (viewId) {
+            case R.id.thrust_button:
+                setThrusting(value);
+                break;
+            case R.id.fire_button:
+                setFiring(value);
+                break;
+            default:
+                break;
+        }
+        Log.v(TAG, toString());
+    }
+
+    private void setTurningLeft(boolean value, int strength) {
+        turningLeft = value;
+        strengthLeft = strength;
+
+        if (value) {
+            gameConnectivityManager.sendRotateMessage(Rotate.LEFT, strength);
+        } else {
+            gameConnectivityManager.sendRotateMessage(Rotate.NONE, 0);
+        }
+    }
+
+    private void setTurningRight(boolean value, int strength) {
+        turningRight = value;
+        strengthRight = strength;
+
+        if (value) {
+            gameConnectivityManager.sendRotateMessage(Rotate.RIGHT, strength);
+        } else {
+            gameConnectivityManager.sendRotateMessage(Rotate.NONE, 0);
+        }
+    }
+
+    private void setThrusting(boolean value) {
+        thrusting = value;
+
+        if (value) {
+            gameConnectivityManager.sendThrustMessage(Thrust.ON);
+        } else {
+            gameConnectivityManager.sendThrustMessage(Thrust.OFF);
+        }
+    }
+
+    private void setFiring(boolean value) {
+        firing = value;
+
+        if (value) {
+            gameConnectivityManager.sendFireMessage(Fire.ON);
+            vibrator.vibrate(10);
+        } else {
+            gameConnectivityManager.sendFireMessage(Fire.OFF);
+        }
+    }
+
+    /**
+     * Sends a quit message to the game manager and disconnects.
+     *
+     * @param view calling view
+     */
+    public void quitGame(View view) {
+        sendQuitMessage(true);
+    }
+
+    /**
+     * Sends a quit message to the game manager and optionally disconnects.
+     *
+     * @param disconnect disconnect flag
+     */
+    private void sendQuitMessage(boolean disconnect) {
+        gameConnectivityManager.sendQuitMessage();
+        finish();
+        if(disconnect) {
+            gameConnectivityManager.disconnect();
+        }
+    }
+
+
+
     /**
      * An example of how to use a Spannable in Android to style specific
      * sections of a String.
@@ -496,10 +510,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             compassView.setVisibility(View.INVISIBLE);
         }
     }
-        
-    //-----------------------------------------
-    //Inner Classes
-    //-----------------------------------------
+
+    /******************************************************************************************************************
+     * Inner Classes
+     */
 
     /**
      * SensorEventListener listens for Accelerometer and Magnetic Field events and updates

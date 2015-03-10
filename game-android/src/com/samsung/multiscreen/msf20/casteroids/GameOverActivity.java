@@ -51,6 +51,10 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
     /** Table that holds all the scores */
     TableLayout tableLayout;
 
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +113,29 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
         bindViews();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Unregister self as a listener
+        connectivityManager.unregisterConnectivityListener(this);
+    }
+
+
+    /******************************************************************************************************************
+     * Connectivity and Game Message Listeners
+     */
+
+    @Override
+    public void onConnectivityUpdate(int eventId) {
+        bindViews();
+    }
+
+
+    /******************************************************************************************************************
+     * Private methods
+     */
+
     /**
      * Android 5.0 (Lollipop) specific code here.
      */
@@ -131,7 +158,6 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
             }
         });
     }
-
 
     /**
      * Show the game scores in the table layout.
@@ -172,16 +198,6 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Unregister self as a listener
-        connectivityManager.unregisterConnectivityListener(this);
-    }
-
-
-
     private void onMainScreenButtonClick() {
 		launchIntent(MainActivity.class);
 	}
@@ -196,8 +212,5 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
         startActivity(intent);
     }
 
-    @Override
-    public void onConnectivityUpdate(int eventId) {
-		bindViews();
-    }
+
 }

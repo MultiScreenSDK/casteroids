@@ -115,6 +115,19 @@ $(ConnectivityManager = function(){
             }
             GameManager.onFire(from.id, msg == 'on');
         });
+
+        channel.on('config_update', function(msg, from) {
+            if (logToConsole) {
+                console.log('config_update. from=' + (from.id || 'Unknown'));
+            }
+
+            // Parse the JSON data received from the client.
+            var config = JSON.parse(msg);
+
+            // Notify the GameManager of the config update.
+            GameManager.setConfig(config);
+        });
+
     });
 
     // Send a slot_update to all or a specific client.

@@ -3,8 +3,6 @@ package com.samsung.multiscreen.msf20.casteroids;
 import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -17,12 +15,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.samsung.multiscreen.msf20.casteroids.model.ConfigType;
-import com.samsung.multiscreen.msf20.casteroids.model.ConfigTypeMap;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
-
-import java.util.Arrays;
 
 /**
  * Landing page for the game. Depending on the connectivity manager, it shows a
@@ -31,7 +25,7 @@ import java.util.Arrays;
  * @author Nik Bhattacharya
  *
  */
-public class MainActivity extends Activity implements ConnectivityListener {
+public class MainActivity extends Activity implements ConnectivityListener{
 
     /** Code to send to the next screen when calling startActivityForResult */
     private static final  int SELECT_TV_RESULT_CODE = 1000;
@@ -40,7 +34,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
     private GameConnectivityManager connectivityManager = null;
 
     /** References to buttons on the screen */
-    private Button playButton, settingsButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
+    private Button playButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
@@ -48,6 +42,10 @@ public class MainActivity extends Activity implements ConnectivityListener {
     /** Reference to the root view */
     private View rootView;
 
+
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,16 +77,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
             }
         });
 
-        // Initialize the how to play button
-        settingsButton = (Button) findViewById(R.id.game_settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showGameSettings();
-            }
-        });
-
-
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +106,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
 
         //set the various buttons with the typeface
         howToPlayButton.setTypeface(customTypeface);
-        settingsButton.setTypeface(customTypeface);
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
@@ -139,6 +126,77 @@ public class MainActivity extends Activity implements ConnectivityListener {
         //capture the current state of the connection and show on the UI
         bindViews();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Unregister self as a listener
+        connectivityManager.unregisterConnectivityListener(this);
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        //disconnect
+        connectivityManager.disconnect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SELECT_TV_RESULT_CODE) {
+            // If the user selected a device...
+            if (resultCode == Activity.RESULT_OK) {
+                // If we are connected to the application, move to the player info screen. Otherwise we will wait to be
+                // connected or for the error message.
+                if (connectivityManager.isConnected()) {
+                    launchIntent(PlayerInfoActivity.class);
+                }
+                // Else, wait for the connect notification.
+            }
+        }
+    }
+
+    /******************************************************************************************************************
+     * Connectivity and Game Message Listeners
+     */
+
+    @Override
+    public void onConnectivityUpdate(int eventId) {
+        switch (eventId) {
+            case DISCOVERY_STOPPED:
+                // Restart discovery as long as we don't have a discovered service.
+                if (!connectivityManager.hasDiscoveredService()) {
+                    connectivityManager.startDiscovery();
+                }
+                break;
+            case APPLICATION_CONNECTED:
+                // TODO: Remove toast
+                Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
+                // We are connected to the application move to the player info screen
+                launchIntent(PlayerInfoActivity.class);
+                break;
+            case APPLICATION_DISCONNECTED:
+            case APPLICATION_CONNECT_FAILED:
+                // TODO: Notify the user that the connection attempt failed.
+                Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+                // The application failed to connect or was disconnected, re-start discovery
+                connectivityManager.startDiscovery();
+                break;
+            default:
+                // ignore
+        }
+
+        // always rebind the views when an event comes in
+        bindViews();
+    }
+
+
+    /******************************************************************************************************************
+     * Private methods
+     */
 
     /**
      * Android 5.0 (Lollipop) specific code here.
@@ -191,21 +249,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Unregister self as a listener
-        connectivityManager.unregisterConnectivityListener(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        //disconnect
-        connectivityManager.disconnect();
-    }
 
     private void onPlayButtonClick() {
 		// If we are connected to the application, move to the player info screen.
@@ -234,68 +277,6 @@ public class MainActivity extends Activity implements ConnectivityListener {
         launchIntent(HowToPlayActivity.class);
     }
 
-    private void showGameSettings() {
-        //Initialize the Alert Dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        //Get the info from the model
-        final ConfigTypeMap configTypeMap = connectivityManager.getGameState().getConfigTypeMap();
-        final ConfigType[] configTypes = configTypeMap.getConfigTypes();
-
-        //Now massage the data in a way that the dialog understands
-        final CharSequence[] gameOptions = new CharSequence[configTypes.length];
-        final boolean[] selectedOptions = new boolean[configTypes.length];
-
-        for(int i=0; i< configTypes.length; i++) {
-            ConfigType type = configTypes[i];
-            gameOptions[i] = type.getDescription();
-            selectedOptions[i] = configTypeMap.isEnabled(type);
-        }
-
-        //a java oddity here to enable an inner class to have a reference to a final variable
-        final boolean[] isModified = new boolean[]{false};
-
-
-        // Set the dialog title
-        builder.setTitle("Game Options")
-                .setMultiChoiceItems(gameOptions, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        isModified[0] = true;
-                        selectedOptions[which] = isChecked;
-                    }
-                })
-
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (isModified[0]) {
-                            for (int i = 0; i < configTypes.length; i++) {
-                                ConfigType type = configTypes[i];
-                                //get the value from the array
-                                configTypeMap.setIsEnabled(type, selectedOptions[i]);
-                            }
-
-                            //save the configuration
-                            connectivityManager.sendConfigUpdate(configTypeMap);
-                            Toast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
-                        }
-
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-    }
 
     private void showSelectTVScreen() {
         //start activity for result here
@@ -321,48 +302,7 @@ public class MainActivity extends Activity implements ConnectivityListener {
         startActivity(intent);
     }
 
-    @Override
-    public void onConnectivityUpdate(int eventId) {
-		switch (eventId) {
-			case DISCOVERY_STOPPED:
-				// Restart discovery as long as we don't have a discovered service.
-				if (!connectivityManager.hasDiscoveredService()) {
-					connectivityManager.startDiscovery();
-				}
-				break;
-			case APPLICATION_CONNECTED:
-                // TODO: Remove toast
-                Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-				// We are connected to the application move to the player info screen
-				launchIntent(PlayerInfoActivity.class);
-				break;
-			case APPLICATION_DISCONNECTED:
-			case APPLICATION_CONNECT_FAILED:
-				// TODO: Notify the user that the connection attempt failed.
-				Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
-				// The application failed to connect or was disconnected, re-start discovery
-				connectivityManager.startDiscovery();
-				break;
-			default:
-				// ignore
-		}
 
-		// always rebind the views when an event comes in
-		bindViews();
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SELECT_TV_RESULT_CODE) {
-			// If the user selected a device...
-			if (resultCode == Activity.RESULT_OK) {
-				// If we are connected to the application, move to the player info screen. Otherwise we will wait to be
-				// connected or for the error message.
-				if (connectivityManager.isConnected()) {
-					launchIntent(PlayerInfoActivity.class);
-				}
-				// Else, wait for the connect notification.
-			}
-		}
-    }
+
 }

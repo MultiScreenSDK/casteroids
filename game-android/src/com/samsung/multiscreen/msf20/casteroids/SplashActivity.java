@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.CycleInterpolator;
 import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
@@ -27,7 +26,11 @@ public class SplashActivity extends Activity {
 
     /** Reference to the Connectivity Manager */
     private GameConnectivityManager connectivityManager = null;
-    
+
+
+    /******************************************************************************************************************
+     * Android Lifecycle methods
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,11 @@ public class SplashActivity extends Activity {
             }
         }, 200);
     }
+
+
+    /******************************************************************************************************************
+     * Private methods
+     */
 
     /**
      * Launch the appropriate activity from the splash screen.

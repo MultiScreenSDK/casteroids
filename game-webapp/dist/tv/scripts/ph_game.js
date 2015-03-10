@@ -4,13 +4,18 @@ BasicGame.Game = function (game) {
     this.shipDimens = 48;
     this.halfShipDimens = this.shipDimens/2;
 
-    this.isPhysics = true;
+    this.ticks = 0;
+
     this.isAlien = true;
     this.isPlayersTinting = true;
     this.isBulletTinting = true;
     this.isGameText = true;
     this.isPointsText = true;
     this.isBackground = true;
+    this.isRespawnOptimize = true;
+    this.isCollisionsDetection = true;
+    this.isCollisionsOptimize = true;
+    this.isFPSdebug = true;
 };
 
 BasicGame.Game.prototype = {
@@ -27,6 +32,22 @@ BasicGame.Game.prototype = {
     },
 
     create: function () {
+        // If the GameManager has a config object, then update the configuration using its values.
+        this.config = GameManager.getConfig();
+        if (this.config !== undefined) {
+            this.isMuted = !this.config.isSoundEnabled;
+            this.isAlien = this.config.isAlienEnabled;
+            this.isPlayersTinting = this.config.isSpaceshipTintingEnabled;
+            this.isBulletTinting = this.config.isBulletTintingEnabled;
+            this.isGameText = this.config.isGameTextEnabled;
+            this.isPointsText = this.config.isPointsTextEnabled;
+            this.isBackground = this.config.isBackgroundImageEnabled;
+            this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
+            this.isCollisionsOptimize = this.config.isOptimizedCollisionDetectionEnabled;
+            this.isRespawnOptimize = this.config.isOptimizedRespawnEnabled;
+            this.isFPSdebug = this.config.isFpsEnabled;
+        }
+
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
@@ -39,44 +60,19 @@ BasicGame.Game.prototype = {
 
     render: function() {
         //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
-        this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
+        if(this.isFPSdebug) {
+            this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
+        }
     },
 
     update: function () {
         //  Main Game Loop
 
-        //
         // players lifecycle
-        for (var id in this.players) {
-            var currentPlayer = this.players[id];
-            // player is dead
-            if(!currentPlayer.alive) {
-                // If its time to respawn the player...
-                if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    this.resetPlayer(currentPlayer);
-                    // Notify the GameManager that the player is back in so that it can notify the client.
-                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
-                }
-            }
-            // player is alive
-            else {
-                this.updatePlayer(currentPlayer);
-            }
-        }
+        this.playerLifecycle();
 
-        //
         // alien lifecycle
-        //
-        // alien exists but is dead
-        if(this.alien && !this.alien.alive) {
-            if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                this.resetAlien(this.alien);
-            }
-        }
-        // alien is alive
-        else {
-            this.updateAlien();
-        }
+        this.alienLifecycle();
 
         // check for points prompt expiring
         if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
@@ -91,6 +87,8 @@ BasicGame.Game.prototype = {
         if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
             this.isMuted = !this.isMuted;
         }
+
+        this.ticks++;
     },
 
     // derivative update functions for main game elements
@@ -111,20 +109,27 @@ BasicGame.Game.prototype = {
         // screen wrapping
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
-        // collision detection
-        if(this.alien) {
-            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-        }
 
-        for (var other_players_id in this.players) {
-            if(other_players_id != currentPlayer.id) {
-                //check for bullets
-                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
 
-                //check for collisions. both die if there is a collision
-                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+        if(this.isCollisionsDetection) {
+
+            if(!this.isCollisionsOptimize || (this.ticks % 4 == 0)) {
+                // collision detection
+                if (this.alien) {
+                    this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                    this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+                    this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+                }
+
+                for (var other_players_id in this.players) {
+                    if (other_players_id != currentPlayer.id) {
+                        //check for bullets
+                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                        //check for collisions. both die if there is a collision
+                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                    }
+                }
             }
         }
     },
@@ -219,7 +224,52 @@ BasicGame.Game.prototype = {
     ////////////////////////////////////////////////////////
     // Miscellaneous game functions
 
-    /*
+    /**
+     * Checks the player status and respawn if necessary
+     *
+     */
+    playerLifecycle: function () {
+        for (var id in this.players) {
+            var currentPlayer = this.players[id];
+            // player is dead
+            if (!currentPlayer.alive) {
+
+                if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
+                    // If its time to respawn the player...
+                    if (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
+                        this.resetPlayer(currentPlayer);
+                        // Notify the GameManager that the player is back in so that it can notify the client.
+                        GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
+                    }
+                }
+            }
+            // player is alive
+            else {
+                this.updatePlayer(currentPlayer);
+            }
+        }
+    },
+
+    /**
+     * Checks the alien status and respawn if necessary
+     *
+     */
+    alienLifecycle: function () {
+        // alien exists but is dead
+        if (this.alien && !this.alien.alive) {
+            if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
+                if (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
+                    this.resetAlien(this.alien);
+                }
+            }
+        }
+        // alien is alive
+        else {
+            this.updateAlien();
+        }
+    },
+
+    /**
      * Keeps track of the game countdown timer and handles last-10-seconds alert
      * with a sound, red tint and increased size.
      *
@@ -283,10 +333,6 @@ BasicGame.Game.prototype = {
      *
      */
     hit: function(target, bullet) {
-        
-        if(!this.isPhysics) {
-            return;
-        }
         if(!this.isMuted) {
             this.sfx.play('boss hit');
         }
@@ -347,11 +393,11 @@ BasicGame.Game.prototype = {
 
 
     /*
-     * handle the collision between a two objects 
+     * handle the collision between a two objects
      *
      */
     collide: function(obj1, obj2) {
-        if(!obj1.body.enabled || !obj2.body.enabled || !this.isPhysics){
+        if(!obj1.body.enabled || !obj2.body.enabled){
             return;
         }
         // deduct points from players on hit
@@ -498,7 +544,7 @@ BasicGame.Game.prototype = {
         GameManager.onGameOver(this.scores);
 
         this.state.start('GameOver', true, false, this.scores, this.names);
-    
+
     },
 
 
@@ -509,6 +555,7 @@ BasicGame.Game.prototype = {
 
     // Add a player to the game.
     addPlayer: function(position, clientId, name, colorCode, hexColor) {
+        console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
             // Initialize the new player
             this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
@@ -547,9 +594,17 @@ BasicGame.Game.prototype = {
             var style_score = { font: "12px", fill: "#fff", align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
+            console.log("game.addPlayer.position");
+            console.log(position);
+            console.log("game.addPlayer.scoreLabels");
+            console.log(this.scoreLabels);
             this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
             this.scoreLabels[clientId].font = 'Wallpoet';
+            //            this.scoreLabels[clientId].tint = colorCode;
+            console.log("game.addPlayer.hexColor");
+            console.log(hexColor);
             this.scoreLabels[clientId].fill = hexColor;
+            console.log(this.scoreLabels[clientId]);
         }
     },
 
@@ -640,35 +695,5 @@ BasicGame.Game.prototype = {
         // Update the isFiring flag.
         currentPlayer.isFiring = fireEnabled;
     },
-    
-    onPhysicsEnabled: function(isEnabled){
-        this.isPhysics = isEnabled;
-    },
-    
-    onAlienEnabled: function(isEnabled){
-        this.isAlien = isEnabled;
-        this.setupAlien();
-    },
-    
-    onSpaceshipTintingEnabled: function(isEnabled){
-        this.isPlayersTinting = isEnabled;
-    },
-    
-    onBulletTintingEnabled: function(isEnabled){
-        this.isBulletTinting = isEnabled;
-    },
-    
-    onGameTextEnabled: function(isEnabled){
-        this.isGameText = isEnabled;
-    },
-    
-    onPointsTextEnabled: function(isEnabled){
-        this.isPointsText = isEnabled;
-    },
-    
-    onBackgroudEnabled: function(isEnabled){
-        this.isBackground = isEnabled;
-    },
-    
 
 };
