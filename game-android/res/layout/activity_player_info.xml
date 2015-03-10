@@ -87,4 +87,17 @@
         android:layout_toRightOf="@+id/color3_button"
         android:layout_toEndOf="@+id/color3_button" />
 
+
+    <Button
+        style="@style/AppButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_settings_button"
+        android:text="Game Settings"
+        android:layout_alignBottom="@+id/play_button"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        />
+
 </RelativeLayout>
