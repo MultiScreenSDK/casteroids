@@ -14,7 +14,7 @@ $(ConnectivityManager = function(){
     var logToConsole = false;
 
     window.msf.local(function(err, service){
-        channel = service.channel('com.samsung.multiscreen.castroids');
+        channel = service.channel('com.samsung.multiscreen.casteroids');
 
         channel.connect({name: 'TV'}, function (err) {
             if(err) return console.error(err);
