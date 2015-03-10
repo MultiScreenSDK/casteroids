@@ -70,25 +70,11 @@ BasicGame.Game.prototype = {
     update: function () {
         //  Main Game Loop
 
-        //
         // players lifecycle
-        if(this.isRespawnOptimize) {
-            if(this.ticks % 16 == 0) {
-                this.playerLifecycle();
-            }
-        } else {
-            this.playerLifecycle();
-        }
+        this.playerLifecycle();
 
-        //
         // alien lifecycle
-        if(this.isRespawnOptimize) {
-            if(this.ticks % 16 == 0) {
-                this.alienLifecycle();
-            }
-        } else {
-            this.alienLifecycle();
-        }
+        this.alienLifecycle();
 
         // check for points prompt expiring
         if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
@@ -125,20 +111,27 @@ BasicGame.Game.prototype = {
         // screen wrapping
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
-        // collision detection
-        if(this.alien) {
-            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-        }
 
-        for (var other_players_id in this.players) {
-            if(other_players_id != currentPlayer.id) {
-                //check for bullets
-                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
 
-                //check for collisions. both die if there is a collision
-                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+        if(this.isCollisionsDetection) {
+
+            if(!this.isCollisionsOptimize || (this.ticks % 4 == 0)) {
+                // collision detection
+                if (this.alien) {
+                    this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                    this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+                    this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+                }
+
+                for (var other_players_id in this.players) {
+                    if (other_players_id != currentPlayer.id) {
+                        //check for bullets
+                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                        //check for collisions. both die if there is a collision
+                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                    }
+                }
             }
         }
     },
@@ -237,16 +230,19 @@ BasicGame.Game.prototype = {
      * Checks the player status and respawn if necessary
      *
      */
-    playerLifecycle: function() {
+    playerLifecycle: function () {
         for (var id in this.players) {
             var currentPlayer = this.players[id];
             // player is dead
-            if(!currentPlayer.alive) {
-                // If its time to respawn the player...
-                if(this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                    this.resetPlayer(currentPlayer);
-                    // Notify the GameManager that the player is back in so that it can notify the client.
-                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
+            if (!currentPlayer.alive) {
+
+                if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
+                    // If its time to respawn the player...
+                    if (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
+                        this.resetPlayer(currentPlayer);
+                        // Notify the GameManager that the player is back in so that it can notify the client.
+                        GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
+                    }
                 }
             }
             // player is alive
@@ -260,11 +256,13 @@ BasicGame.Game.prototype = {
      * Checks the alien status and respawn if necessary
      *
      */
-    alienLifecycle: function() {
+    alienLifecycle: function () {
         // alien exists but is dead
-        if(this.alien && !this.alien.alive) {
-            if(this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                this.resetAlien(this.alien);
+        if (this.alien && !this.alien.alive) {
+            if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
+                if (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
+                    this.resetAlien(this.alien);
+                }
             }
         }
         // alien is alive
