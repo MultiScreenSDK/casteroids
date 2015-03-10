@@ -6,6 +6,10 @@ BasicGame.MainMenu = function (game) {
 
 BasicGame.MainMenu.prototype = {
 
+    /******************************************************************************************************************
+     * Phaser Lifecycle functions
+     */
+
     init: function() {
 
     },
@@ -38,6 +42,31 @@ BasicGame.MainMenu.prototype = {
     update: function () {
 
     },
+
+    /******************************************************************************************************************
+     * Game Callback functions
+     */
+
+    onPlayerUpdate: function (count) {
+        console.log("onPlayerUpdate " + count);
+        this.updateConnectedPlayers(count);
+        if (count > 0) {
+            if (!this.menuTimer.running) {
+                this.menuTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, BasicGame.GAME_COUNTDOWN_LENGTH + 1, this.updateTimer, this);
+            }
+
+        } else {
+            //stop the countdown
+            this.game.time.events.remove(this.menuTimer);
+
+            this.secondsElapsed = 0; //reset
+            this.loadingText.setText("Waiting for Players to join")
+        }
+    },
+
+    /******************************************************************************************************************
+     * Private functions
+     */
 
     startGame: function () {
         GameManager.onGameStart(0);
@@ -90,20 +119,5 @@ BasicGame.MainMenu.prototype = {
     },
 
 
-    onPlayerUpdate: function (count) {
-        console.log("onPlayerUpdate " + count);
-        this.updateConnectedPlayers(count);
-        if (count > 0) {
-            if (!this.menuTimer.running) {
-                this.menuTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, BasicGame.GAME_COUNTDOWN_LENGTH + 1, this.updateTimer, this);
-            }
 
-        } else {
-            //stop the countdown
-            this.game.time.events.remove(this.menuTimer);
-
-            this.secondsElapsed = 0; //reset
-            this.loadingText.setText("Waiting for Players to join")
-        }
-    }
 };

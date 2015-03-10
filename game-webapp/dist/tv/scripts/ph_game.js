@@ -18,8 +18,9 @@ BasicGame.Game.prototype = {
     // Instance var
     players: {},
 
-    /////////////////////////////////////////////////////////////
-    // phaser base functions
+    /******************************************************************************************************************
+     * Phaser Lifecycle functions
+     */
 
     preload: function () {
         //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
@@ -93,55 +94,178 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // derivative update functions for main game elements
 
-    updatePlayer: function (currentPlayer) {
-        if (currentPlayer.isThrusting) {
-            this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
-                                                              BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
-        } else {
-            // TODO fix null body
-            currentPlayer.body.acceleration.set(0);
-        }
+    /******************************************************************************************************************
+     * Game Callback functions
+     */
 
-        if (currentPlayer.isFiring) {
-            this.fire(currentPlayer);
-        }
+    // Add a player to the game.
+    addPlayer: function(position, clientId, name, colorCode, hexColor) {
+        if (this.game !== undefined) {
+            // Initialize the new player
+            this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
+            // Here I setup the user controlled ship
+            var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
+            var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
 
-        // screen wrapping
-        this.screenWrap(currentPlayer);
-        currentPlayer.bullets.forEachExists(this.screenWrap, this);
-        // collision detection
-        if(this.alien) {
-            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-        }
-
-        for (var other_players_id in this.players) {
-            if(other_players_id != currentPlayer.id) {
-                //check for bullets
-                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                //check for collisions. both die if there is a collision
-                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+            this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
+            this.players[clientId].id = clientId;
+            this.players[clientId].order = position;
+            this.players[clientId].isThrusting = false;
+            this.players[clientId].isFiring = false;
+            if(this.isPlayersTinting) {
+                this.players[clientId].tint = colorCode;
             }
+            this.players[clientId].anchor.set(0.5);
+            this.physics.enable(this.players[clientId], Phaser.Physics.ARCADE);
+            this.players[clientId].body.drag.set(BasicGame.PLAYER_DRAG);
+            this.players[clientId].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
+
+            this.players[clientId].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
+            this.players[clientId].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
+            this.players[clientId].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
+
+            // Here I setup the bullets
+            this.players[clientId].bullets = this.add.group();
+            this.players[clientId].bullets.enableBody = true;
+            this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
+            this.players[clientId].bulletTime = 0;
+
+            this.players[clientId].bullets.createMultiple(20, 'bullets');
+            this.players[clientId].bullets.setAll('anchor.x', 0.5);
+            this.players[clientId].bullets.setAll('anchor.y', 0.5);
+
+            // Initialize the new player's text
+            var style_score = { font: "12px", fill: "#fff", align: "center" };
+            this.scores[clientId] = 0;
+            this.names[clientId] = name;
+            this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
+            this.scoreLabels[clientId].font = 'Wallpoet';
+            this.scoreLabels[clientId].fill = hexColor;
         }
     },
 
-    updateAlien: function() {
-        if(this.alien) {
-            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
-                                                              this.alien.body.acceleration);
-            this.fire(this.alien);
-            this.screenWrap(this.alien);
-            this.alien.bullets.forEachExists(this.screenWrap, this);
+    // Remove a player from the game.
+    removePlayer: function(clientId) {
+        if (this.game !== undefined) {
+            // Look up the player.
+            var currentPlayer = this.players[clientId];
+
+            // If the player was not found, ignore and return.
+            if (currentPlayer == null) {
+                return;
+            }
+
+            this.players[clientId].destroy();
+            delete this.players[clientId];
+            this.scoreLabels[clientId].destroy();
+        }
+
+        if($.isEmptyObject(this.players)) {
+            console.log("quitting since everyone left");
+            this.quitGame();
         }
     },
 
+    // Called to rotate a specific player's spaceship.
+    onRotate: function(clientId, direction, strength) {
+        // Map the 0 to 20 range strength value to a 150 to (150+300=450) range angular velocity value for the game.
+        var velocity = ((strength * 300) / 20) + 150;
 
-    ////////////////////////////////////////////////////////////////
-    // Setup functions
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null || currentPlayer.body == null) {
+            return;
+        }
+
+        // Update the angular velocity based on the rotate direction (right, left, or none).
+        if(direction == 'left') {
+            currentPlayer.body.angularVelocity = -velocity;
+        } else if(direction == 'right') {
+            currentPlayer.body.angularVelocity = velocity;
+        } else {
+            currentPlayer.body.angularVelocity = 0;
+        }
+    },
+
+    // Called to enable thrust on a specific player's spaceship.
+    onThrust: function onThrust(clientId, thrustEnabled) {
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null) {
+            return;
+        }
+
+        // Update the isThrusting flag.
+        currentPlayer.isThrusting = thrustEnabled;
+    },
+
+    // Called to enable firing on a specific player's spaceship.
+    onFire: function(clientId, fireEnabled) {
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null) {
+            return;
+        }
+
+        // Update the isFiring flag.
+        currentPlayer.isFiring = fireEnabled;
+    },
+
+    //
+    // Settings callback functions for debugging features from the client app
+    onMute: function(fireEnabled) {
+        // Look up the player.
+        var currentPlayer = this.players[clientId];
+
+        // If the player was not found, ignore and return.
+        if (currentPlayer == null) {
+            return;
+        }
+
+        // Update the isFiring flag.
+        currentPlayer.isFiring = fireEnabled;
+    },
+
+    onPhysicsEnabled: function(isEnabled){
+        this.isPhysics = isEnabled;
+    },
+
+    onAlienEnabled: function(isEnabled){
+        this.isAlien = isEnabled;
+        this.setupAlien();
+    },
+
+    onSpaceshipTintingEnabled: function(isEnabled){
+        this.isPlayersTinting = isEnabled;
+    },
+
+    onBulletTintingEnabled: function(isEnabled){
+        this.isBulletTinting = isEnabled;
+    },
+
+    onGameTextEnabled: function(isEnabled){
+        this.isGameText = isEnabled;
+    },
+
+    onPointsTextEnabled: function(isEnabled){
+        this.isPointsText = isEnabled;
+    },
+
+    onBackgroudEnabled: function(isEnabled){
+        this.isBackground = isEnabled;
+    },
+
+
+    /******************************************************************************************************************
+     * Private Setup functions
+     */
     setupSystem: function () {
         // Here I setup some general utilities
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -216,8 +340,53 @@ BasicGame.Game.prototype = {
         this.scoreLabels = { };
     },
 
-    ////////////////////////////////////////////////////////
-    // Miscellaneous game functions
+    /******************************************************************************************************************
+     * Private functions
+     */
+
+    updatePlayer: function (currentPlayer) {
+        if (currentPlayer.isThrusting) {
+            this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
+                BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+        } else {
+            // TODO fix null body
+            currentPlayer.body.acceleration.set(0);
+        }
+
+        if (currentPlayer.isFiring) {
+            this.fire(currentPlayer);
+        }
+
+        // screen wrapping
+        this.screenWrap(currentPlayer);
+        currentPlayer.bullets.forEachExists(this.screenWrap, this);
+        // collision detection
+        if(this.alien) {
+            this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+            this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+            this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+        }
+
+        for (var other_players_id in this.players) {
+            if(other_players_id != currentPlayer.id) {
+                //check for bullets
+                this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+
+                //check for collisions. both die if there is a collision
+                this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+            }
+        }
+    },
+
+    updateAlien: function() {
+        if(this.alien) {
+            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
+                this.alien.body.acceleration);
+            this.fire(this.alien);
+            this.screenWrap(this.alien);
+            this.alien.bullets.forEachExists(this.screenWrap, this);
+        }
+    },
 
     /*
      * Keeps track of the game countdown timer and handles last-10-seconds alert
@@ -500,175 +669,5 @@ BasicGame.Game.prototype = {
         this.state.start('GameOver', true, false, this.scores, this.names);
     
     },
-
-
-    /*
-    *
-    *   Game callbacks
-    **/
-
-    // Add a player to the game.
-    addPlayer: function(position, clientId, name, colorCode, hexColor) {
-        if (this.game !== undefined) {
-            // Initialize the new player
-            this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
-            // Here I setup the user controlled ship
-            var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
-            var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-
-            this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
-            this.players[clientId].id = clientId;
-            this.players[clientId].order = position;
-            this.players[clientId].isThrusting = false;
-            this.players[clientId].isFiring = false;
-            if(this.isPlayersTinting) {
-                this.players[clientId].tint = colorCode;
-            }
-            this.players[clientId].anchor.set(0.5);
-            this.physics.enable(this.players[clientId], Phaser.Physics.ARCADE);
-            this.players[clientId].body.drag.set(BasicGame.PLAYER_DRAG);
-            this.players[clientId].body.maxVelocity.set(BasicGame.PLAYER_MAX_SPEED);
-
-            this.players[clientId].bulletSpeed = BasicGame.PLAYER_BULLET_SPEED;
-            this.players[clientId].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
-            this.players[clientId].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
-
-            // Here I setup the bullets
-            this.players[clientId].bullets = this.add.group();
-            this.players[clientId].bullets.enableBody = true;
-            this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
-            this.players[clientId].bulletTime = 0;
-
-            this.players[clientId].bullets.createMultiple(20, 'bullets');
-            this.players[clientId].bullets.setAll('anchor.x', 0.5);
-            this.players[clientId].bullets.setAll('anchor.y', 0.5);
-
-            // Initialize the new player's text
-            var style_score = { font: "12px", fill: "#fff", align: "center" };
-            this.scores[clientId] = 0;
-            this.names[clientId] = name;
-            this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
-            this.scoreLabels[clientId].font = 'Wallpoet';
-            this.scoreLabels[clientId].fill = hexColor;
-        }
-    },
-
-    // Remove a player from the game.
-    removePlayer: function(clientId) {
-        if (this.game !== undefined) {
-            // Look up the player.
-            var currentPlayer = this.players[clientId];
-
-            // If the player was not found, ignore and return.
-            if (currentPlayer == null) {
-                return;
-            }
-
-            this.players[clientId].destroy();
-            delete this.players[clientId];
-            this.scoreLabels[clientId].destroy();
-        }
-
-        if($.isEmptyObject(this.players)) {
-            console.log("quitting since everyone left");
-            this.quitGame();
-        }
-    },
-
-    // Called to rotate a specific player's spaceship.
-    onRotate: function(clientId, direction, strength) {
-        // Map the 0 to 20 range strength value to a 150 to (150+300=450) range angular velocity value for the game.
-        var velocity = ((strength * 300) / 20) + 150;
-
-        // Look up the player.
-        var currentPlayer = this.players[clientId];
-
-        // If the player was not found, ignore and return.
-        if (currentPlayer == null || currentPlayer.body == null) {
-            return;
-        }
-
-        // Update the angular velocity based on the rotate direction (right, left, or none).
-        if(direction == 'left') {
-            currentPlayer.body.angularVelocity = -velocity;
-        } else if(direction == 'right') {
-            currentPlayer.body.angularVelocity = velocity;
-        } else {
-            currentPlayer.body.angularVelocity = 0;
-        }
-    },
-
-    // Called to enable thrust on a specific player's spaceship.
-    onThrust: function onThrust(clientId, thrustEnabled) {
-        // Look up the player.
-        var currentPlayer = this.players[clientId];
-
-        // If the player was not found, ignore and return.
-        if (currentPlayer == null) {
-            return;
-        }
-
-        // Update the isThrusting flag.
-        currentPlayer.isThrusting = thrustEnabled;
-    },
-
-    // Called to enable firing on a specific player's spaceship.
-    onFire: function(clientId, fireEnabled) {
-        // Look up the player.
-        var currentPlayer = this.players[clientId];
-
-        // If the player was not found, ignore and return.
-        if (currentPlayer == null) {
-            return;
-        }
-
-        // Update the isFiring flag.
-        currentPlayer.isFiring = fireEnabled;
-    },
-
-    //
-    // Settings callback functions for debugging features from the client app
-    onMute: function(fireEnabled) {
-        // Look up the player.
-        var currentPlayer = this.players[clientId];
-
-        // If the player was not found, ignore and return.
-        if (currentPlayer == null) {
-            return;
-        }
-
-        // Update the isFiring flag.
-        currentPlayer.isFiring = fireEnabled;
-    },
-    
-    onPhysicsEnabled: function(isEnabled){
-        this.isPhysics = isEnabled;
-    },
-    
-    onAlienEnabled: function(isEnabled){
-        this.isAlien = isEnabled;
-        this.setupAlien();
-    },
-    
-    onSpaceshipTintingEnabled: function(isEnabled){
-        this.isPlayersTinting = isEnabled;
-    },
-    
-    onBulletTintingEnabled: function(isEnabled){
-        this.isBulletTinting = isEnabled;
-    },
-    
-    onGameTextEnabled: function(isEnabled){
-        this.isGameText = isEnabled;
-    },
-    
-    onPointsTextEnabled: function(isEnabled){
-        this.isPointsText = isEnabled;
-    },
-    
-    onBackgroudEnabled: function(isEnabled){
-        this.isBackground = isEnabled;
-    },
-    
 
 };
