@@ -14,6 +14,7 @@ BasicGame.Game = function (game) {
     this.isPointsText = true;
     this.isBackground = true;
     this.isRespawnOptimize = true;
+    this.isCollisionsDetection = true;
     this.isCollisionsOptimize = true;
     this.isFPSdebug = true;
 };
@@ -43,10 +44,10 @@ BasicGame.Game.prototype = {
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
             this.isBackground = this.config.isBackgroundImageEnabled;
-            // this.config.isCollisionDetectionEnabled
-            // this.config.isOptimizedCollisionDetectionEnabled
-            // this.config.isOptimizedRespawnEnabled
-            // this.config.isFpsEnabled
+            this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
+            this.isCollisionsOptimize = this.config.isOptimizedCollisionDetectionEnabled;
+            this.isRespawnOptimize = this.config.isOptimizedRespawnEnabled;
+            this.isFPSdebug = this.config.isFpsEnabled;
         }
 
         this.setupSystem();
