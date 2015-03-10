@@ -22,7 +22,6 @@ public enum ConfigType {
 	GAME_TEXT("isGameTextEnabled", "Game Text", true),
 	POINTS_TEXT("isPointsTextEnabled", "Points Text", true),
 	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", true),
-	PHYSICS("isPhysicsEnabled", "Physics", true),
 	FPS("isFpsEnabled", "FPS", true);
 
 	// The TV application defined name for the ConfigType. This field is as the key when sending the data to the client.

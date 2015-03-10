@@ -37,7 +37,6 @@ BasicGame.Game.prototype = {
         this.config = GameManager.getConfig();
         if (this.config !== undefined) {
             this.isMuted = !this.config.isSoundEnabled;
-            this.isPhysics = this.config.isPhysicsEnabled;
             this.isAlien = this.config.isAlienEnabled;
             this.isPlayersTinting = this.config.isSpaceshipTintingEnabled;
             this.isBulletTinting = this.config.isBulletTintingEnabled;
