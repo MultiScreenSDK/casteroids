@@ -11,10 +11,8 @@ BasicGame.Game = function (game) {
     this.isBulletTinting = true;
     this.isGameText = true;
     this.isPointsText = true;
-    this.isBackground = true;
-    this.isRespawnOptimize = true;
+//    this.isBackground = true;
     this.isCollisionsDetection = true;
-    this.isCollisionsOptimize = true;
     this.isFPSdebug = true;
 };
 
@@ -27,8 +25,6 @@ BasicGame.Game.prototype = {
      */
 
     preload: function () {
-        //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
-        this.game.time.advancedTiming = true;
     },
 
     create: function () {
@@ -41,12 +37,14 @@ BasicGame.Game.prototype = {
             this.isBulletTinting = this.config.isBulletTintingEnabled;
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
-            this.isBackground = this.config.isBackgroundImageEnabled;
+//            this.isBackground = this.config.isBackgroundImageEnabled;
             this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
-            this.isCollisionsOptimize = this.config.isOptimizedCollisionDetectionEnabled;
-            this.isRespawnOptimize = this.config.isOptimizedRespawnEnabled;
             this.isFPSdebug = this.config.isFpsEnabled;
         }
+
+        // If the FPS debug flag is enabled, then advanced timing is required. Showing the FPS is is useful when
+        // performance testing/tuning the application.
+        this.game.time.advancedTiming = this.isFPSdebug;
 
         this.setupSystem();
         this.setupText();
@@ -72,13 +70,16 @@ BasicGame.Game.prototype = {
         // alien lifecycle
         this.alienLifecycle();
 
-        // check for points prompt expiring
-        if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
-            this.pointsPrompt.destroy();
-        }
-        // check for points prompt expiring
-        if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
-            this.pointsUpPrompt.destroy();
+        // Every 16th update cycle, check for points prompt expiring. We do not do this every update cycle to distribute
+        // the work in order to maintain a high frames-per-second.
+        if (this.ticks % 16 == 0) {
+            if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
+                this.pointsPrompt.destroy();
+            }
+            // check for points prompt expiring
+            if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
+                this.pointsUpPrompt.destroy();
+            }
         }
 
         this.ticks++;
@@ -216,66 +217,69 @@ BasicGame.Game.prototype = {
         currentPlayer.isFiring = fireEnabled;
     },
 
-    //
-    // Settings callback functions for debugging features from the client app
-    onMute: function(fireEnabled) {
-        // Look up the player.
-        var currentPlayer = this.players[clientId];
-
-        // If the player was not found, ignore and return.
-        if (currentPlayer == null) {
-            return;
-        }
-
-        // Update the isFiring flag.
-        currentPlayer.isFiring = fireEnabled;
+    // Called to set the game's sound on or off.
+    onMute: function(mute) {
+        this.isMuted = mute;
     },
 
     /******************************************************************************************************************
      * Private functions
      */
     updatePlayer: function (currentPlayer) {
+        // If this is not the current player's turn to update then return. To maintain a high frames-per-second we need
+        // to distribute the work across update cycles. Here we are enforcing a rule that only one player gets updated
+        // each cycle.
+        if ((this.ticks % 4) != currentPlayer.order) {
+            return;
+        }
+
+        // Thrusting
         if (currentPlayer.isThrusting) {
             this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
-                                                              BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+                BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
         } else {
             // TODO fix null body
             currentPlayer.body.acceleration.set(0);
         }
 
+        // Firing
         if (currentPlayer.isFiring) {
             this.fire(currentPlayer);
         }
 
-        // screen wrapping
+        // Screen Wrapping
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
 
-
+        // Determine whether or not we should do collision detection at this point.
         if(this.isCollisionsDetection) {
+            // collision detection
+            if (this.alien) {
+                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+            }
 
-            if(!this.isCollisionsOptimize || (this.ticks % 4 == 0)) {
-                // collision detection
-                if (this.alien) {
-                    this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-                    this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-                    this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-                }
+            for (var other_players_id in this.players) {
+                if (other_players_id != currentPlayer.id) {
+                    //check for bullets
+                    this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
 
-                for (var other_players_id in this.players) {
-                    if (other_players_id != currentPlayer.id) {
-                        //check for bullets
-                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                        //check for collisions. both die if there is a collision
-                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-                    }
+                    //check for collisions. both die if there is a collision
+                    this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
                 }
             }
         }
     },
 
     updateAlien: function() {
+        // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
+        // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
+        // other cycle.
+        if (this.ticks % 2 == 0) {
+            return;
+        }
+
         if(this.alien) {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
                                                               this.alien.body.acceleration);
@@ -289,9 +293,9 @@ BasicGame.Game.prototype = {
         // Here I setup some general utilities
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.time.events.loop(1000, this.updateTimer, this);
-        if (this.isBackground) {
+//        if (this.isBackground) {
 //            this.background = this.add.tileSprite(0, 0, 1280, 800, 'starfield');
-        }
+//        }
     },
 
     setupPlayers: function () {
@@ -371,16 +375,15 @@ BasicGame.Game.prototype = {
     playerLifecycle: function () {
         for (var id in this.players) {
             var currentPlayer = this.players[id];
-            // player is dead
-            if (!currentPlayer.alive) {
 
-                if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
-                    // If its time to respawn the player...
-                    if (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                        this.resetPlayer(currentPlayer);
-                        // Notify the GameManager that the player is back in so that it can notify the client.
-                        GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
-                    }
+            // player is dead, determine if we should respawn at this time.
+            if (!currentPlayer.alive) {
+                // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
+                // enforcing a rule that players get an opportunity to respawn every 16th cycle.
+                if ((this.ticks % 16 == 0) && (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY)) {
+                    this.resetPlayer(currentPlayer);
+                    // Notify the GameManager that the player is back in so that it can notify the client.
+                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
                 }
             }
             // player is alive
@@ -395,15 +398,20 @@ BasicGame.Game.prototype = {
      *
      */
     alienLifecycle: function () {
-        // alien exists but is dead
-        if (this.alien && !this.alien.alive) {
-            if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
-                if (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                    this.resetAlien(this.alien);
-                }
+        // If the alien is disabled or does not exist, return.
+        if (!this.isAlien || !this.alien) {
+            return;
+        }
+
+        // If the alien is dead, determine if we should respawn at this time.
+        if (!this.alien.alive) {
+            // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
+            // enforcing a rule that aliens get an opportunity to respawn every 15th cycle.
+            if ((this.ticks % 15 == 0) && (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY)) {
+                this.resetAlien(this.alien);
             }
         }
-        // alien is alive
+        // Else the alien is alive
         else {
             this.updateAlien();
         }
@@ -530,7 +538,6 @@ BasicGame.Game.prototype = {
 
         bullet.kill();
     },
-
 
     /*
      * handle the collision between a two objects
