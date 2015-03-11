@@ -53,9 +53,9 @@ $(GameManager = function(){
     // The available slots in the game (4 players of different colors)
     var slots = [
         new Slot(0,'red', 0xFF0000, '#FF0000'),
-        new Slot(1,'orange', 0xFF8800, '#FF8800'),
-        new Slot(2,'green', 0x00FF00, '#00FF00'),
-        new Slot(3,'cyan', 0x00b8d4, '#00b8d4')
+        new Slot(2,'green', 0X5EFF00, '#5EFF00'),
+        new Slot(1,'yellow', 0xFFFF00, '#FFFF00'),
+        new Slot(3,'blue', 0x00E1FF, '#00E1FF')
     ];
 
     // Store client id to slot mappings.

@@ -9,9 +9,9 @@ package com.samsung.multiscreen.msf20.casteroids.model;
  */
 public enum Color {
 	RED("red", "#FF0000"),
-	ORANGE("orange", "#FF8000"),
-	GREEN("green", "#00FF00"),
-	CYAN("cyan", "#00b8d4");
+	GREEN("green", "#5EFF00"),
+    YELLOW("yellow", "#FFFF00"),
+    BLUE("blue", "#00E1FF");
 
     // The application defined name for the message data type.
     private final String name;
