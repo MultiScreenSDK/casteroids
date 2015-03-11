@@ -27,8 +27,6 @@ BasicGame.Game.prototype = {
      */
 
     preload: function () {
-        //TODO:  Remove before shipping.  To calculate fps during testing. Used in the render function. Remove this before shipping.
-        this.game.time.advancedTiming = true;
     },
 
     create: function () {
@@ -47,6 +45,10 @@ BasicGame.Game.prototype = {
             this.isRespawnOptimize = this.config.isOptimizedRespawnEnabled;
             this.isFPSdebug = this.config.isFpsEnabled;
         }
+
+        // If the FPS debug flag is enabled, then advanced timing is required. Showing the FPS is is useful when
+        // performance testing/tuning the application.
+        this.game.time.advancedTiming = this.isFPSdebug;
 
         this.setupSystem();
         this.setupText();
