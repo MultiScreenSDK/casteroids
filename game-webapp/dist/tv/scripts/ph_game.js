@@ -358,9 +358,9 @@ BasicGame.Game.prototype = {
             var currentPlayer = this.players[id];
 
             // player is dead, determine if we should respawn at this time.
-            if (!currentPlayer.alive && (this.ticks % 16 == 0)) {
+            if (!currentPlayer.alive) {
                 // If its time to respawn the player...
-                if (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
+                if ((this.ticks % 16 == 0) && (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY)) {
                     this.resetPlayer(currentPlayer);
                     // Notify the GameManager that the player is back in so that it can notify the client.
                     GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
@@ -384,8 +384,8 @@ BasicGame.Game.prototype = {
         }
 
         // If the alien is dead, determine if we should respawn at this time.
-        if (!this.alien.alive && (this.ticks % 16 == 0)) {
-            if (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
+        if (!this.alien.alive) {
+            if ((this.ticks % 16 == 0) && (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY)) {
                 this.resetAlien(this.alien);
             }
         }
