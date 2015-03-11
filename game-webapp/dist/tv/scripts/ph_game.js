@@ -6,6 +6,8 @@ BasicGame.Game = function (game) {
 
     this.ticks = 0;
 
+    // The variables below were used during performance testing to enable/disable game features to see which had the
+    // greatest impact on performance.
     this.isAlien = true;
     this.isPlayersTinting = true;
     this.isBulletTinting = true;
@@ -28,7 +30,9 @@ BasicGame.Game.prototype = {
     },
 
     create: function () {
-        // If the GameManager has a config object, then update the configuration using its values.
+        // If the GameManager has a config object, then update the configuration using its values. These configurations
+        // were used during performance testing to enable/disable game features to see which had the greatest impact on
+        // performance.
         this.config = GameManager.getConfig();
         if (this.config !== undefined) {
             this.isMuted = !this.config.isSoundEnabled;
@@ -293,9 +297,6 @@ BasicGame.Game.prototype = {
         // Here I setup some general utilities
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.time.events.loop(1000, this.updateTimer, this);
-//        if (this.isBackground) {
-//            this.background = this.add.tileSprite(0, 0, 1280, 800, 'starfield');
-//        }
     },
 
     setupPlayers: function () {
@@ -544,7 +545,10 @@ BasicGame.Game.prototype = {
      *
      */
     collide: function(obj1, obj2) {
-        if(!obj1.body.enabled || !obj2.body.enabled){
+        console.log("collide");
+        console.log(obj1);
+        console.log(obj2);
+        if(!obj1.alive || !obj2.alive){
             return;
         }
         // deduct points from players on hit
@@ -555,8 +559,6 @@ BasicGame.Game.prototype = {
             if(this.isGameText) {
                 this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
             }
-            obj1.tod = this.game.time.now;
-            this.explode(obj1, 'explosionBig'); //huge explosion
             // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
         }
@@ -568,10 +570,19 @@ BasicGame.Game.prototype = {
             if(this.isGameText) {
                 this.scoreLabels[obj2.id].setText(this.names[obj2.id] + "\t\t"+this.scores[obj2.id]);
             }
-            obj2.tod = this.game.time.now;
-            this.explode(obj2, 'explosionBig'); //huge explosion
             // notify the GameManager that the player is out so that it can notify the client.
             GameManager.onPlayerOut(obj2.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+        }
+        
+        obj1.tod = this.game.time.now;
+        this.explode(obj1, 'explosionBig'); //huge explosion
+        obj1.kill();
+        if(obj2 === this.alien) {
+            obj2.damage(BasicGame.HIT_POW);
+            if(obj2.health <= 0) {
+                obj2.tod = this.game.time.now;
+                this.explode(obj2, 'explosionBig'); //huge explosion
+            }
         }
         if(!this.isMuted) {
             this.sfx.play("death");

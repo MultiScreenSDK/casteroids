@@ -1,6 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -9,10 +10,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
@@ -34,7 +39,10 @@ public class MainActivity extends Activity implements ConnectivityListener{
     private GameConnectivityManager connectivityManager = null;
 
     /** References to buttons on the screen */
-    private Button playButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
+    private Button playButton, selectTVButton, noTVDiscoveredButton;
+
+    /** Reference to ImageButton */
+    private ImageButton howToPlayButton;
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
@@ -42,6 +50,11 @@ public class MainActivity extends Activity implements ConnectivityListener{
     /** Reference to the root view */
     private View rootView;
 
+    /** Reference to the Casteroids TextView */
+    private TextView casteroidsText;
+
+    /** How to play button animator */
+    private ObjectAnimator animator;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -69,13 +82,19 @@ public class MainActivity extends Activity implements ConnectivityListener{
         rootView = findViewById(R.id.root_view);
 
         // Initialize the how to play button
-        howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
+        howToPlayButton = (ImageButton) findViewById(R.id.how_to_play_button);
         howToPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showHowToPlay();
             }
         });
+
+        animator = ObjectAnimator.ofFloat(howToPlayButton, "rotation", 360);
+        animator.setRepeatCount(ObjectAnimator.INFINITE);
+        animator.setRepeatMode(ObjectAnimator.RESTART);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(15000);
 
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
@@ -104,11 +123,14 @@ public class MainActivity extends Activity implements ConnectivityListener{
             }
         });
 
-        //set the various buttons with the typeface
-        howToPlayButton.setTypeface(customTypeface);
+        //get the Casteroids text view
+        casteroidsText = (TextView)findViewById(R.id.game_title);
+
+        //set the various buttons and text labels with the typeface
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
+        casteroidsText.setTypeface(customTypeface);
 
         //if we are lollipop, do a custom animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -125,6 +147,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
         //capture the current state of the connection and show on the UI
         bindViews();
+
+        animator.start();
     }
 
     @Override
@@ -134,6 +158,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
         // Unregister self as a listener
         connectivityManager.unregisterConnectivityListener(this);
 
+        animator.start();
     }
 
     @Override
@@ -142,6 +167,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
         //disconnect
         connectivityManager.disconnect();
+
+        animator.cancel();
     }
 
     @Override

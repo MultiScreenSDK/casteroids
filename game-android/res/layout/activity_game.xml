@@ -11,6 +11,15 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/instructions_text" />
 
+    <view
+        class="com.samsung.multiscreen.msf20.casteroids.views.CompassView"
+        android:layout_width="340dp"
+        android:layout_height="340dp"
+        android:id="@+id/compass_view"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-80dp"/>
+
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="100dp"
@@ -79,11 +88,6 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:onClick="quitGame"/>
 
-    <view
-        class="com.samsung.multiscreen.msf20.casteroids.views.CompassView"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:id="@+id/compass_view"
-        android:layout_centerInParent="true" />
+
 
 </RelativeLayout>

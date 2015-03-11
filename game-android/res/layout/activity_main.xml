@@ -5,15 +5,16 @@
     android:background="@drawable/casteroids"
     android:id="@+id/root_view">
 
-    <Button
-        style="@style/AppButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/how_to_play_button"
-        android:text="@string/how_to_play"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp" />
+        android:src="@drawable/btn_others"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@null"/>
 
 
     <Button
@@ -50,6 +51,23 @@
         android:layout_marginBottom="30dp"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/game_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="@string/casteroids"
+        android:textSize="60sp"
+        android:textColor="#fff"
+        android:shadowDy="10"
+        android:shadowDx="10"
+        android:shadowRadius="3"
+        android:shadowColor="#03aae7"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        />
 
 
 </RelativeLayout>
