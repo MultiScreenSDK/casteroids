@@ -51,15 +51,13 @@ BasicGame.Game.prototype = {
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
-        if (this.isAlien) {
-            this.setupAlien();
-        }
-        //this.setupAsteroid();
+        this.setupAlien();
         this.setupAudio();
     },
 
     render: function() {
-        //TODO:  Remove before shipping.  Show this during testing at the top left corner of the screen
+        // If the FPS debug flag is enabled, show the FPS at the top left corner of the screen. This is useful when
+        // performance testing/tuning the application.
         if(this.isFPSdebug) {
             this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
         }
@@ -82,6 +80,7 @@ BasicGame.Game.prototype = {
         if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
             this.pointsUpPrompt.destroy();
         }
+
         this.ticks++;
     },
 
@@ -305,6 +304,11 @@ BasicGame.Game.prototype = {
     },
 
     setupAlien: function () {
+        // If the alien is not enabled then return.
+        if (!this.isAlien) {
+            return;
+        }
+
         // Here I setup the computer controlled ship
         this.alien = this.game.add.sprite(0, 0, 'ufo');
 
