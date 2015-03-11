@@ -13,6 +13,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,10 @@ public class MainActivity extends Activity implements ConnectivityListener{
     private GameConnectivityManager connectivityManager = null;
 
     /** References to buttons on the screen */
-    private Button playButton, howToPlayButton, selectTVButton, noTVDiscoveredButton;
+    private Button playButton, selectTVButton, noTVDiscoveredButton;
+
+    /** Reference to ImageButton */
+    private ImageButton howToPlayButton;
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
@@ -73,7 +77,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
         rootView = findViewById(R.id.root_view);
 
         // Initialize the how to play button
-        howToPlayButton = (Button) findViewById(R.id.how_to_play_button);
+        howToPlayButton = (ImageButton) findViewById(R.id.how_to_play_button);
         howToPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +116,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
         casteroidsText = (TextView)findViewById(R.id.game_title);
 
         //set the various buttons and text labels with the typeface
-        howToPlayButton.setTypeface(customTypeface);
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
