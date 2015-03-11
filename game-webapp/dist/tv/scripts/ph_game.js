@@ -274,7 +274,7 @@ BasicGame.Game.prototype = {
 
     updateAlien: function() {
         // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
-        // // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
+        // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
         // other cycle.
         if (this.ticks % 2 == 0) {
             return;
@@ -378,7 +378,8 @@ BasicGame.Game.prototype = {
 
             // player is dead, determine if we should respawn at this time.
             if (!currentPlayer.alive) {
-                // If its time to respawn the player...
+                // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
+                // enforcing a rule that players get an opportunity to respawn every 16th cycle.
                 if ((this.ticks % 16 == 0) && (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY)) {
                     this.resetPlayer(currentPlayer);
                     // Notify the GameManager that the player is back in so that it can notify the client.
@@ -404,6 +405,8 @@ BasicGame.Game.prototype = {
 
         // If the alien is dead, determine if we should respawn at this time.
         if (!this.alien.alive) {
+            // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
+            // enforcing a rule that aliens get an opportunity to respawn every 15th cycle.
             if ((this.ticks % 15 == 0) && (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY)) {
                 this.resetAlien(this.alien);
             }
@@ -535,7 +538,6 @@ BasicGame.Game.prototype = {
 
         bullet.kill();
     },
-
 
     /*
      * handle the collision between a two objects
