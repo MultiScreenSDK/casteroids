@@ -6,6 +6,8 @@ BasicGame.Game = function (game) {
 
     this.ticks = 0;
 
+    // The variables below were used during performance testing to enable/disable game features to see which had the
+    // greatest impact on performance.
     this.isAlien = true;
     this.isPlayersTinting = true;
     this.isBulletTinting = true;
@@ -28,7 +30,9 @@ BasicGame.Game.prototype = {
     },
 
     create: function () {
-        // If the GameManager has a config object, then update the configuration using its values.
+        // If the GameManager has a config object, then update the configuration using its values. These configurations
+        // were used during performance testing to enable/disable game features to see which had the greatest impact on
+        // performance.
         this.config = GameManager.getConfig();
         if (this.config !== undefined) {
             this.isMuted = !this.config.isSoundEnabled;
@@ -229,7 +233,7 @@ BasicGame.Game.prototype = {
         // If this is not the current player's turn to update then return. To maintain a high frames-per-second we need
         // to distribute the work across update cycles. Here we are enforcing a rule that only one player gets updated
         // each cycle.
-        if ((this.ticks % 4) != (currentPlayer.order *.25)) {
+        if ((this.ticks % 4) != currentPlayer.order) {
             return;
         }
 
