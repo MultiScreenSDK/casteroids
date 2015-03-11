@@ -1,6 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -9,9 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -50,6 +53,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
     /** Reference to the Casteroids TextView */
     private TextView casteroidsText;
 
+    /** How to play button animator */
+    private ObjectAnimator animator;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -84,6 +89,12 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 showHowToPlay();
             }
         });
+
+        animator = ObjectAnimator.ofFloat(howToPlayButton, "rotation", 360);
+        animator.setRepeatCount(ObjectAnimator.INFINITE);
+        animator.setRepeatMode(ObjectAnimator.RESTART);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(15000);
 
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
@@ -136,6 +147,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
         //capture the current state of the connection and show on the UI
         bindViews();
+
+        animator.start();
     }
 
     @Override
@@ -145,6 +158,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
         // Unregister self as a listener
         connectivityManager.unregisterConnectivityListener(this);
 
+        animator.start();
     }
 
     @Override
@@ -153,6 +167,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
         //disconnect
         connectivityManager.disconnect();
+
+        animator.cancel();
     }
 
     @Override
