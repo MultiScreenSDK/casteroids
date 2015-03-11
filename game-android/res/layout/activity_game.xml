@@ -44,10 +44,10 @@
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
-        android:layout_marginLeft="-40dp"
-        android:layout_marginBottom="-40dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="20dp"
         android:text="THRUST"
         android:id="@+id/thrust_button"
         android:layout_alignParentBottom="true"
@@ -56,11 +56,11 @@
          />
 
     <Button
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         android:text="FIRE"
-        android:layout_marginRight="-40dp"
-        android:layout_marginBottom="-40dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
         android:id="@+id/fire_button"
         android:background="@drawable/round_button"
         android:layout_alignParentBottom="true"
