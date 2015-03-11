@@ -223,24 +223,33 @@ BasicGame.Game.prototype = {
      * Private functions
      */
     updatePlayer: function (currentPlayer) {
+        // If this is not the current player's turn to update then return. To maintain a high frames-per-second we need
+        // to distribute the work across update cycles. Here we are enforcing a rule that only one player gets updated
+        // each cycle.
+        if ((this.ticks % 4) != (currentPlayer.order *.25)) {
+            return;
+        }
+
+        // Thrusting
         if (currentPlayer.isThrusting) {
             this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
-                                                              BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+                BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
         } else {
             // TODO fix null body
             currentPlayer.body.acceleration.set(0);
         }
 
+        // Firing
         if (currentPlayer.isFiring) {
             this.fire(currentPlayer);
         }
 
-        // screen wrapping
+        // Screen Wrapping
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
 
         // Determine whether or not we should do collision detection at this point.
-        if(this.isCollisionsDetection && (this.ticks % 4 == 0)) {
+        if(this.isCollisionsDetection) {
             // collision detection
             if (this.alien) {
                 this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
@@ -261,6 +270,13 @@ BasicGame.Game.prototype = {
     },
 
     updateAlien: function() {
+        // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
+        // // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
+        // other cycle.
+        if (this.ticks % 2 == 0) {
+            return;
+        }
+
         if(this.alien) {
             this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
                                                               this.alien.body.acceleration);
@@ -378,8 +394,8 @@ BasicGame.Game.prototype = {
      *
      */
     alienLifecycle: function () {
-        // If the alien is disabled or does not exist or this is not an odd tick, return.
-        if (!this.isAlien || !this.alien || (this.ticks % 2 == 0)) {
+        // If the alien is disabled or does not exist, return.
+        if (!this.isAlien || !this.alien) {
             return;
         }
 
