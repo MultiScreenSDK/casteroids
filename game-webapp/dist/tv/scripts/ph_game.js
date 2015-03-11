@@ -378,14 +378,14 @@ BasicGame.Game.prototype = {
      *
      */
     alienLifecycle: function () {
-        // If the alien is disabled or does not exist, return.
-        if (!this.isAlien || !this.alien) {
+        // If the alien is disabled or does not exist or this is not an odd tick, return.
+        if (!this.isAlien || !this.alien || (this.ticks % 2 == 0)) {
             return;
         }
 
         // If the alien is dead, determine if we should respawn at this time.
         if (!this.alien.alive) {
-            if ((this.ticks % 16 == 0) && (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY)) {
+            if ((this.ticks % 15 == 0) && (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY)) {
                 this.resetAlien(this.alien);
             }
         }
