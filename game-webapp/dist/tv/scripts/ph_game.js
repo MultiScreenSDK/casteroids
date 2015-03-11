@@ -576,10 +576,14 @@ BasicGame.Game.prototype = {
         
         obj1.tod = this.game.time.now;
         this.explode(obj1, 'explosionBig'); //huge explosion
-        obj2.tod = this.game.time.now;
-        this.explode(obj2, 'explosionBig'); //huge explosion
         obj1.kill();
-        obj2.kill();
+        if(obj2 === this.alien) {
+            obj2.damage(BasicGame.HIT_POW);
+            if(obj2.health <= 0) {
+                obj2.tod = this.game.time.now;
+                this.explode(obj2, 'explosionBig'); //huge explosion
+            }
+        }
         if(!this.isMuted) {
             this.sfx.play("death");
         }
