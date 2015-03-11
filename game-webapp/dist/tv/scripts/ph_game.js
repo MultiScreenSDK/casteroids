@@ -229,7 +229,7 @@ BasicGame.Game.prototype = {
         // If this is not the current player's turn to update then return. To maintain a high frames-per-second we need
         // to distribute the work across update cycles. Here we are enforcing a rule that only one player gets updated
         // each cycle.
-        if ((this.ticks % 4) != (currentPlayer.order *.25)) {
+        if ((this.ticks % 4) != currentPlayer.order) {
             return;
         }
 
