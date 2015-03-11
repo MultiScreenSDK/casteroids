@@ -11,10 +11,8 @@ BasicGame.Game = function (game) {
     this.isBulletTinting = true;
     this.isGameText = true;
     this.isPointsText = true;
-    this.isBackground = true;
-    this.isRespawnOptimize = true;
+//    this.isBackground = true;
     this.isCollisionsDetection = true;
-    this.isCollisionsOptimize = true;
     this.isFPSdebug = true;
 };
 
@@ -39,10 +37,8 @@ BasicGame.Game.prototype = {
             this.isBulletTinting = this.config.isBulletTintingEnabled;
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
-            this.isBackground = this.config.isBackgroundImageEnabled;
+//            this.isBackground = this.config.isBackgroundImageEnabled;
             this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
-            this.isCollisionsOptimize = this.config.isOptimizedCollisionDetectionEnabled;
-            this.isRespawnOptimize = this.config.isOptimizedRespawnEnabled;
             this.isFPSdebug = this.config.isFpsEnabled;
         }
 
@@ -253,25 +249,22 @@ BasicGame.Game.prototype = {
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
 
+        // Determine whether or not we should do collision detection at this point.
+        if(this.isCollisionsDetection && (this.ticks % 4 == 0)) {
+            // collision detection
+            if (this.alien) {
+                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+            }
 
-        if(this.isCollisionsDetection) {
+            for (var other_players_id in this.players) {
+                if (other_players_id != currentPlayer.id) {
+                    //check for bullets
+                    this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
 
-            if(!this.isCollisionsOptimize || (this.ticks % 4 == 0)) {
-                // collision detection
-                if (this.alien) {
-                    this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-                    this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-                    this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
-                }
-
-                for (var other_players_id in this.players) {
-                    if (other_players_id != currentPlayer.id) {
-                        //check for bullets
-                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
-
-                        //check for collisions. both die if there is a collision
-                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
-                    }
+                    //check for collisions. both die if there is a collision
+                    this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
                 }
             }
         }
@@ -291,9 +284,9 @@ BasicGame.Game.prototype = {
         // Here I setup some general utilities
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.time.events.loop(1000, this.updateTimer, this);
-        if (this.isBackground) {
+//        if (this.isBackground) {
 //            this.background = this.add.tileSprite(0, 0, 1280, 800, 'starfield');
-        }
+//        }
     },
 
     setupPlayers: function () {
@@ -373,16 +366,14 @@ BasicGame.Game.prototype = {
     playerLifecycle: function () {
         for (var id in this.players) {
             var currentPlayer = this.players[id];
-            // player is dead
-            if (!currentPlayer.alive) {
 
-                if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
-                    // If its time to respawn the player...
-                    if (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
-                        this.resetPlayer(currentPlayer);
-                        // Notify the GameManager that the player is back in so that it can notify the client.
-                        GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
-                    }
+            // player is dead, determine if we should respawn at this time.
+            if (!currentPlayer.alive && (this.ticks % 16 == 0)) {
+                // If its time to respawn the player...
+                if (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY) {
+                    this.resetPlayer(currentPlayer);
+                    // Notify the GameManager that the player is back in so that it can notify the client.
+                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
                 }
             }
             // player is alive
@@ -397,15 +388,18 @@ BasicGame.Game.prototype = {
      *
      */
     alienLifecycle: function () {
-        // alien exists but is dead
-        if (this.alien && !this.alien.alive) {
-            if (!this.isRespawnOptimize || (this.ticks % 16 == 0)) {
-                if (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
-                    this.resetAlien(this.alien);
-                }
+        // If the alien is disabled or does not exist, return.
+        if (!this.isAlien || !this.alien) {
+            return;
+        }
+
+        // If the alien is dead, determine if we should respawn at this time.
+        if (!this.alien.alive && (this.ticks % 16 == 0)) {
+            if (this.game.time.now - this.alien.tod > BasicGame.ALIEN_RESPAWN_DELAY) {
+                this.resetAlien(this.alien);
             }
         }
-        // alien is alive
+        // Else the alien is alive
         else {
             this.updateAlien();
         }
