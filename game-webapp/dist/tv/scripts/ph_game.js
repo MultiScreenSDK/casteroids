@@ -70,13 +70,16 @@ BasicGame.Game.prototype = {
         // alien lifecycle
         this.alienLifecycle();
 
-        // check for points prompt expiring
-        if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
-            this.pointsPrompt.destroy();
-        }
-        // check for points prompt expiring
-        if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
-            this.pointsUpPrompt.destroy();
+        // Every 16th update cycle, check for points prompt expiring. We do not do this every update cycle to distribute
+        // the work in order to maintain a high frames-per-second.
+        if (this.ticks % 16 == 0) {
+            if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
+                this.pointsPrompt.destroy();
+            }
+            // check for points prompt expiring
+            if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
+                this.pointsUpPrompt.destroy();
+            }
         }
 
         this.ticks++;
