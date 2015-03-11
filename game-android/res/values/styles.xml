@@ -29,4 +29,11 @@
         <item name="android:textColor">@color/grey_100</item>
     </style>
 
+    <style name="GameButton" parent="android:Widget.Button">
+        <item name="android:background">@drawable/round_button</item>
+        <item name="android:textColor">@drawable/gamebutton_text</item>
+    </style>
+
+
+
 </resources>
