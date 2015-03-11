@@ -290,7 +290,7 @@ BasicGame.Game.prototype = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.time.events.loop(1000, this.updateTimer, this);
         if (this.isBackground) {
-            this.background = this.add.tileSprite(0, 0, 1280, 800, 'starfield');
+//            this.background = this.add.tileSprite(0, 0, 1280, 800, 'starfield');
         }
     },
 
