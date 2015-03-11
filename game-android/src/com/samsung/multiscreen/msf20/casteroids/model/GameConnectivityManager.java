@@ -103,6 +103,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	 */
 	public void sendQuitMessage() {
 		sendMessage(Event.QUIT.getName(), null);
+        getGameState().onGameQuit();
 	}
 
 	/**

@@ -7,21 +7,21 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.util.Log;
+import android.view.*;
+import android.widget.*;
 
-import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.casteroids.model.GameState;
-import com.samsung.multiscreen.msf20.casteroids.model.ScoreData;
+import com.samsung.multiscreen.msf20.casteroids.model.*;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +31,9 @@ import java.util.List;
  * @author Nik Bhattacharya
  *
  */
-public class GameOverActivity extends Activity implements ConnectivityListener {
+public class GameOverActivity extends Activity implements ConnectivityListener, MessageListener {
+
+    private static final String TAG = GameOverActivity.class.getSimpleName();
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
@@ -50,6 +52,9 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
 
     /** Table that holds all the scores */
     TableLayout tableLayout;
+
+    /** Reference to toast shown on the screen */
+    private Toast toast = null;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -108,6 +113,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
 
         //Register for connectivity updates.
         connectivityManager.registerConnectivityListener(this);
+        connectivityManager.registerMessageListener(this, Event.GAME_START);
 
         //capture the current state of the connection and show on the UI
         bindViews();
@@ -119,6 +125,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
 
         // Unregister self as a listener
         connectivityManager.unregisterConnectivityListener(this);
+        connectivityManager.unregisterMessageListener(this, Event.GAME_START);
     }
 
 
@@ -129,6 +136,60 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
     @Override
     public void onConnectivityUpdate(int eventId) {
         bindViews();
+    }
+
+    @Override
+    public void onMessage(String event, String data, byte[] payload) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Received event '" + event + "'");
+        }
+        if (event.equals(Event.GAME_START.getName())){
+            //show countdown
+            int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
+
+            if(toast != null) {
+                toast.cancel();
+            }
+
+            //show a toast for any non 0 wait time.
+            if(numSeconds != 0) {
+                toast = Toast.makeText(this, getStyledString("Game starting in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            } else {
+                Intent gameControllerActivity = new Intent();
+                gameControllerActivity.setClass(this, GameControllerActivity.class);
+                gameControllerActivity.putExtra("color", connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt());
+                startActivity(gameControllerActivity);
+            }
+        }
+    }
+
+    /**
+     * An example of how to use a Spannable in Android to style specific
+     * sections of a String.
+     *
+     * @param string the string to be styled
+     * @return the spannable with the styles embedded
+     */
+    private Spannable getStyledString(String string) {
+
+        Spannable spannable = new SpannableString(string);
+        ArrayList<Integer> spans = new ArrayList<Integer>(spannable.length());
+        for(int i = 0; i < spannable.length(); i++){
+            if(Character.isDigit(spannable.charAt(i))){
+                spans.add(new Integer(i));
+            }
+        }
+        for(int j = 0; j < spans.size(); j++) {
+            int index = spans.get(j).intValue();
+            spannable.setSpan(new RelativeSizeSpan(1.7f), index, index+1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt()), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new StyleSpan(Typeface.BOLD), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return spannable;
     }
 
 
@@ -206,11 +267,17 @@ public class GameOverActivity extends Activity implements ConnectivityListener {
         //don't keep us in the back stack
         finish();
 
+        if(toast != null) {
+            toast.cancel();
+        }
+
+        connectivityManager.sendQuitMessage();
+        connectivityManager.disconnect();
+
         //launch the main screen
         Intent intent = new Intent();
         intent.setClass(this, cls);
         startActivity(intent);
     }
-
 
 }

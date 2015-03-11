@@ -94,11 +94,14 @@ public class GameState {
 	 * @param scoreData
 	 */
 	protected void onGameOver(List<ScoreData> scoreData) {
-		this.joinResponseData = null;
 		this.gameStartCountDownSeconds = -1;
 		this.scoreDataList = scoreData;
 		this.playerOutCountDownSeconds = -1;
 	}
+
+    protected void onGameQuit() {
+        this.joinResponseData = null;
+    }
 
 	/**
 	 * Called when the configuration update was sent out by another client. This was added to assist in the performance
