@@ -44,7 +44,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         TextView gameTitle = (TextView)findViewById(R.id.game_title);
-        gameTitle.setTypeface(((GameApplication)getApplication()).getCustomTypeface2());
+        gameTitle.setTypeface(((GameApplication)getApplication()).getCustomTypeface());
 
         // Get an instance of the ConnectivtyManager and start discovery of compatible Samsung SmartTVs.
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());

@@ -60,17 +60,6 @@ public class GameApplication extends Application {
         return customTypeface;
     }
 
-    /**
-     * Returns the 2nd custom typeface for the application.
-     *
-     * @return 2nd custom typeface for the game.
-     */
-    public Typeface getCustomTypeface2() {
-        return customTypeface2;
-    }
-
-
-
     /******************************************************************************************************************
      * Private methods
      */
@@ -82,8 +71,7 @@ public class GameApplication extends Application {
      *
      */
     private void createCustomTypefaces() {
-        customTypeface = Typeface.createFromAsset(getAssets(), "fonts/typodermic_neuropolx.ttf");
-        customTypeface2 = Typeface.createFromAsset(getAssets(), "fonts/desdemona.ttf");
+        customTypeface = Typeface.createFromAsset(getAssets(), "fonts/audiowideregular.ttf");
     }
 
 

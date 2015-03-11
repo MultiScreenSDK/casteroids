@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.samsung.multiscreen.msf20.casteroids.SplashActivity"
-    android:background="@drawable/deepspace">
+    android:background="@drawable/casteroids">
 
     <TextView
         android:id="@+id/game_title"
@@ -15,10 +15,10 @@
         android:text="@string/casteroids"
         android:textSize="60sp"
         android:textColor="#fff"
-        android:shadowDy="3"
-        android:shadowDx="3"
+        android:shadowDy="10"
+        android:shadowDx="10"
         android:shadowRadius="3"
-        android:shadowColor="#000"
+        android:shadowColor="#03aae7"
         />
 
     <LinearLayout
