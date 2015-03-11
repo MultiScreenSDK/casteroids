@@ -214,19 +214,9 @@ BasicGame.Game.prototype = {
         currentPlayer.isFiring = fireEnabled;
     },
 
-    //
-    // Settings callback functions for debugging features from the client app
-    onMute: function(fireEnabled) {
-        // Look up the player.
-        var currentPlayer = this.players[clientId];
-
-        // If the player was not found, ignore and return.
-        if (currentPlayer == null) {
-            return;
-        }
-
-        // Update the isFiring flag.
-        currentPlayer.isFiring = fireEnabled;
+    // Called to set the game's sound on or off.
+    onMute: function(mute) {
+        this.isMuted = mute;
     },
 
     /******************************************************************************************************************
