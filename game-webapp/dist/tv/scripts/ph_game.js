@@ -295,8 +295,8 @@ BasicGame.Game.prototype = {
     updateAlien: function() {
         // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
         // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
-        // other cycle.
-        if (this.ticks % 2 == 0) {
+        // third cycle.
+        if (this.ticks % 3 == 0) {
             return;
         }
 
@@ -383,7 +383,7 @@ BasicGame.Game.prototype = {
     },
 
     setupAudio: function () {
-        // If the game is muted, reutrn.
+        // If the game is muted, return.
         if (this.isMuted) {
             return;
         }
@@ -471,8 +471,10 @@ BasicGame.Game.prototype = {
      *
      */
     updateTimer: function updateTimer() {
+        // Decrement the countdown
         this.secondsLeft--;
 
+        // If the game text is enabled, display the countdown.
         if (this.isGameText) {
             var minutes = Math.floor(this.secondsLeft/60);
             var seconds = this.secondsLeft - minutes * 60;
@@ -483,7 +485,6 @@ BasicGame.Game.prototype = {
             this.timerLabel.setText(minutes+":"+seconds);
             if(this.secondsLeft <= 10) {
                 this.timerLabel.fontSize = 38;
-                //            this.timerLabel.tint = 0xFF0000;
                 this.timerLabel.fill = '#FFFF00';
                 if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
                     this.sfx.play("ping");
@@ -495,6 +496,7 @@ BasicGame.Game.prototype = {
             }
         }
 
+        // Check if the game is over
         if(this.secondsLeft < 0) {
             this.secondsLeft = BasicGame.GAME_LENGTH;
             this.quitGame();
