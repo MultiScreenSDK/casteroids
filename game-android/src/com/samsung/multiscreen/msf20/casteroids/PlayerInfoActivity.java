@@ -314,7 +314,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                int color = (int)animation.getAnimatedValue();
+                int color = (Integer)animation.getAnimatedValue();
                 //set the edit text color
                 nameText.setTextColor(color);
                 setShipColor(shipView, color);
