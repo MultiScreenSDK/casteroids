@@ -592,12 +592,12 @@ BasicGame.Game.prototype = {
 
         // If obj1 is a player, process as a player out.
         if(obj1 !== this.alien) {
-            this.playerOut(obj1);
+            this.playerOut(obj1, true);
         }
 
         // If obj2 is a player, process as a player out.
         if(obj2 !== this.alien) {
-            this.playerOut(obj2);
+            this.playerOut(obj2, false);
         }
 
         // If obj2 is an alien, process as an alien out.
@@ -615,24 +615,30 @@ BasicGame.Game.prototype = {
         }
     },
 
-    playerOut: function (playerObj) {
+    playerOut: function (player, leftCollision) {
         // Deduct points from players on hit
-        this.scores[playerObj.id] -= BasicGame.PLAYER_HIT_DEDUCT;
-        var player = this.players[playerObj.id];
-        this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
+        this.scores[player.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+
+        // TODO: If two ships collide we get two negagtive points updates and the 2nd one will destroy the first one.
+        // TODO: The showPoints function needs to be updated to support this scenario.
+        if (leftCollision) {
+            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
+        } else {
+            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y+(player.height/2), player.tint);
+        }
 
         // Update the player's score
         if(this.isGameText) {
-            this.scoreLabels[playerObj.id].setText(this.names[playerObj.id] + "\t\t"+this.scores[playerObj.id]);
+            this.scoreLabels[player.id].setText(this.names[player.id] + "\t\t"+this.scores[player.id]);
         }
 
-        // Explore the player
-        playerObj.tod = this.game.time.now;
-        this.explode(playerObj, 'explosionBig'); //huge explosion
-        playerObj.kill();
+        // Explode the player
+        player.tod = this.game.time.now;
+        this.explode(player, 'explosionBig'); //huge explosion
+        player.kill();
 
         // Notify the GameManager that the player is out so that it can notify the client.
-        GameManager.onPlayerOut(playerObj.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+        GameManager.onPlayerOut(player.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
     },
 
     /**
@@ -659,6 +665,7 @@ BasicGame.Game.prototype = {
      */
     showPoints: function (points, x, y, color) {
         var sign = "+";
+        // TODO: If two ships collide we get two negagtive points updates and the 2nd one will destroy the first one.
         if(points < 0) {
             if(this.pointsPrompt != null || this.pointsPrompt != undefined) {
                 this.pointsPrompt.destroy();
