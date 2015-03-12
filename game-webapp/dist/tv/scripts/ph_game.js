@@ -13,7 +13,8 @@ BasicGame.Game = function (game) {
     this.isBulletTinting = true;
     this.isGameText = true;
     this.isPointsText = true;
-//    this.isBackground = true;
+    this.isBackground = true;
+    this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
     this.isFPSdebug = true;
 };
@@ -41,7 +42,8 @@ BasicGame.Game.prototype = {
             this.isBulletTinting = this.config.isBulletTintingEnabled;
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
-//            this.isBackground = this.config.isBackgroundImageEnabled;
+            this.isBackground = this.config.isBackgroundImageEnabled;
+            this.isBackgroundTiled = this.config.isBackgroundImageTiled;
             this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
             this.isFPSdebug = this.config.isFpsEnabled;
         }
@@ -50,6 +52,7 @@ BasicGame.Game.prototype = {
         // performance testing/tuning the application.
         this.game.time.advancedTiming = this.isFPSdebug;
 
+        this.setupBackground();
         this.setupSystem();
         this.setupText();
         this.setupPlayers();
@@ -291,6 +294,30 @@ BasicGame.Game.prototype = {
             this.screenWrap(this.alien);
             this.alien.bullets.forEachExists(this.screenWrap, this);
         }
+    },
+
+    setupBackground: function () {
+        // Default to no background
+        var bgImage = "none";
+        var bgRepeat = "no-repeat";
+
+        // If background is enabled...
+        if (this.isBackground) {
+            // If tiled background...
+            if (this.isBackgroundTiled) {
+                bgImage = "url(assets/starfield.png)";
+                bgRepeat = "repeat";
+            }
+            // Else Single Image background...
+            else {
+                bgImage = "url(assets/starfield_full.jpg)";
+                bgRepeat = "no-repeat";
+            }
+        }
+
+        // Update the body
+        $("body").css("background-image", bgImage);
+        $("body").css("background-repeat", bgRepeat);
     },
 
     setupSystem: function () {
