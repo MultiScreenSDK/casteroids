@@ -258,23 +258,32 @@ BasicGame.Game.prototype = {
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
 
-        // Determine whether or not we should do collision detection at this point.
+        // If collision detection is enabled....
         if(this.isCollisionsDetection) {
-            // collision detection
+            // Collision detection with the alien.
             if (this.alien) {
                 this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
                 this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
                 this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
             }
 
+            // Collision detection with other players.
+            var performCollisionCheck = false;
             for (var other_players_id in this.players) {
+                // check if player's bullets collided with another player.
                 if (other_players_id != currentPlayer.id) {
-                    //check for bullets
                     this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+                }
 
-                    //check for collisions. both die if there is a collision
+                // Check for collisions with other players. The performCollisionCheck boolean variable used to avoid
+                // duplicate checks like checking if A and B collided and then B and A collided by only comparing the
+                // current player to other players after her in the list. This was added during performance tuning cycle
+                // when we were focused on limiting the work done per update cycle in order to maintain a high
+                // frames-per-second.
+                if (performCollisionCheck) {
                     this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
                 }
+                performCollisionCheck = (performCollisionCheck || (other_players_id == currentPlayer.id));
             }
         }
     },
@@ -572,38 +581,26 @@ BasicGame.Game.prototype = {
      *
      */
     collide: function(obj1, obj2) {
+        // If either object is not alive ignore the collision.
+        if(!obj1.alive || !obj2.alive) {
+            return;
+        }
+
         console.log("collide");
         console.log(obj1);
         console.log(obj2);
-        if(!obj1.alive || !obj2.alive){
-            return;
-        }
-        // deduct points from players on hit
+
+        // If obj1 is a player, process as a player out.
         if(obj1 !== this.alien) {
-            this.scores[obj1.id] -= BasicGame.PLAYER_HIT_DEDUCT;
-            var player = this.players[obj1.id];
-            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
-            if(this.isGameText) {
-                this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
-            }
-            // notify the GameManager that the player is out so that it can notify the client.
-            GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+            this.playerOut(obj1);
         }
 
+        // If obj2 is a player, process as a player out.
         if(obj2 !== this.alien) {
-            this.scores[obj2.id] -= BasicGame.PLAYER_HIT_DEDUCT;
-            var player = this.players[obj2.id];
-            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y+(player.height/2), player.tint);
-            if(this.isGameText) {
-                this.scoreLabels[obj2.id].setText(this.names[obj2.id] + "\t\t"+this.scores[obj2.id]);
-            }
-            // notify the GameManager that the player is out so that it can notify the client.
-            GameManager.onPlayerOut(obj2.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+            this.playerOut(obj2);
         }
-        
-        obj1.tod = this.game.time.now;
-        this.explode(obj1, 'explosionBig'); //huge explosion
-        obj1.kill();
+
+        // If obj2 is an alien, process as an alien out.
         if(obj2 === this.alien) {
             obj2.damage(BasicGame.HIT_POW);
             if(obj2.health <= 0) {
@@ -611,9 +608,31 @@ BasicGame.Game.prototype = {
                 this.explode(obj2, 'explosionBig'); //huge explosion
             }
         }
+
+        // If we are not muted, play the sound of death.
         if(!this.isMuted) {
             this.sfx.play("death");
         }
+    },
+
+    playerOut: function (playerObj) {
+        // Deduct points from players on hit
+        this.scores[playerObj.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+        var player = this.players[playerObj.id];
+        this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
+
+        // Update the player's score
+        if(this.isGameText) {
+            this.scoreLabels[playerObj.id].setText(this.names[playerObj.id] + "\t\t"+this.scores[playerObj.id]);
+        }
+
+        // Explore the player
+        playerObj.tod = this.game.time.now;
+        this.explode(playerObj, 'explosionBig'); //huge explosion
+        playerObj.kill();
+
+        // Notify the GameManager that the player is out so that it can notify the client.
+        GameManager.onPlayerOut(playerObj.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
     },
 
     /**
