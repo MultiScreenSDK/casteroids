@@ -111,6 +111,7 @@ BasicGame.Game.prototype = {
             this.players[clientId].order = position;
             this.players[clientId].isThrusting = false;
             this.players[clientId].isFiring = false;
+            this.players[clientId].fireCount = 0;
             if(this.isPlayersTinting) {
                 this.players[clientId].tint = colorCode;
             }
@@ -224,8 +225,14 @@ BasicGame.Game.prototype = {
             return;
         }
 
-        // Update the isFiring flag.
+        // Update the isFiring flag. Whether or not the user is holding down the fire button.
         currentPlayer.isFiring = fireEnabled;
+
+        // If the fire button is down, update the fireCount flag. This is reset each time the user is presses the
+        // button. This makes sure that a bullet is shot each time the user taps the button.
+        if (fireEnabled) {
+            currentPlayer.fireCount = 1;
+        }
     },
 
     // Called to set the game's sound on or off.
@@ -254,7 +261,7 @@ BasicGame.Game.prototype = {
         }
 
         // Firing
-        if (currentPlayer.isFiring) {
+        if (currentPlayer.isFiring || (currentPlayer.fireCount > 0)) {
             this.fire(currentPlayer);
         }
 
@@ -508,7 +515,8 @@ BasicGame.Game.prototype = {
      *
      */
     fire: function(origin) {
-        if (this.game.time.now > origin.bulletTime) {
+        if ((origin.fireCount > 0) || (this.game.time.now > origin.bulletTime)) {
+            origin.fireCount--;
             origin.bullet = origin.bullets.getFirstExists(false);
             if (origin.bullet) {
                 origin.bullet.source = origin.id;
