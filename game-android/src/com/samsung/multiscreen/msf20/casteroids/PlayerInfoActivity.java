@@ -2,6 +2,7 @@ package com.samsung.multiscreen.msf20.casteroids;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -82,6 +84,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Reference to the game config gameConfigDialog */
     private Dialog gameConfigDialog;
 
+    /** Stroke size in pixels */
+    private int strokeSize;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -105,6 +109,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         // Get an instance of the ConnectivtyManager
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+
+        //get the stroke size
+        strokeSize = getResources().getDimensionPixelSize(R.dimen.ship_stroke);
 
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
@@ -151,7 +158,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color3Button.setOnClickListener(this);
         color4Button.setOnClickListener(this);
 
-
+        //set the stroke color on the ship drawable
+        setShipColor(shipView, 0xffffffff);
     }
 
     @Override
@@ -290,8 +298,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         //run an animation changing the color from old to new
         animateBackgroundColor(prevColor, newColor);
 
-        //set the edit text color
-        nameText.setTextColor(newColor);
+
     }
 
     private void animateBackgroundColor(int startColor, int endColor) {
@@ -300,7 +307,45 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         colorFade.setDuration(600);
         //colorFade.start();
 
-        shipView.setColorFilter(endColor, PorterDuff.Mode.MULTIPLY);
+        ValueAnimator valueAnimator = new ValueAnimator();
+        valueAnimator.setIntValues(startColor, endColor);
+        valueAnimator.setEvaluator(argbEvaluator);
+        valueAnimator.setDuration(800);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int color = (int)animation.getAnimatedValue();
+                //set the edit text color
+                nameText.setTextColor(color);
+                setShipColor(shipView, color);
+            }
+        });
+        valueAnimator.start();
+
+    }
+
+    private void setShipColor(ImageView shipView, int color) {
+        shipView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+
+        GradientDrawable drawable = (GradientDrawable)shipView.getBackground();
+
+        //get the individual rgb values
+        int startR = (color >> 16) & 0xff;
+        int startG = (color >> 8) & 0xff;
+        int startB = color & 0xff;
+
+        //replace the alpha channel with transparency 0x27
+        int alphaColor = (int)(0x27 << 24) |
+                (int)(startR << 16) |
+                (int)(startG  << 8) |
+                (int)(startB);
+
+        //set the fill color to the alpha transparent color
+        drawable.setColor(alphaColor);
+
+        //set the stroke color
+        drawable.setStroke(strokeSize, color);
+        drawable.invalidateSelf();
     }
 
     private void bindAvailableSlots() {
