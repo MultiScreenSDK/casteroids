@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.Color;
@@ -59,6 +60,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     /** References to buttons on the screen */
     private Button playButton, settingsButton, color1Button, color2Button, color3Button, color4Button;
+
+    /** References to the labels */
+    private TextView enterNameText, selectShipText;
 
     /** Reference to the name EditText */
     private EditText nameText;
@@ -107,8 +111,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //Get reference to various views
         rootView = findViewById(R.id.root_view);
-
         shipView = (ImageView)findViewById(R.id.ship_view);
+        enterNameText = (TextView)findViewById(R.id.name_label);
+        selectShipText = (TextView) findViewById(R.id.color_label);
 
         //set the root views initial background color
         rootViewDefaultBackgoundColor = this.getResources().getColor(R.color.blue_grey_500);
@@ -135,6 +140,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         playButton.setTypeface(customTypeface);
         settingsButton.setTypeface(customTypeface);
         nameText.setTypeface(customTypeface);
+        enterNameText.setTypeface(customTypeface);
+        selectShipText.setTypeface(customTypeface);
 
         //attach listeners
         playButton.setOnClickListener(this);
