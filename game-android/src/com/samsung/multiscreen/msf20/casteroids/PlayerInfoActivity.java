@@ -158,7 +158,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color3Button.setOnClickListener(this);
         color4Button.setOnClickListener(this);
 
-
+        //set the stroke color on the ship drawable
+        setStrokeColor(0xffffffff);
     }
 
     @Override
@@ -317,13 +318,33 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                 shipView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
                 //set the edit text color
                 nameText.setTextColor(color);
-                GradientDrawable drawable = (GradientDrawable)shipView.getBackground();
-                drawable.setStroke(strokeSize, color);
-                drawable.invalidateSelf();
+                setStrokeColor(color);
             }
         });
         valueAnimator.start();
 
+    }
+
+    private void setStrokeColor(int color) {
+        GradientDrawable drawable = (GradientDrawable)shipView.getBackground();
+
+        //get the individual rgb values
+        int startR = (color >> 16) & 0xff;
+        int startG = (color >> 8) & 0xff;
+        int startB = color & 0xff;
+
+        //replace the alpha channel with transparency 0x27
+        int alphaColor = (int)(0x27 << 24) |
+                (int)(startR << 16) |
+                (int)(startG  << 8) |
+                (int)(startB);
+
+        //set the fill color to the alpha transparent color
+        drawable.setColor(alphaColor);
+
+        //set the stroke color
+        drawable.setStroke(strokeSize, color);
+        drawable.invalidateSelf();
     }
 
     private void bindAvailableSlots() {
