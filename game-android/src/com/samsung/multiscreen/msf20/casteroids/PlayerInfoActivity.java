@@ -159,7 +159,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color4Button.setOnClickListener(this);
 
         //set the stroke color on the ship drawable
-        setStrokeColor(0xffffffff);
+        setShipColor(shipView, 0xffffffff);
     }
 
     @Override
@@ -315,17 +315,18 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int color = (int)animation.getAnimatedValue();
-                shipView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
                 //set the edit text color
                 nameText.setTextColor(color);
-                setStrokeColor(color);
+                setShipColor(shipView, color);
             }
         });
         valueAnimator.start();
 
     }
 
-    private void setStrokeColor(int color) {
+    private void setShipColor(ImageView shipView, int color) {
+        shipView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+
         GradientDrawable drawable = (GradientDrawable)shipView.getBackground();
 
         //get the individual rgb values

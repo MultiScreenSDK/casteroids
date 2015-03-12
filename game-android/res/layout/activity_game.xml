@@ -11,6 +11,19 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/instructions_text" />
 
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:padding="20dp"
+        android:id="@+id/ship_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/ship"
+        android:scaleType="fitCenter"
+        android:background="@drawable/stroke"/>
+
     <view
         class="com.samsung.multiscreen.msf20.casteroids.views.CompassView"
         android:layout_width="340dp"

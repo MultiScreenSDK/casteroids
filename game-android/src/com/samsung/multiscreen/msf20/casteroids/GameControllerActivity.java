@@ -3,7 +3,9 @@ package com.samsung.multiscreen.msf20.casteroids;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +76,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Reference to text labels*/
     private TextView instructionsText;
 
+    /** Reference to the ship */
+    private ImageView shipView;
+
     /** Device orientation */
     float pitch = 0;
 
@@ -100,7 +106,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Whether the current player out event has been processed */
     private boolean processedPlayerOutEvent = false;
 
-
+    /** Stroke size in pixels */
+    private int strokeSize;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -122,6 +129,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
+
+        //get the stroke size
+        strokeSize = getResources().getDimensionPixelSize(R.dimen.ship_stroke);
 
         //get the color from the intent
         userSelectedColor= getIntent().getIntExtra("color", getResources().getColor(R.color.pink_400));
@@ -150,6 +160,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         fireButton.setTypeface(customTypeface);
         quitButton.setTypeface(customTypeface);
         instructionsText.setTypeface(customTypeface);
+
+        //reference to the ship
+        shipView = (ImageView)findViewById(R.id.ship_view);
+        setShipColor(shipView, userSelectedColor);
     }
 
     @Override
@@ -509,6 +523,30 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         } else {
             compassView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void setShipColor(ImageView shipView, int color) {
+        shipView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+
+        GradientDrawable drawable = (GradientDrawable)shipView.getBackground();
+
+        //get the individual rgb values
+        int startR = (color >> 16) & 0xff;
+        int startG = (color >> 8) & 0xff;
+        int startB = color & 0xff;
+
+        //replace the alpha channel with transparency 0x27
+        int alphaColor = (int)(0x27 << 24) |
+                (int)(startR << 16) |
+                (int)(startG  << 8) |
+                (int)(startB);
+
+        //set the fill color to the alpha transparent color
+        drawable.setColor(alphaColor);
+
+        //set the stroke color
+        drawable.setStroke(strokeSize, color);
+        drawable.invalidateSelf();
     }
 
     /******************************************************************************************************************
