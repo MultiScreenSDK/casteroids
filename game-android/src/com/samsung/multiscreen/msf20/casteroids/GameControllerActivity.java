@@ -79,6 +79,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Reference to the ship */
     private ImageView shipView;
 
+    /** Reference to the ship */
+    private ImageView deathOverlayView;
+
     /** Device orientation */
     float pitch = 0;
 
@@ -164,6 +167,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         //reference to the ship
         shipView = (ImageView)findViewById(R.id.ship_view);
         setShipColor(shipView, userSelectedColor);
+
+        deathOverlayView = (ImageView) findViewById(R.id.death_overlay);
+        deathOverlayView.setVisibility(View.GONE);
     }
 
     @Override
@@ -295,6 +301,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
 
+                deathOverlayView.setVisibility(View.VISIBLE);
+
                 if(!processedPlayerOutEvent) {
                     vibrator.vibrate(300);
                 }
@@ -304,6 +312,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             setUserInputEnabled(numSeconds == 0);
             if(numSeconds == 0){
                 processedPlayerOutEvent = false; //get ready for the next player out
+                deathOverlayView.setVisibility(View.GONE);
             }
         }
     }
