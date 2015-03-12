@@ -535,8 +535,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         int startG = (color >> 8) & 0xff;
         int startB = color & 0xff;
 
-        //replace the alpha channel with transparency 0x27
-        int alphaColor = (int)(0x27 << 24) |
+        //replace the alpha channel with transparency 0x19
+        int alphaColor = (int)(0x19 << 24) |
                 (int)(startR << 16) |
                 (int)(startG  << 8) |
                 (int)(startB);

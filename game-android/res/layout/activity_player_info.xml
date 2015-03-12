@@ -31,10 +31,9 @@
         style="@style/AppButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="@string/start_game"
+        android:text="@string/play"
         android:id="@+id/play_button"
         android:layout_marginBottom="30dp"
-        android:drawableBottom="@drawable/ic_launcher"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -108,7 +107,7 @@
         android:id="@+id/ship_view"
         android:layout_above="@+id/play_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="30dp"
         android:src="@drawable/ship"
         android:scaleType="fitCenter"
         android:background="@drawable/stroke"/>
