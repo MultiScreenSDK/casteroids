@@ -169,6 +169,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
                 gameControllerActivity.setClass(this, GameControllerActivity.class);
                 gameControllerActivity.putExtra("color", connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt());
                 startActivity(gameControllerActivity);
+                finish();
             }
         }
     }
@@ -260,8 +261,6 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
 	}
 
     private void launchIntent(Class cls){
-        //don't keep us in the back stack
-        finish();
 
         if(toast != null) {
             toast.cancel();
@@ -274,6 +273,8 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         Intent intent = new Intent();
         intent.setClass(this, cls);
         startActivity(intent);
+
+        finish();
     }
 
     /**
