@@ -49,6 +49,9 @@ public class GameState {
 	protected void onConnected() {
 		// Reset the SlotData.
 		initializeSlotData();
+		
+		// Reset the ConfigTypeMap since each time the TV Application is restarted it resets the config. 
+		configTypeMap = new ConfigTypeMap();
 	}
 
 	/**
