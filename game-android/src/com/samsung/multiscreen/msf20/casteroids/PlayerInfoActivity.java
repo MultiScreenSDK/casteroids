@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.Color;
@@ -46,8 +48,11 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
 
-    /** Reference to the root view */
+    /** Reference to views */
     private View rootView;
+
+    /** Reference to the ship view */
+    private ImageView shipView;
 
     /** Reference to the initial background color of the root view */
     private int rootViewDefaultBackgoundColor;
@@ -100,8 +105,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
 
-        //Get reference to the root view
+        //Get reference to various views
         rootView = findViewById(R.id.root_view);
+
+        shipView = (ImageView)findViewById(R.id.ship_view);
 
         //set the root views initial background color
         rootViewDefaultBackgoundColor = this.getResources().getColor(R.color.blue_grey_500);
@@ -275,13 +282,18 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //run an animation changing the color from old to new
         animateBackgroundColor(prevColor, newColor);
+
+        //set the edit text color
+        nameText.setTextColor(newColor);
     }
 
     private void animateBackgroundColor(int startColor, int endColor) {
         //run an animation changing the color from old to new
-        ObjectAnimator colorFade = ObjectAnimator.ofObject(rootView, "backgroundColor", argbEvaluator, startColor, endColor);
+        ObjectAnimator colorFade = ObjectAnimator.ofObject(shipView, "colorFilter", argbEvaluator, startColor, endColor);
         colorFade.setDuration(600);
-        colorFade.start();
+        //colorFade.start();
+
+        shipView.setColorFilter(endColor, PorterDuff.Mode.MULTIPLY);
     }
 
     private void bindAvailableSlots() {
