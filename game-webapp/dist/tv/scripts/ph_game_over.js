@@ -42,8 +42,22 @@ BasicGame.GameOver.prototype = {
             scoreText.font = 'Revalia';
         }
 
+        var playersConnected = false;
+
+        for (var i in GameManager.slots) {
+            var slot = GameManager.slots[i];
+            if (!slot.available) {
+                playersConnected = true;
+                break;
+            }
+        }
+
         this.secondsElapsed = 0;
-        this.gameOverScreenTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, 6, this.updateTimer, this);
+        if (playersConnected) {
+            this.gameOverScreenTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, 6, this.updateTimer, this);
+        } else {
+            this.gotoMainMenu();
+        }
 
     },
 
