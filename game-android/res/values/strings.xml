@@ -15,5 +15,6 @@
     <string name="select_color">Select Your Ship</string>
     <string name="return_to_main_menu">Return to Main Menu</string>
     <string name="game_over">Game Over</string>
+    <string name="winner">Winner</string>
 
 </resources>

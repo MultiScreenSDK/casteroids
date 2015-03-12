@@ -50,6 +50,10 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
     /** Reference to the game over label */
     private TextView gameOverLabel;
 
+    /** Reference to the winner label */
+    private TextView winnerLabel;
+
+
     /** Table that holds all the scores */
     TableLayout tableLayout;
 
@@ -85,6 +89,9 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         //reference to game over label
         gameOverLabel = (TextView) findViewById(R.id.game_over_label);
 
+        // reference to the winner label
+        winnerLabel = (TextView) findViewById(R.id.winner_label);
+
         //get a reference to the scores table
         tableLayout = (TableLayout)findViewById(R.id.scores_table);
 
@@ -100,6 +107,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         //set the various buttons with the typeface
         mainScreenButton.setTypeface(customTypeface);
         gameOverLabel.setTypeface(customTypeface);
+        winnerLabel.setTypeface(customTypeface);
 
         //if we are lollipop, do a custom animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -228,34 +236,49 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         tableLayout.removeAllViews();
 
         GameState gameState = connectivityManager.getGameState();
+        ScoreData highscore = null;
         List<ScoreData> scoreDataList = gameState.getScoreData();
+        if(scoreDataList == null || scoreDataList.size() < 1) {
+            return;
+        }
         for (int i=0; i<scoreDataList.size(); i++){
             TableRow tr = (TableRow)getLayoutInflater().inflate(R.layout.view_score, null);
 
             ScoreData data = scoreDataList.get(i);
+            if(highscore == null || data.getScore() > highscore.getScore()) {
+                highscore = data;
+            } else {
+                //get references to the various cells in the table row
+                TextView positionText = (TextView) tr.findViewById(R.id.position_text);
+                TextView nameText = (TextView) tr.findViewById(R.id.name_text);
+                TextView scoreText = (TextView) tr.findViewById(R.id.score_text);
 
-            //get references to the various cells in the table row
-            TextView positionText = (TextView) tr.findViewById(R.id.position_text);
-            TextView nameText = (TextView) tr.findViewById(R.id.name_text);
-            TextView scoreText = (TextView) tr.findViewById(R.id.score_text);
+                //bind the color
+                int playerColor = data.getColor().getColorInt();
+                positionText.setTextColor(playerColor);
+                nameText.setTextColor(playerColor);
+                scoreText.setTextColor(playerColor);
 
-            //bind the color
-            int playerColor = data.getColor().getColorInt();
-            positionText.setTextColor(playerColor);
-            nameText.setTextColor(playerColor);
-            scoreText.setTextColor(playerColor);
+                //bind the font
+                positionText.setTypeface(customTypeface);
+                nameText.setTypeface(customTypeface);
+                scoreText.setTypeface(customTypeface);
 
-            //bind the font
-            positionText.setTypeface(customTypeface);
-            nameText.setTypeface(customTypeface);
-            scoreText.setTypeface(customTypeface);
+                //bind the values
+                //positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
+                nameText.setText(data.getName());
+                scoreText.setText("" + data.getScore()); //number, hence the empty quotes for coercion to a string
 
-            //bind the values
-            //positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
-            nameText.setText(data.getName());
-            scoreText.setText("" + data.getScore()); //number, hence the empty quotes for coercion to a string
-
-            tableLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                tableLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+            }
+        }
+        if(highscore != null) {
+            String winnerText = highscore.getName() + " " + highscore.getScore();
+            winnerLabel.setText(winnerText);
+            winnerLabel.setTextColor(highscore.getColor().getColorInt());
+            gameOverLabel.setTextColor(highscore.getColor().getColorInt());
+        } else {
+            Log.e(TAG, "highscore is null");
         }
     }
 
