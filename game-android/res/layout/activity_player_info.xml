@@ -102,12 +102,15 @@
         />
 
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:padding="20dp"
         android:id="@+id/ship_view"
         android:layout_above="@+id/play_button"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/ship" />
+        android:src="@drawable/ship"
+        android:scaleType="fitCenter"
+        android:background="@drawable/stroke"/>
 
 </RelativeLayout>
