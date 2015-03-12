@@ -139,15 +139,17 @@ BasicGame.Game.prototype = {
             this.names[clientId] = name;
             console.log("game.addPlayer.position");
             console.log(position);
-            console.log("game.addPlayer.scoreLabels");
-            console.log(this.scoreLabels);
-            this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
-            this.scoreLabels[clientId].font = 'Wallpoet';
-            //            this.scoreLabels[clientId].tint = colorCode;
-            console.log("game.addPlayer.hexColor");
-            console.log(hexColor);
-            this.scoreLabels[clientId].fill = hexColor;
-            console.log(this.scoreLabels[clientId]);
+
+            if(this.isGameText) {
+                console.log("game.addPlayer.scoreLabels");
+                console.log(this.scoreLabels);
+                this.scoreLabels[clientId] = this.add.text(position * 320, 35, name + "\t\t0", style_score);
+                this.scoreLabels[clientId].font = 'Wallpoet';
+                console.log("game.addPlayer.hexColor");
+                console.log(hexColor);
+                this.scoreLabels[clientId].fill = hexColor;
+                console.log(this.scoreLabels[clientId]);
+            }
         }
     },
 
@@ -164,7 +166,9 @@ BasicGame.Game.prototype = {
 
             this.players[clientId].destroy();
             delete this.players[clientId];
-            this.scoreLabels[clientId].destroy();
+            if(this.isGameText) {
+                this.scoreLabels[clientId].destroy();
+            }
         }
 
         if($.isEmptyObject(this.players)) {
@@ -398,8 +402,10 @@ BasicGame.Game.prototype = {
     setupText: function () {
         // Here I setup the labels and other texts
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
-        this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
-        this.timerLabel.font = 'Wallpoet';
+        if (this.isGameText) {
+            this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
+            this.timerLabel.font = 'Wallpoet';
+        }
         this.scores = { };
         this.names = { };
         this.scoreLabels = { };
@@ -461,25 +467,29 @@ BasicGame.Game.prototype = {
      */
     updateTimer: function updateTimer() {
         this.secondsLeft--;
-        var minutes = Math.floor(this.secondsLeft/60);
-        var seconds = this.secondsLeft - minutes * 60;
-        if(seconds < 10) {
-            seconds = '0'+seconds;
+
+        if (this.isGameText) {
+            var minutes = Math.floor(this.secondsLeft/60);
+            var seconds = this.secondsLeft - minutes * 60;
+            if(seconds < 10) {
+                seconds = '0'+seconds;
+            }
+
+            this.timerLabel.setText(minutes+":"+seconds);
+            if(this.secondsLeft <= 10) {
+                this.timerLabel.fontSize = 38;
+                //            this.timerLabel.tint = 0xFF0000;
+                this.timerLabel.fill = '#FFFF00';
+                if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
+                    this.sfx.play("ping");
+                }
+                if(this.secondsLeft <= 3) {
+                    this.timerLabel.fontSize = 46;
+                    this.timerLabel.fill = '#FF0000';
+                }
+            }
         }
 
-        this.timerLabel.setText(minutes+":"+seconds);
-        if(this.secondsLeft <= 10) {
-            this.timerLabel.fontSize = 38;
-            //            this.timerLabel.tint = 0xFF0000;
-            this.timerLabel.fill = '#FFFF00';
-            if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
-                this.sfx.play("ping");
-            }
-            if(this.secondsLeft <= 3) {
-                this.timerLabel.fontSize = 46;
-                this.timerLabel.fill = '#FF0000';
-            }
-        }
         if(this.secondsLeft < 0) {
             this.secondsLeft = BasicGame.GAME_LENGTH;
             this.quitGame();
@@ -561,8 +571,8 @@ BasicGame.Game.prototype = {
             if(this.isGameText) {
                 this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
             }
-            var player = this.players[target.id];
             if(this.isPointsText){
+                var player = this.players[target.id];
                 this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
             }
         }
@@ -749,7 +759,9 @@ BasicGame.Game.prototype = {
 
         for (var id in this.players) {
             this.players[id].destroy();
-            this.scoreLabels[id].destroy();
+            if(this.isGameText) {
+                this.scoreLabels[id].destroy();
+            }
         }
         this.players = {};
 
@@ -758,7 +770,6 @@ BasicGame.Game.prototype = {
 
         this.state.start('GameOver', true, false, this.scores, this.names);
 
-    },
-
+    }
 
 };
