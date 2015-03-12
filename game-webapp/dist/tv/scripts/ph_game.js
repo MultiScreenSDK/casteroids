@@ -383,6 +383,11 @@ BasicGame.Game.prototype = {
     },
 
     setupAudio: function () {
+        // If the game is muted, reutrn.
+        if (this.isMuted) {
+            return;
+        }
+
         // Here I setup audio
         this.sfx = this.game.add.audio("sfx");
         this.sfx.allowMultiple = true;
