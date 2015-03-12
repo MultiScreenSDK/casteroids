@@ -148,6 +148,9 @@ $(GameManager = function(){
         if (game.state.getCurrentState() === menuState) {
             menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
         }
+        if (game.state.getCurrentState() === overState) {
+            overState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
+        }
 
         // Return the SUCCESS code
         return JoinResponseCode.SUCCESS;
@@ -180,6 +183,9 @@ $(GameManager = function(){
         // If in the Menu state, notify the Menu state.
         if (game.state.getCurrentState() === menuState) {
             menuState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
+        }
+        if (game.state.getCurrentState() === overState) {
+            overState.onPlayerUpdate(Object.keys(clientIdToSlotMap).length);
         }
     }
 

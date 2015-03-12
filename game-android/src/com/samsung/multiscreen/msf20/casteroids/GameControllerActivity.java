@@ -246,7 +246,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         }
         if(event.equals(Event.GAME_OVER.getName())){
             Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
-            sendQuitMessage(false); //quit, but do not disconnect on game over
+            //sendQuitMessage(false); //quit, but do not disconnect on game over
             Intent gameOverScreen = new Intent();
             gameOverScreen.setClass(this, GameOverActivity.class);
             startActivity(gameOverScreen);

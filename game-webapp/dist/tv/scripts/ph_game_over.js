@@ -45,7 +45,6 @@ BasicGame.GameOver.prototype = {
         this.secondsElapsed = 0;
         this.gameOverScreenTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, 6, this.updateTimer, this);
 
-        //this.game.time.events.add(Phaser.Timer.SECOND * 5, this.gotoMainMenu, this);
     },
 
     update: function () {
@@ -59,16 +58,35 @@ BasicGame.GameOver.prototype = {
      */
 
     updateTimer: function () {
-        var secondsToStart = 5 - this.secondsElapsed;
+        var secondsToStart = BasicGame.GAME_COUNTDOWN_LENGTH - this.secondsElapsed;
         this.gameOverText.setText("Game will restart in " + secondsToStart + (secondsToStart==1 ? " second" : " seconds"));
-        if (this.secondsElapsed == 5) {
-            this.gotoMainMenu();
+        GameManager.onGameStart(secondsToStart);
+        if (this.secondsElapsed == BasicGame.GAME_COUNTDOWN_LENGTH) {
+            this.startGame();
         }
         this.secondsElapsed = this.secondsElapsed + 1;
     },
 
+    startGame: function () {
+        GameManager.onGameStart(0);
+        this.secondsElapsed = 0; //reset
+        this.state.start('Game');
+    },
+
     gotoMainMenu: function () {
         //  Then let's go back to the main menu.
-        this.state.start('MainMenu');    
+        this.secondsElapsed = 0; //reset
+        this.state.start('MainMenu');
+    },
+
+    onPlayerUpdate: function (count) {
+        console.log("game over menu onPlayerUpdate " + count);
+        if (count == 0) {
+            console.log("no players connected");
+            if (this.gameOverScreenTimer.running) {
+                this.game.time.events.remove(this.gameOverScreenTimer);
+            }
+            this.gotoMainMenu();
+        }
     }
 };

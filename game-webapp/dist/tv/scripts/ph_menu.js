@@ -116,8 +116,6 @@ BasicGame.MainMenu.prototype = {
             }
         }
         return activeSlots;
-    },
-
-
+    }
 
 };
