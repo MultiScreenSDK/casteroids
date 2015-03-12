@@ -140,13 +140,14 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	}
 
 	/**
-	 * Sends a CONFIG_UPDATE message to the TV application.
+	 * Sends a CONFIG_UPDATE message to the TV application and all connected clients.
 	 * 
 	 * @param configTypeMap
 	 */
 	public void sendConfigUpdate(ConfigTypeMap configTypeMap) {
 		String data = MessageDataHelper.encodeConfigUpdateData(configTypeMap);
 		if (data != null) {
+			// By using Message.TARGET_ALL, we are sending the message to the TV application and all connected clients
 			sendMessage(Event.CONFIG_UPDATE.getName(), data, Message.TARGET_ALL);
 		}
 	}
@@ -228,6 +229,7 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 				gameState.onPlayerOut(MessageDataHelper.decodePlayerOutCountDownSeconds(data));
 				break;
 			case CONFIG_UPDATE:
+				// We received a configuration update sent by another client.
 				gameState.onConfigUpdate(MessageDataHelper.decodeConfigUpdateData(data));
 				break;
 			default:
