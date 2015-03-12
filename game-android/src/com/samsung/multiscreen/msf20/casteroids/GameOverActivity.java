@@ -169,35 +169,9 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
                 gameControllerActivity.setClass(this, GameControllerActivity.class);
                 gameControllerActivity.putExtra("color", connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt());
                 startActivity(gameControllerActivity);
+                finish();
             }
         }
-    }
-
-    /**
-     * An example of how to use a Spannable in Android to style specific
-     * sections of a String.
-     *
-     * @param string the string to be styled
-     * @return the spannable with the styles embedded
-     */
-    private Spannable getStyledString(String string) {
-
-        Spannable spannable = new SpannableString(string);
-        ArrayList<Integer> spans = new ArrayList<Integer>(spannable.length());
-        for(int i = 0; i < spannable.length(); i++){
-            if(Character.isDigit(spannable.charAt(i))){
-                spans.add(new Integer(i));
-            }
-        }
-        for(int j = 0; j < spans.size(); j++) {
-            int index = spans.get(j).intValue();
-            spannable.setSpan(new RelativeSizeSpan(1.7f), index, index+1,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannable.setSpan(new ForegroundColorSpan(connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt()), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannable.setSpan(new StyleSpan(Typeface.BOLD), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-
-        return spannable;
     }
 
 
@@ -278,7 +252,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
             winnerLabel.setTextColor(highscore.getColor().getColorInt());
             gameOverLabel.setTextColor(highscore.getColor().getColorInt());
         } else {
-            Log.e(TAG, "highscore is null");
+            Log.e(TAG, "High score is null");
         }
     }
 
@@ -287,8 +261,6 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
 	}
 
     private void launchIntent(Class cls){
-        //don't keep us in the back stack
-        finish();
 
         if(toast != null) {
             toast.cancel();
@@ -301,6 +273,35 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         Intent intent = new Intent();
         intent.setClass(this, cls);
         startActivity(intent);
+
+        finish();
+    }
+
+    /**
+     * An example of how to use a Spannable in Android to style specific
+     * sections of a String.
+     *
+     * @param string the string to be styled
+     * @return the spannable with the styles embedded
+     */
+    private Spannable getStyledString(String string) {
+
+        Spannable spannable = new SpannableString(string);
+        ArrayList<Integer> spans = new ArrayList<Integer>(spannable.length());
+        for(int i = 0; i < spannable.length(); i++){
+            if(Character.isDigit(spannable.charAt(i))){
+                spans.add(new Integer(i));
+            }
+        }
+        for(int j = 0; j < spans.size(); j++) {
+            int index = spans.get(j).intValue();
+            spannable.setSpan(new RelativeSizeSpan(1.7f), index, index+1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt()), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new StyleSpan(Typeface.BOLD), index, index+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return spannable;
     }
 
 }

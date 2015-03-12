@@ -265,11 +265,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             Log.d(TAG, "Received event '" + event + "'");
         }
         if(event.equals(Event.GAME_OVER.getName())){
-            Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
-            //sendQuitMessage(false); //quit, but do not disconnect on game over
             Intent gameOverScreen = new Intent();
             gameOverScreen.setClass(this, GameOverActivity.class);
             startActivity(gameOverScreen);
+            finish();
         } else if (event.equals(Event.GAME_START.getName())){
             //show countdown
             int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);

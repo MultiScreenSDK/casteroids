@@ -111,6 +111,7 @@ BasicGame.Game.prototype = {
             this.players[clientId].order = position;
             this.players[clientId].isThrusting = false;
             this.players[clientId].isFiring = false;
+            this.players[clientId].fireCount = 0;
             if(this.isPlayersTinting) {
                 this.players[clientId].tint = colorCode;
             }
@@ -139,15 +140,17 @@ BasicGame.Game.prototype = {
             this.names[clientId] = name;
             console.log("game.addPlayer.position");
             console.log(position);
-            console.log("game.addPlayer.scoreLabels");
-            console.log(this.scoreLabels);
-            this.scoreLabels[clientId] = this.add.text(position*320, 35, name + "\t\t0", style_score);
-            this.scoreLabels[clientId].font = 'Wallpoet';
-            //            this.scoreLabels[clientId].tint = colorCode;
-            console.log("game.addPlayer.hexColor");
-            console.log(hexColor);
-            this.scoreLabels[clientId].fill = hexColor;
-            console.log(this.scoreLabels[clientId]);
+
+            if(this.isGameText) {
+                console.log("game.addPlayer.scoreLabels");
+                console.log(this.scoreLabels);
+                this.scoreLabels[clientId] = this.add.text(position * 320, 35, name + "\t\t0", style_score);
+                this.scoreLabels[clientId].font = 'Wallpoet';
+                console.log("game.addPlayer.hexColor");
+                console.log(hexColor);
+                this.scoreLabels[clientId].fill = hexColor;
+                console.log(this.scoreLabels[clientId]);
+            }
         }
     },
 
@@ -164,7 +167,9 @@ BasicGame.Game.prototype = {
 
             this.players[clientId].destroy();
             delete this.players[clientId];
-            this.scoreLabels[clientId].destroy();
+            if(this.isGameText) {
+                this.scoreLabels[clientId].destroy();
+            }
         }
 
         if($.isEmptyObject(this.players)) {
@@ -220,8 +225,14 @@ BasicGame.Game.prototype = {
             return;
         }
 
-        // Update the isFiring flag.
+        // Update the isFiring flag. Whether or not the user is holding down the fire button.
         currentPlayer.isFiring = fireEnabled;
+
+        // If the fire button is down, update the fireCount flag. This is reset each time the user is presses the
+        // button. This makes sure that a bullet is shot each time the user taps the button.
+        if (fireEnabled) {
+            currentPlayer.fireCount = 1;
+        }
     },
 
     // Called to set the game's sound on or off.
@@ -250,7 +261,7 @@ BasicGame.Game.prototype = {
         }
 
         // Firing
-        if (currentPlayer.isFiring) {
+        if (currentPlayer.isFiring || (currentPlayer.fireCount > 0)) {
             this.fire(currentPlayer);
         }
 
@@ -258,23 +269,32 @@ BasicGame.Game.prototype = {
         this.screenWrap(currentPlayer);
         currentPlayer.bullets.forEachExists(this.screenWrap, this);
 
-        // Determine whether or not we should do collision detection at this point.
+        // If collision detection is enabled....
         if(this.isCollisionsDetection) {
-            // collision detection
+            // Collision detection with the alien.
             if (this.alien) {
                 this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
                 this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
                 this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
             }
 
+            // Collision detection with other players.
+            var performCollisionCheck = false;
             for (var other_players_id in this.players) {
+                // check if player's bullets collided with another player.
                 if (other_players_id != currentPlayer.id) {
-                    //check for bullets
                     this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+                }
 
-                    //check for collisions. both die if there is a collision
+                // Check for collisions with other players. The performCollisionCheck boolean variable used to avoid
+                // duplicate checks like checking if A and B collided and then B and A collided by only comparing the
+                // current player to other players after her in the list. This was added during performance tuning cycle
+                // when we were focused on limiting the work done per update cycle in order to maintain a high
+                // frames-per-second.
+                if (performCollisionCheck) {
                     this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
                 }
+                performCollisionCheck = (performCollisionCheck || (other_players_id == currentPlayer.id));
             }
         }
     },
@@ -282,8 +302,8 @@ BasicGame.Game.prototype = {
     updateAlien: function() {
         // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
         // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
-        // other cycle.
-        if (this.ticks % 2 == 0) {
+        // third cycle.
+        if (this.ticks % 3 == 0) {
             return;
         }
 
@@ -370,6 +390,11 @@ BasicGame.Game.prototype = {
     },
 
     setupAudio: function () {
+        // If the game is muted, return.
+        if (this.isMuted) {
+            return;
+        }
+
         // Here I setup audio
         this.sfx = this.game.add.audio("sfx");
         this.sfx.allowMultiple = true;
@@ -389,8 +414,10 @@ BasicGame.Game.prototype = {
     setupText: function () {
         // Here I setup the labels and other texts
         var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
-        this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
-        this.timerLabel.font = 'Wallpoet';
+        if (this.isGameText) {
+            this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
+            this.timerLabel.font = 'Wallpoet';
+        }
         this.scores = { };
         this.names = { };
         this.scoreLabels = { };
@@ -451,26 +478,32 @@ BasicGame.Game.prototype = {
      *
      */
     updateTimer: function updateTimer() {
+        // Decrement the countdown
         this.secondsLeft--;
-        var minutes = Math.floor(this.secondsLeft/60);
-        var seconds = this.secondsLeft - minutes * 60;
-        if(seconds < 10) {
-            seconds = '0'+seconds;
+
+        // If the game text is enabled, display the countdown.
+        if (this.isGameText) {
+            var minutes = Math.floor(this.secondsLeft/60);
+            var seconds = this.secondsLeft - minutes * 60;
+            if(seconds < 10) {
+                seconds = '0'+seconds;
+            }
+
+            this.timerLabel.setText(minutes+":"+seconds);
+            if(this.secondsLeft <= 10) {
+                this.timerLabel.fontSize = 38;
+                this.timerLabel.fill = '#FFFF00';
+                if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
+                    this.sfx.play("ping");
+                }
+                if(this.secondsLeft <= 3) {
+                    this.timerLabel.fontSize = 46;
+                    this.timerLabel.fill = '#FF0000';
+                }
+            }
         }
 
-        this.timerLabel.setText(minutes+":"+seconds);
-        if(this.secondsLeft <= 10) {
-            this.timerLabel.fontSize = 38;
-            //            this.timerLabel.tint = 0xFF0000;
-            this.timerLabel.fill = '#FFFF00';
-            if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
-                this.sfx.play("ping");
-            }
-            if(this.secondsLeft <= 3) {
-                this.timerLabel.fontSize = 46;
-                this.timerLabel.fill = '#FF0000';
-            }
-        }
+        // Check if the game is over
         if(this.secondsLeft < 0) {
             this.secondsLeft = BasicGame.GAME_LENGTH;
             this.quitGame();
@@ -482,7 +515,8 @@ BasicGame.Game.prototype = {
      *
      */
     fire: function(origin) {
-        if (this.game.time.now > origin.bulletTime) {
+        if ((origin.fireCount > 0) || (this.game.time.now > origin.bulletTime)) {
+            origin.fireCount--;
             origin.bullet = origin.bullets.getFirstExists(false);
             if (origin.bullet) {
                 origin.bullet.source = origin.id;
@@ -552,8 +586,8 @@ BasicGame.Game.prototype = {
             if(this.isGameText) {
                 this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
             }
-            var player = this.players[target.id];
             if(this.isPointsText){
+                var player = this.players[target.id];
                 this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
             }
         }
@@ -572,38 +606,26 @@ BasicGame.Game.prototype = {
      *
      */
     collide: function(obj1, obj2) {
+        // If either object is not alive ignore the collision.
+        if(!obj1.alive || !obj2.alive) {
+            return;
+        }
+
         console.log("collide");
         console.log(obj1);
         console.log(obj2);
-        if(!obj1.alive || !obj2.alive){
-            return;
-        }
-        // deduct points from players on hit
+
+        // If obj1 is a player, process as a player out.
         if(obj1 !== this.alien) {
-            this.scores[obj1.id] -= BasicGame.PLAYER_HIT_DEDUCT;
-            var player = this.players[obj1.id];
-            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
-            if(this.isGameText) {
-                this.scoreLabels[obj1.id].setText(this.names[obj1.id] + "\t\t"+this.scores[obj1.id]);
-            }
-            // notify the GameManager that the player is out so that it can notify the client.
-            GameManager.onPlayerOut(obj1.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+            this.playerOut(obj1, true);
         }
 
+        // If obj2 is a player, process as a player out.
         if(obj2 !== this.alien) {
-            this.scores[obj2.id] -= BasicGame.PLAYER_HIT_DEDUCT;
-            var player = this.players[obj2.id];
-            this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y+(player.height/2), player.tint);
-            if(this.isGameText) {
-                this.scoreLabels[obj2.id].setText(this.names[obj2.id] + "\t\t"+this.scores[obj2.id]);
-            }
-            // notify the GameManager that the player is out so that it can notify the client.
-            GameManager.onPlayerOut(obj2.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
+            this.playerOut(obj2, false);
         }
-        
-        obj1.tod = this.game.time.now;
-        this.explode(obj1, 'explosionBig'); //huge explosion
-        obj1.kill();
+
+        // If obj2 is an alien, process as an alien out.
         if(obj2 === this.alien) {
             obj2.damage(BasicGame.HIT_POW);
             if(obj2.health <= 0) {
@@ -611,9 +633,39 @@ BasicGame.Game.prototype = {
                 this.explode(obj2, 'explosionBig'); //huge explosion
             }
         }
+
+        // If we are not muted, play the sound of death.
         if(!this.isMuted) {
             this.sfx.play("death");
         }
+    },
+
+    playerOut: function (player, leftCollision) {
+        // Deduct points from players on hit
+        this.scores[player.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+
+        // TODO: If two ships collide we get two negative points updates and the 2nd one will destroy the first one.
+        // TODO: The showPoints function needs to be updated to support this scenario.
+        if(this.isPointsText) {
+            if (leftCollision) {
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
+            } else {
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.tint);
+            }
+        }
+
+        // Update the player's score
+        if(this.isGameText) {
+            this.scoreLabels[player.id].setText(this.names[player.id] + "\t\t"+this.scores[player.id]);
+        }
+
+        // Explode the player
+        player.tod = this.game.time.now;
+        this.explode(player, 'explosionBig'); //huge explosion
+        player.kill();
+
+        // Notify the GameManager that the player is out so that it can notify the client.
+        GameManager.onPlayerOut(player.id, (BasicGame.PLAYER_RESPAWN_DELAY / 1000)); // seconds remaining
     },
 
     /**
@@ -640,6 +692,7 @@ BasicGame.Game.prototype = {
      */
     showPoints: function (points, x, y, color) {
         var sign = "+";
+        // TODO: If two ships collide we get two negagtive points updates and the 2nd one will destroy the first one.
         if(points < 0) {
             if(this.pointsPrompt != null || this.pointsPrompt != undefined) {
                 this.pointsPrompt.destroy();
@@ -721,7 +774,9 @@ BasicGame.Game.prototype = {
 
         for (var id in this.players) {
             this.players[id].destroy();
-            this.scoreLabels[id].destroy();
+            if(this.isGameText) {
+                this.scoreLabels[id].destroy();
+            }
         }
         this.players = {};
 
@@ -730,7 +785,6 @@ BasicGame.Game.prototype = {
 
         this.state.start('GameOver', true, false, this.scores, this.names);
 
-    },
-
+    }
 
 };
