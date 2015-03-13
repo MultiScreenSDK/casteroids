@@ -110,6 +110,7 @@ BasicGame.Game.prototype = {
             this.players[clientId].id = clientId;
             this.players[clientId].order = position;
             this.players[clientId].isThrusting = false;
+            this.players[clientId].thrustCount = 0;
             this.players[clientId].isFiring = false;
             this.players[clientId].fireCount = 0;
             if(this.isPlayersTinting) {
@@ -213,6 +214,13 @@ BasicGame.Game.prototype = {
 
         // Update the isThrusting flag.
         currentPlayer.isThrusting = thrustEnabled;
+
+        // If the thrust button is down, update the thrustCount flag. This is reset each time the user is presses the
+        // button. This makes sure that a thust busrt is made each time the user taps the button.
+        if (thrustEnabled) {
+            // How many update cycles should the thrust be effective for.
+            currentPlayer.thrustCount = 10;
+        }
     },
 
     // Called to enable firing on a specific player's spaceship.
@@ -252,7 +260,10 @@ BasicGame.Game.prototype = {
         }
 
         // Thrusting
-        if (currentPlayer.isThrusting) {
+        if ((currentPlayer.isThrusting) || (currentPlayer.thrustCount > 0)) {
+            if (currentPlayer.thrustCount > 0) {
+			    currentPlayer.thrustCount--;
+			}
             this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
                 BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
         } else {
@@ -516,7 +527,9 @@ BasicGame.Game.prototype = {
      */
     fire: function(origin) {
         if ((origin.fireCount > 0) || (this.game.time.now > origin.bulletTime)) {
-            origin.fireCount--;
+            if (origin.fireCount > 0) {
+			    origin.fireCount--;
+			}
             origin.bullet = origin.bullets.getFirstExists(false);
             if (origin.bullet) {
                 origin.bullet.source = origin.id;
