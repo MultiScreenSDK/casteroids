@@ -8,7 +8,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
@@ -20,6 +19,8 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
  * @author Nik Bhattacharya
  */
 public class SelectDeviceActivity extends Activity implements ConnectivityListener, AdapterView.OnItemClickListener {
+
+    public static final int RESULT_ERROR = -2;
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
@@ -78,9 +79,9 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
                 String service = avblServices.getItem(position);
                 //connect to the service
                 connectivityManager.connect(service);
-                setReturnValue(Activity.RESULT_OK);
+                setReturnValue(SelectDeviceActivity.RESULT_OK);
             } catch (Exception ex) {
-                setReturnValue(Activity.RESULT_CANCELED);
+                setReturnValue(SelectDeviceActivity.RESULT_ERROR);
             }
         }
         finish();
@@ -88,7 +89,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 
     @Override
     public void onBackPressed() {
-        setReturnValue(Activity.RESULT_OK);
+        setReturnValue(SelectDeviceActivity.RESULT_CANCELED);
         finish();
     }
 
@@ -117,20 +118,9 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
                 bindList();
                 break;
             case APPLICATION_CONNECTED:
-                // TODO: Notify the user that the connection was made.
-                Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-
-                break;
             case APPLICATION_DISCONNECTED:
-                // TODO: Notify the user that the connection was lost.
-                Toast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
-                connectivityManager.startDiscovery();
-                break;
             case APPLICATION_CONNECT_FAILED:
-                // TODO: Notify the user that the connection attempt failed.
-                Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
-                // Re-start discover
-                connectivityManager.startDiscovery();
+                // Nothing needs to happen here, the main activity should handle these cases
                 break;
         }
     }
