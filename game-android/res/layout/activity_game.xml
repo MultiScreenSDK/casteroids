@@ -106,6 +106,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/skull"
         android:id="@+id/death_overlay"
-        android:adjustViewBounds="true"/>
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"/>
 
 </RelativeLayout>
