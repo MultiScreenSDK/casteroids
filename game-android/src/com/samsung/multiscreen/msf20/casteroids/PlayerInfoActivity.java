@@ -85,7 +85,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     private Dialog gameConfigDialog;
 
     /** Stroke size in pixels */
-    private int strokeSize;
+    private int strokeSize, strokeSizeWide;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -112,6 +112,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //get the stroke size
         strokeSize = getResources().getDimensionPixelSize(R.dimen.ship_stroke);
+        strokeSizeWide = getResources().getDimensionPixelSize(R.dimen.ship_stroke_wide);
 
         //get the custom typeface from the application
         customTypeface = ((GameApplication)getApplication()).getCustomTypeface();
@@ -344,7 +345,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         drawable.setColor(alphaColor);
 
         //set the stroke color
-        drawable.setStroke(strokeSize, color);
+        drawable.setStroke(strokeSizeWide, color);
         drawable.invalidateSelf();
     }
 

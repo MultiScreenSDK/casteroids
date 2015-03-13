@@ -23,9 +23,10 @@
         android:ems="10"
         android:id="@+id/name_text"
         android:imeOptions="actionDone"
+        android:gravity="center"
         android:layout_below="@+id/name_label"
-        android:layout_centerHorizontal="true"
-        android:gravity="center" />
+        android:layout_alignLeft="@+id/color_label"
+        android:layout_alignStart="@+id/color_label" />
 
     <Button
         style="@style/AppButton"
@@ -33,9 +34,10 @@
         android:layout_height="wrap_content"
         android:text="@string/play"
         android:id="@+id/play_button"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="34dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/color1_button"
+        android:layout_alignStart="@+id/color1_button" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -54,8 +56,8 @@
         android:minWidth="80dp"
         android:id="@+id/color1_button"
         android:layout_below="@+id/color_label"
-        android:layout_toLeftOf="@+id/color_label"
-        android:layout_toStartOf="@+id/color_label" />
+        android:layout_toRightOf="@+id/ship_view"
+        android:layout_toEndOf="@+id/ship_view" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -94,22 +96,22 @@
         android:layout_height="wrap_content"
         android:id="@+id/game_settings_button"
         android:text="Game Settings"
-        android:layout_alignBottom="@+id/play_button"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="10dp"
-        />
+        android:layout_alignTop="@+id/play_button"
+        android:layout_alignLeft="@+id/ship_view"
+        android:layout_alignStart="@+id/ship_view" />
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="12dp"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:padding="22dp"
         android:id="@+id/ship_view"
-        android:layout_above="@+id/play_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
         android:src="@drawable/ship"
         android:scaleType="fitCenter"
-        android:background="@drawable/stroke"/>
+        android:background="@drawable/stroke"
+        android:layout_below="@+id/name_label"
+        android:layout_toLeftOf="@+id/name_label"
+        android:layout_toStartOf="@+id/name_label"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp" />
 
 </RelativeLayout>
