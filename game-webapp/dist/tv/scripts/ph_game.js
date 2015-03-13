@@ -1,6 +1,5 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
-    this.isMuted = false;
     this.shipDimens = 48;
     this.halfShipDimens = this.shipDimens/2;
 
@@ -8,15 +7,16 @@ BasicGame.Game = function (game) {
 
     // The variables below were used during performance testing to enable/disable game features to see which had the
     // greatest impact on performance.
+    this.isMuted = true;
     this.isAlien = true;
     this.isPlayersTinting = true;
     this.isBulletTinting = true;
     this.isGameText = true;
-    this.isPointsText = true;
-    this.isBackground = true;
+    this.isPointsText = false;
+    this.isBackground = false;
     this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
-    this.isFPSdebug = true;
+    this.isFPSdebug = false;
 };
 
 BasicGame.Game.prototype = {
