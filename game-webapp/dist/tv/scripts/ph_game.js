@@ -1,6 +1,5 @@
 BasicGame.Game = function (game) {
     this.secondsLeft = BasicGame.GAME_LENGTH;
-    this.isMuted = false;
     this.shipDimens = 48;
     this.halfShipDimens = this.shipDimens/2;
 
@@ -8,15 +7,16 @@ BasicGame.Game = function (game) {
 
     // The variables below were used during performance testing to enable/disable game features to see which had the
     // greatest impact on performance.
+    this.isMuted = true;
     this.isAlien = true;
     this.isPlayersTinting = true;
     this.isBulletTinting = true;
     this.isGameText = true;
-    this.isPointsText = true;
-    this.isBackground = true;
+    this.isPointsText = false;
+    this.isBackground = false;
     this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
-    this.isFPSdebug = true;
+    this.isFPSdebug = false;
 };
 
 BasicGame.Game.prototype = {
@@ -252,60 +252,64 @@ BasicGame.Game.prototype = {
      * Private functions
      */
     updatePlayer: function (currentPlayer) {
-        // If this is not the current player's turn to update then return. To maintain a high frames-per-second we need
-        // to distribute the work across update cycles. Here we are enforcing a rule that only one player gets updated
-        // each cycle.
-        if ((this.ticks % 4) != currentPlayer.order) {
-            return;
-        }
+        // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
+        // enforcing a rule that only one player gets updated each cycle. One update cycle the player processes firing
+        // and thrust and the next it will perform collision detection. For example one player will update firing and
+        // thrust on update cycle 0 and check for collisions on update cycle 4.
+        var updateCycle =  (this.ticks % 8);
 
-        // Thrusting
-        if ((currentPlayer.isThrusting) || (currentPlayer.thrustCount > 0)) {
-            if (currentPlayer.thrustCount > 0) {
-			    currentPlayer.thrustCount--;
-			}
-            this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
-                BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
-        } else {
-            // TODO fix null body
-            currentPlayer.body.acceleration.set(0);
-        }
-
-        // Firing
-        if (currentPlayer.isFiring || (currentPlayer.fireCount > 0)) {
-            this.fire(currentPlayer);
-        }
-
-        // Screen Wrapping
-        this.screenWrap(currentPlayer);
-        currentPlayer.bullets.forEachExists(this.screenWrap, this);
-
-        // If collision detection is enabled....
-        if(this.isCollisionsDetection) {
-            // Collision detection with the alien.
-            if (this.alien) {
-                this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
-                this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
-                this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
+        // If this is the current player's turn to update firing and thrusting....
+        if (updateCycle == currentPlayer.order) {
+            // Thrusting
+            if ((currentPlayer.isThrusting) || (currentPlayer.thrustCount > 0)) {
+                if (currentPlayer.thrustCount > 0) {
+                    currentPlayer.thrustCount--;
+                }
+                this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
+                    BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+            } else {
+                // TODO fix null body
+                currentPlayer.body.acceleration.set(0);
             }
 
-            // Collision detection with other players.
-            var performCollisionCheck = false;
-            for (var other_players_id in this.players) {
-                // check if player's bullets collided with another player.
-                if (other_players_id != currentPlayer.id) {
-                    this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+            // Firing
+            if (currentPlayer.isFiring || (currentPlayer.fireCount > 0)) {
+                this.fire(currentPlayer);
+            }
+        }
+        // Else If this is the current player's turn to check for collisions....
+        else if (updateCycle == (currentPlayer.order+4)) {
+            // Screen Wrapping
+            this.screenWrap(currentPlayer);
+            currentPlayer.bullets.forEachExists(this.screenWrap, this);
+
+            // If collision detection is enabled....
+            if(this.isCollisionsDetection) {
+                // Collision detection with the alien.
+                if (this.alien) {
+                    this.physics.arcade.overlap(currentPlayer.bullets, this.alien, this.hit, null, this);
+                    this.physics.arcade.overlap(this.alien.bullets, currentPlayer, this.hit, null, this);
+                    this.physics.arcade.overlap(currentPlayer, this.alien, this.collide, null, this);
                 }
 
-                // Check for collisions with other players. The performCollisionCheck boolean variable used to avoid
-                // duplicate checks like checking if A and B collided and then B and A collided by only comparing the
-                // current player to other players after her in the list. This was added during performance tuning cycle
-                // when we were focused on limiting the work done per update cycle in order to maintain a high
-                // frames-per-second.
-                if (performCollisionCheck) {
-                    this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                // Collision detection with other players.
+                var performCollisionCheck = false;
+                for (var other_players_id in this.players) {
+                    // check if player's bullets collided with another player.
+                    if (other_players_id != currentPlayer.id) {
+                        this.physics.arcade.overlap(currentPlayer.bullets, this.players[other_players_id], this.hit, null, this);
+                    }
+
+                    // Check for collisions with other players. The performCollisionCheck boolean variable used to avoid
+                    // duplicate checks like checking if A and B collided and then B and A collided by only comparing the
+                    // current player to other players after her in the list. This was added during performance tuning cycle
+                    // when we were focused on limiting the work done per update cycle in order to maintain a high
+                    // frames-per-second.
+                    if (performCollisionCheck) {
+                        this.physics.arcade.overlap(currentPlayer, this.players[other_players_id], this.collide, null, this);
+                    }
+                    performCollisionCheck = (performCollisionCheck || (other_players_id == currentPlayer.id));
                 }
-                performCollisionCheck = (performCollisionCheck || (other_players_id == currentPlayer.id));
             }
         }
     },
@@ -313,8 +317,8 @@ BasicGame.Game.prototype = {
     updateAlien: function() {
         // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
         // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
-        // third cycle.
-        if (this.ticks % 3 == 0) {
+        // 8th cycle.
+        if (this.ticks % 8 == 0) {
             return;
         }
 
@@ -504,7 +508,7 @@ BasicGame.Game.prototype = {
             if(this.secondsLeft <= 10) {
                 this.timerLabel.fontSize = 38;
                 this.timerLabel.fill = '#FFFF00';
-                if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
+                if((this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3) && !this.isMuted) {
                     this.sfx.play("ping");
                 }
                 if(this.secondsLeft <= 3) {
