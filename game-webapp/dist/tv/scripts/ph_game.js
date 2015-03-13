@@ -504,7 +504,7 @@ BasicGame.Game.prototype = {
             if(this.secondsLeft <= 10) {
                 this.timerLabel.fontSize = 38;
                 this.timerLabel.fill = '#FFFF00';
-                if(this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3 && !this.isMuted) {
+                if((this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3) && !this.isMuted) {
                     this.sfx.play("ping");
                 }
                 if(this.secondsLeft <= 3) {
