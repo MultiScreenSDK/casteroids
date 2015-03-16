@@ -21,6 +21,7 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 public class SelectDeviceActivity extends Activity implements ConnectivityListener, AdapterView.OnItemClickListener {
 
     public static final int RESULT_ERROR = -2;
+    public static final String SELECTED_SERVICE_KEY = "SELECTED_SERVICE";
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
@@ -77,11 +78,9 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
         if(avblServices != null) {
             try {
                 String service = avblServices.getItem(position);
-                //connect to the service
-                connectivityManager.connect(service);
-                setReturnValue(SelectDeviceActivity.RESULT_OK);
+                setReturnValue(SelectDeviceActivity.RESULT_OK, service);
             } catch (Exception ex) {
-                setReturnValue(SelectDeviceActivity.RESULT_ERROR);
+                setReturnValue(SelectDeviceActivity.RESULT_ERROR, null);
             }
         }
         finish();
@@ -89,7 +88,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 
     @Override
     public void onBackPressed() {
-        setReturnValue(SelectDeviceActivity.RESULT_CANCELED);
+        setReturnValue(SelectDeviceActivity.RESULT_CANCELED, null);
         finish();
     }
 
@@ -147,8 +146,9 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
         }
     }
 
-    private void setReturnValue(int result){
+    private void setReturnValue(int result, String selectedService){
         Intent intent = new Intent();
+        intent.putExtra(SELECTED_SERVICE_KEY, selectedService);
         setResult(result, intent);
     }
 }
