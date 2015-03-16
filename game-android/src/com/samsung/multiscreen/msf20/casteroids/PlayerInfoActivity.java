@@ -494,7 +494,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     private void showGameSettings() {
         //Initialize the Alert Dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppDialog);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this/*, R.style.AppDialog*/);
 
         //Get the info from the model
         final ConfigTypeMap configTypeMap = connectivityManager.getGameState().getConfigTypeMap();
