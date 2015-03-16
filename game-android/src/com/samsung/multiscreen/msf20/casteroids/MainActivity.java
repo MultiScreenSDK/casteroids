@@ -212,6 +212,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 cancelProgressIndicator();
 
                 Toast.makeText(this, "Application disconnected.", Toast.LENGTH_SHORT).show();
+                break;
             case APPLICATION_CONNECT_FAILED:
                 cancelProgressIndicator();
 
