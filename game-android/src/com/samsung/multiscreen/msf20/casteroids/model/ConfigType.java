@@ -22,7 +22,7 @@ public enum ConfigType {
 	BULLET_TINTING("isBulletTintingEnabled", "Bullet Tinting", true),
 	GAME_TEXT("isGameTextEnabled", "Game Text", true),
 	POINTS_TEXT("isPointsTextEnabled", "Points Text", false),
-	AGGRESSIVE_UPDATE_CYCLE("isAggressiveUpdateCycle", "Aggressive Update Cycle", true);
+	AGGRESSIVE_UPDATE_CYCLE("isAggressiveUpdateCycle", "Sacrifice Responsiveness for Performance", true);
 
 	// The TV application defined name for the ConfigType. This field is as the key when sending the data to the client.
 	private final String name;
