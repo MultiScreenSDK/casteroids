@@ -16,6 +16,7 @@ BasicGame.Game = function (game) {
     this.isBackground = false;
     this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
+    this.isAggressiveUpdateCycle = true;
     this.isFPSdebug = false;
 };
 
@@ -45,6 +46,7 @@ BasicGame.Game.prototype = {
             this.isBackground = this.config.isBackgroundImageEnabled;
             this.isBackgroundTiled = this.config.isBackgroundImageTiled;
             this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
+            this.isAggressiveUpdateCycle = this.config.isAggressiveUpdateCycle;
             this.isFPSdebug = this.config.isFpsEnabled;
         }
 
@@ -253,10 +255,12 @@ BasicGame.Game.prototype = {
      */
     updatePlayer: function (currentPlayer) {
         // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
-        // enforcing a rule that only one player gets updated each cycle. One update cycle the player processes firing
-        // and thrust and the next it will perform collision detection. For example one player will update firing and
-        // thrust on update cycle 0 and check for collisions on update cycle 4.
-        var updateCycle =  (this.ticks % 8);
+        // enforcing a rule that only one player gets updated each cycle.
+        //
+        // If in aggressive mode, one update cycle the player processes firing and thrust and the next it will perform
+        // collision detection. For example one player will update firing and thrust on update cycle 0 and check for
+        // collisions on update cycle 4. Aggressive mode sacrifices responsiveness for performance.
+        var updateCycle =  this.isAggressiveUpdateCycle ? (this.ticks % 8) : (this.ticks % 4);
 
         // If this is the current player's turn to update firing and thrusting....
         if (updateCycle == currentPlayer.order) {
@@ -276,13 +280,14 @@ BasicGame.Game.prototype = {
             if (currentPlayer.isFiring || (currentPlayer.fireCount > 0)) {
                 this.fire(currentPlayer);
             }
-        }
-        // Else If this is the current player's turn to check for collisions....
-        else if (updateCycle == (currentPlayer.order+4)) {
+
             // Screen Wrapping
             this.screenWrap(currentPlayer);
             currentPlayer.bullets.forEachExists(this.screenWrap, this);
+        }
 
+        // If this is the current player's turn to check for collisions....
+        if (updateCycle == (this.isAggressiveUpdateCycle ? (currentPlayer.order+4) : currentPlayer.order)) {
             // If collision detection is enabled....
             if(this.isCollisionsDetection) {
                 // Collision detection with the alien.
@@ -317,8 +322,9 @@ BasicGame.Game.prototype = {
     updateAlien: function() {
         // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
         // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
-        // 8th cycle.
-        if (this.ticks % 8 == 0) {
+        // 4th or 8th cycle if in aggressive mode. Aggressive mode sacrifices responsiveness for performance.
+        var updateCycle = this.isAggressiveUpdateCycle ? (this.ticks % 8) : (this.ticks % 4);
+        if (updateCycle == (this.isAggressiveUpdateCycle ? 7 : 3)) {
             return;
         }
 

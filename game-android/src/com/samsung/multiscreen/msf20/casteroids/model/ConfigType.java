@@ -21,7 +21,8 @@ public enum ConfigType {
 	SPACESHIP_TINTING("isSpaceshipTintingEnabled", "Spaceship Tinting", true),
 	BULLET_TINTING("isBulletTintingEnabled", "Bullet Tinting", true),
 	GAME_TEXT("isGameTextEnabled", "Game Text", true),
-	POINTS_TEXT("isPointsTextEnabled", "Points Text", false);
+	POINTS_TEXT("isPointsTextEnabled", "Points Text", false),
+	AGGRESSIVE_UPDATE_CYCLE("isAggressiveUpdateCycle", "Aggressive Update Cycle", true);
 
 	// The TV application defined name for the ConfigType. This field is as the key when sending the data to the client.
 	private final String name;
