@@ -145,7 +145,7 @@ BasicGame.Game.prototype = {
             if(this.isGameText) {
                 console.log("game.addPlayer.scoreLabels");
                 console.log(this.scoreLabels);
-                this.scoreLabels[clientId] = this.add.text(position * 320, 35, name + "\t\t0", style_score);
+                this.scoreLabels[clientId] = this.add.text(position * 320, 40, name + "\t\t0", style_score);
                 this.scoreLabels[clientId].font = 'Wallpoet';
                 console.log("game.addPlayer.hexColor");
                 console.log(hexColor);
