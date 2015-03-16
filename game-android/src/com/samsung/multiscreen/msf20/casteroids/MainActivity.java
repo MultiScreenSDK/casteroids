@@ -287,7 +287,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
             if ((services != null) && (services.length > 0)) {
                 boolean hasSingleService = services.length == 1;
                 if(hasSingleService){
-    				playButton.setEnabled(true);
                     playButton.setVisibility(View.VISIBLE);
                 } else {
                     //multiple services
@@ -312,8 +311,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
 			String[] services = connectivityManager.getDiscoveredServiceNames();
 			if ((services != null) && (services.length > 0)) {
                 displayProgressIndicator();
-				// Disable the play button so it doesn't get pressed again while we are connecting.
-				playButton.setEnabled(false);
 
 				// Connect to the first available service.
 				// There should only be one for this button to be visible.
