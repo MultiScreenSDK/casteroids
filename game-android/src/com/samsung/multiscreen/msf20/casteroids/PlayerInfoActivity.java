@@ -180,7 +180,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
 
         //set the stroke color on the ship drawable
-        setShipColor(shipView, 0xffffffff);
+        setShipColor(shipView, 0x1affffff);
     }
 
     @Override

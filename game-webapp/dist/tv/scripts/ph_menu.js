@@ -6,6 +6,8 @@ BasicGame.MainMenu = function (game) {
 
 BasicGame.MainMenu.prototype = {
 
+    anim: null,
+
     /******************************************************************************************************************
      * Phaser Lifecycle functions
      */
@@ -23,8 +25,8 @@ BasicGame.MainMenu.prototype = {
         var sprite = this.add.sprite(0, 0, 'titlepage');
         sprite.anchor.setTo(0, 0);
 
-        var anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
-        anim.start();
+        this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
+        this.anim.start();
 
         this.players = this.game.add.group();
 
@@ -69,6 +71,11 @@ BasicGame.MainMenu.prototype = {
      */
 
     startGame: function () {
+        // Clean up the background animation
+        this.anim.stop();
+        this.game.tweens.remove(this.anim);
+
+        // Start the game
         GameManager.onGameStart(0);
         this.secondsElapsed = 0; //reset
         this.state.start('Game');
