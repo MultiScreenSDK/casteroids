@@ -13,6 +13,7 @@ package com.samsung.multiscreen.msf20.casteroids.model;
 public enum ConfigType {
 
 	SOUND("isSoundEnabled", "Sound", false),
+	FPS("isFpsEnabled", "FPS", false),
 	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", false),
 	TILED_BACKGROUND_IMAGE("isBackgroundImageTiled", "Tiled Background Image", true),
 	COLLISION_DETECTION("isCollisionDetectionEnabled", "Collision Detection", true),
@@ -20,8 +21,7 @@ public enum ConfigType {
 	SPACESHIP_TINTING("isSpaceshipTintingEnabled", "Spaceship Tinting", true),
 	BULLET_TINTING("isBulletTintingEnabled", "Bullet Tinting", true),
 	GAME_TEXT("isGameTextEnabled", "Game Text", true),
-	POINTS_TEXT("isPointsTextEnabled", "Points Text", false),
-	FPS("isFpsEnabled", "FPS", false);
+	POINTS_TEXT("isPointsTextEnabled", "Points Text", false);
 
 	// The TV application defined name for the ConfigType. This field is as the key when sending the data to the client.
 	private final String name;
