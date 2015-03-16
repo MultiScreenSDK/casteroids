@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
@@ -49,9 +48,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
     /** Reference to the root view */
     private View rootView;
-
-    /** Reference to the Casteroids TextView */
-    private TextView casteroidsText;
 
     /** How to play button animator */
     private ObjectAnimator animator;
@@ -123,14 +119,10 @@ public class MainActivity extends Activity implements ConnectivityListener{
             }
         });
 
-        //get the Casteroids text view
-        casteroidsText = (TextView)findViewById(R.id.game_title);
-
         //set the various buttons and text labels with the typeface
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
-        casteroidsText.setTypeface(customTypeface);
 
         //if we are lollipop, do a custom animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

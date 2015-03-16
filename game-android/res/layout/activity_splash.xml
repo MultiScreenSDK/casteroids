@@ -5,21 +5,13 @@
     tools:context="com.samsung.multiscreen.msf20.casteroids.SplashActivity"
     android:background="@drawable/casteroids">
 
-    <TextView
-        android:id="@+id/game_title"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:text="@string/casteroids"
-        android:textSize="60sp"
-        android:textColor="#fff"
-        android:shadowDy="10"
-        android:shadowDx="10"
-        android:shadowRadius="3"
-        android:shadowColor="#03aae7"
-        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/img_casteroids"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
