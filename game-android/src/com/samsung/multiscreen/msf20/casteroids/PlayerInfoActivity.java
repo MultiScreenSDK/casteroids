@@ -16,6 +16,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -46,7 +47,7 @@ import java.util.List;
  *
  */
 
-public class PlayerInfoActivity extends Activity implements ConnectivityListener, MessageListener, View.OnClickListener{
+public class PlayerInfoActivity extends Activity implements ConnectivityListener, MessageListener, View.OnClickListener, View.OnTouchListener{
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
@@ -158,6 +159,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color2Button.setOnClickListener(this);
         color3Button.setOnClickListener(this);
         color4Button.setOnClickListener(this);
+        color1Button.setOnTouchListener(this);
+        color2Button.setOnTouchListener(this);
+        color3Button.setOnTouchListener(this);
+        color4Button.setOnTouchListener(this);
 
         //set the stroke color on the ship drawable
         setShipColor(shipView, 0xffffffff);
@@ -233,6 +238,21 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         super.onBackPressed();
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+
+        int id = v.getId();
+
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            handleEvent(id, true, v);
+        } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            handleEvent(id, false, v);
+        }
+
+
+        return false;
+    }
+
 
     /******************************************************************************************************************
      * Connectivity and Game Message Listeners
@@ -284,6 +304,29 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /******************************************************************************************************************
      * Private methods
      */
+
+    private void handleEvent(int viewId, boolean isDown, View v) {
+        switch (viewId) {
+            case R.id.color1_button:
+            case R.id.color2_button:
+            case R.id.color3_button:
+            case R.id.color4_button:
+                runAnimation(v, isDown);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void runAnimation(View v, boolean isDown){
+        if(isDown){
+            v.animate().scaleX(0.7f).scaleY(0.7f).setDuration(150).start();
+        } else {
+            v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(150).start();
+        }
+    }
+
+
 
     private void selectColorForSlot(SlotData slotData) {
 
