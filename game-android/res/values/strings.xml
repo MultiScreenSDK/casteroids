@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">MSF2 Casteroids</string>
-    <string name="play_spaceships">Play Casteroids</string>
+    <string name="connect">Connect</string>
     <string name="start_flying">Fly Your Spaceship</string>
     <string name="how_to_play">How to Play</string>
     <string name="select_tv">Select TV</string>

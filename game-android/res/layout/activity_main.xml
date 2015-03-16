@@ -22,11 +22,10 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/play_button"
-        android:text="@string/play_spaceships"
+        android:text="@string/connect"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:layout_centerHorizontal="true"
-        android:drawableBottom="@drawable/ic_launcher"
         android:visibility="gone" />
 
     <Button
