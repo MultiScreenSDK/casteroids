@@ -171,16 +171,13 @@ public class MainActivity extends Activity implements ConnectivityListener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SELECT_TV_RESULT_CODE) {
+
+            String selectedService = data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY);
             // If the user selected a device...
             if (resultCode == SelectDeviceActivity.RESULT_OK) {
-                // If we are connected to the application, move to the player info screen. Otherwise we will wait to be
-                // connected or for the error message.
-                if (connectivityManager.isConnected()) {
-                    launchIntent(PlayerInfoActivity.class);
-                } else {
-                    // Else, wait for the connect notification.
-                    displayProgressIndicator();
-                }
+                displayProgressIndicator();
+                connectivityManager.connect(selectedService);
+                // Wait for the connect notification.
             } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
                 // Looks like something went wrong when trying to select a device to use
                 Toast.makeText(this, "Failed to select device to connect to.", Toast.LENGTH_SHORT).show();
