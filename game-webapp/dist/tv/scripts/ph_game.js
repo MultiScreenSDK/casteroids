@@ -219,7 +219,7 @@ BasicGame.Game.prototype = {
         // button. This makes sure that a thust busrt is made each time the user taps the button.
         if (thrustEnabled) {
             // How many update cycles should the thrust be effective for.
-            currentPlayer.thrustCount = 10;
+            currentPlayer.thrustCount = 7;
         }
     },
 
