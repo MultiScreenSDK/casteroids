@@ -328,7 +328,13 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     private void setShipColor(ImageView shipView, int color) {
         shipView.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
 
-        GradientDrawable drawable = (GradientDrawable)shipView.getBackground();
+        setCustomBackgroundColor(shipView, color, strokeSizeWide);
+    }
+
+
+    /** This method expects that the view has a GradientDrawable shape background */
+    private void setCustomBackgroundColor(View view, int color, int size) {
+        GradientDrawable drawable = (GradientDrawable)view.getBackground();
 
         //get the individual rgb values
         int startR = (color >> 16) & 0xff;
@@ -345,7 +351,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         drawable.setColor(alphaColor);
 
         //set the stroke color
-        drawable.setStroke(strokeSizeWide, color);
+        drawable.setStroke(size, color);
         drawable.invalidateSelf();
     }
 
@@ -374,7 +380,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             Button b = buttons[i];
             Color c = slot.getColor();
 
-            b.setText(c.getName().toUpperCase());
+            setCustomBackgroundColor(b, c.getColorInt(), strokeSize);
+            //b.setText(c.getName().toUpperCase());
             b.setTextColor(c.getColorInt());
             b.setTag(slot);
 
