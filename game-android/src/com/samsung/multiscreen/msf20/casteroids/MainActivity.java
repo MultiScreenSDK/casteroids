@@ -202,6 +202,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 }
                 break;
             case APPLICATION_CONNECTED:
+                cancelProgressIndicator();
                 // TODO: Remove toast
                 Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
                 // We are connected to the application move to the player info screen
