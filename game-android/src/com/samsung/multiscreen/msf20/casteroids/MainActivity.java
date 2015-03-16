@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
     private Button playButton, selectTVButton, noTVDiscoveredButton;
 
     /** Reference to ImageButton */
-    private ImageButton howToPlayButton;
+    private ImageButton gameOptionsButton;
 
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
@@ -83,15 +83,15 @@ public class MainActivity extends Activity implements ConnectivityListener{
         rootView = findViewById(R.id.root_view);
 
         // Initialize the how to play button
-        howToPlayButton = (ImageButton) findViewById(R.id.how_to_play_button);
-        howToPlayButton.setOnClickListener(new View.OnClickListener() {
+        gameOptionsButton = (ImageButton) findViewById(R.id.game_options_button);
+        gameOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showHowToPlay();
+                showGameOptions();
             }
         });
 
-        animator = ObjectAnimator.ofFloat(howToPlayButton, "rotation", 360);
+        animator = ObjectAnimator.ofFloat(gameOptionsButton, "rotation", 360);
         animator.setRepeatCount(ObjectAnimator.INFINITE);
         animator.setRepeatMode(ObjectAnimator.RESTART);
         animator.setInterpolator(new LinearInterpolator());
@@ -155,7 +155,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
         // Unregister self as a listener
         connectivityManager.unregisterConnectivityListener(this);
 
-        animator.start();
+        animator.cancel();
     }
 
     @Override
@@ -323,7 +323,9 @@ public class MainActivity extends Activity implements ConnectivityListener{
 		}
 	}
 
-    private void showHowToPlay() {
+    private void showGameOptions() {
+        //TODO:  Show all the options instead of going directly to how to play
+
         launchIntent(HowToPlayActivity.class);
     }
 

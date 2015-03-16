@@ -20,8 +20,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +64,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     private int rootViewDefaultBackgoundColor;
 
     /** References to buttons on the screen */
-    private Button playButton, settingsButton, color1Button, color2Button, color3Button, color4Button;
+    private Button playButton, color1Button, color2Button, color3Button, color4Button;
+
+    /** */
+    private ImageButton gameOptionsButton;
 
     /** References to the labels */
     private TextView enterNameText, selectShipText;
@@ -87,6 +92,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
     /** Stroke size in pixels */
     private int strokeSize, strokeSizeWide;
+
+    /** Button animator */
+    private ObjectAnimator animator;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -131,7 +139,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         playButton = (Button) findViewById(R.id.play_button);
 
         // Initialize the how to play button
-        settingsButton = (Button) findViewById(R.id.game_settings_button);
+        gameOptionsButton = (ImageButton) findViewById(R.id.game_options_button);
         color1Button = (Button) findViewById(R.id.color1_button);
         color2Button = (Button) findViewById(R.id.color2_button);
         color3Button = (Button) findViewById(R.id.color3_button);
@@ -147,14 +155,13 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color3Button.setTypeface(customTypeface);
         color4Button.setTypeface(customTypeface);
         playButton.setTypeface(customTypeface);
-        settingsButton.setTypeface(customTypeface);
         nameText.setTypeface(customTypeface);
         enterNameText.setTypeface(customTypeface);
         selectShipText.setTypeface(customTypeface);
 
         //attach listeners
         playButton.setOnClickListener(this);
-        settingsButton.setOnClickListener(this);
+        gameOptionsButton.setOnClickListener(this);
         color1Button.setOnClickListener(this);
         color2Button.setOnClickListener(this);
         color3Button.setOnClickListener(this);
@@ -164,8 +171,16 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         color3Button.setOnTouchListener(this);
         color4Button.setOnTouchListener(this);
 
+        //create the animator
+        animator = ObjectAnimator.ofFloat(gameOptionsButton, "rotation", 360);
+        animator.setRepeatCount(ObjectAnimator.INFINITE);
+        animator.setRepeatMode(ObjectAnimator.RESTART);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(15000);
+
+
         //set the stroke color on the ship drawable
-        setShipColor(shipView, 0xffffffff);
+        setShipColor(shipView, 0x1affffff);
     }
 
     @Override
@@ -186,6 +201,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         //rebind the data
         bindAvailableSlots();
 
+        //run the animation on the button
+        animator.start();
+
         //put in the player name if it was previously saved
         nameText.setText(getPlayerNameFromPreferences());
         nameText.setSelection(nameText.getText().length());
@@ -200,6 +218,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //unregister for SLOT changes
         connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
+
+        animator.cancel();
     }
 
     @Override
@@ -224,7 +244,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                     connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
                 }
                 break;
-            case R.id.game_settings_button:
+            case R.id.game_options_button:
                 showGameSettings();
                 break;
             default:
@@ -235,6 +255,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     @Override
     public void onBackPressed() {
         connectivityManager.disconnect();
+
+        animator.cancel();
         super.onBackPressed();
     }
 
