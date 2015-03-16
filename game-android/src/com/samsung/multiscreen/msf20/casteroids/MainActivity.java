@@ -229,22 +229,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
         bindViews();
     }
 
-    private void displayProgressIndicator() {
-        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
-        progressDialog.setCancelable(true);
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-
-            public void onCancel(DialogInterface dialog) {
-                connectivityManager.disconnect();
-                connectivityManager.startDiscovery();
-            }
-        });
-
-    }
-
-    private void cancelProgressIndicator() {
-        progressDialog.dismiss();
-    }
 
     /******************************************************************************************************************
      * Private methods
@@ -271,6 +255,23 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 return false;
             }
         });
+    }
+
+    private void displayProgressIndicator() {
+        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            public void onCancel(DialogInterface dialog) {
+                connectivityManager.disconnect();
+                connectivityManager.startDiscovery();
+            }
+        });
+
+    }
+
+    private void cancelProgressIndicator() {
+        progressDialog.dismiss();
     }
 
 
