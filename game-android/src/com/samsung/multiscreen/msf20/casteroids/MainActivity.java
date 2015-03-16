@@ -202,6 +202,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 }
                 break;
             case APPLICATION_CONNECTED:
+                cancelProgressIndicator();
                 // TODO: Remove toast
                 Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
                 // We are connected to the application move to the player info screen
@@ -211,6 +212,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 cancelProgressIndicator();
 
                 Toast.makeText(this, "Application disconnected.", Toast.LENGTH_SHORT).show();
+                break;
             case APPLICATION_CONNECT_FAILED:
                 cancelProgressIndicator();
 
@@ -228,22 +230,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
         bindViews();
     }
 
-    private void displayProgressIndicator() {
-        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
-        progressDialog.setCancelable(true);
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-
-            public void onCancel(DialogInterface dialog) {
-                connectivityManager.disconnect();
-                connectivityManager.startDiscovery();
-            }
-        });
-
-    }
-
-    private void cancelProgressIndicator() {
-        progressDialog.dismiss();
-    }
 
     /******************************************************************************************************************
      * Private methods
@@ -270,6 +256,23 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 return false;
             }
         });
+    }
+
+    private void displayProgressIndicator() {
+        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            public void onCancel(DialogInterface dialog) {
+                connectivityManager.disconnect();
+                connectivityManager.startDiscovery();
+            }
+        });
+
+    }
+
+    private void cancelProgressIndicator() {
+        progressDialog.dismiss();
     }
 
 
