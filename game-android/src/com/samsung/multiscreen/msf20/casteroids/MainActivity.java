@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -16,7 +18,6 @@ import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
@@ -33,6 +34,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
     /** Code to send to the next screen when calling startActivityForResult */
     private static final  int SELECT_TV_RESULT_CODE = 1000;
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
@@ -51,6 +54,8 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
     /** How to play button animator */
     private ObjectAnimator animator;
+
+    ProgressDialog progressDialog;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -167,13 +172,18 @@ public class MainActivity extends Activity implements ConnectivityListener{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SELECT_TV_RESULT_CODE) {
             // If the user selected a device...
-            if (resultCode == Activity.RESULT_OK) {
+            if (resultCode == SelectDeviceActivity.RESULT_OK) {
                 // If we are connected to the application, move to the player info screen. Otherwise we will wait to be
                 // connected or for the error message.
                 if (connectivityManager.isConnected()) {
                     launchIntent(PlayerInfoActivity.class);
+                } else {
+                    // Else, wait for the connect notification.
+                    displayProgressIndicator();
                 }
-                // Else, wait for the connect notification.
+            } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
+                // Looks like something went wrong when trying to select a device to use
+                Toast.makeText(this, "Failed to select device to connect to.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -198,9 +208,15 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 launchIntent(PlayerInfoActivity.class);
                 break;
             case APPLICATION_DISCONNECTED:
+                cancelProgressIndicator();
+
+                Toast.makeText(this, "Application disconnected.", Toast.LENGTH_SHORT).show();
             case APPLICATION_CONNECT_FAILED:
-                // TODO: Notify the user that the connection attempt failed.
+                cancelProgressIndicator();
+
+                // Notify the user that the connection attempt failed.
                 Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+
                 // The application failed to connect or was disconnected, re-start discovery
                 connectivityManager.startDiscovery();
                 break;
@@ -212,6 +228,22 @@ public class MainActivity extends Activity implements ConnectivityListener{
         bindViews();
     }
 
+    private void displayProgressIndicator() {
+        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            public void onCancel(DialogInterface dialog) {
+                connectivityManager.disconnect();
+                connectivityManager.startDiscovery();
+            }
+        });
+
+    }
+
+    private void cancelProgressIndicator() {
+        progressDialog.dismiss();
+    }
 
     /******************************************************************************************************************
      * Private methods
@@ -270,14 +302,16 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
 
     private void onPlayButtonClick() {
-		// If we are connected to the application, move to the player info screen.
+        // If we are connected to the application, move to the player info screen.
 		if (connectivityManager.isConnected()) {
+            displayProgressIndicator();
 			launchIntent(PlayerInfoActivity.class);
 		}
 		// Else if there is at least one service, attempt to connect to a service.
 		else if (connectivityManager.hasDiscoveredService()) {
 			String[] services = connectivityManager.getDiscoveredServiceNames();
 			if ((services != null) && (services.length > 0)) {
+                displayProgressIndicator();
 				// Disable the play button so it doesn't get pressed again while we are connecting.
 				playButton.setEnabled(false);
 
