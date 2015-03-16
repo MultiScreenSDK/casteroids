@@ -275,4 +275,7 @@
     <color name="toggle_dark_on">#333333</color>
     <color name="toggle_light_off">@color/grey_300</color>
     <color name="toggle_light_on">@color/grey_white_1000</color>
+
+    <!-- Custom dialog theme colors-->
+    <color name="dialogs_text_blue">#00ade9</color>
 </resources>
