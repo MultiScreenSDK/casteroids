@@ -24,8 +24,10 @@
     <style name="AppDialog" parent="android:Theme.Holo.Dialog">
         <item name="android:textColorPrimary">@color/dialogs_text_blue</item>
         <item name="android:textAppearanceMedium">@style/AppTextAppearance.Medium</item>
-        <item name="android:background">@drawable/bg_rounded_corners</item>
+        <item name="android:windowBackground">@drawable/bg_rounded_corners</item>
         <item name="android:borderlessButtonStyle">@style/AppWidget.Button.Borderless</item>
+        <item name="android:windowTitleSize">25dip</item>
+        <item name="android:windowTitleBackgroundStyle">@style/AppDialogWindowTitleBackground</item>
     </style>
 
     <style name="AppButton" parent="android:Widget.Button">
@@ -43,14 +45,19 @@
 
     <!-- Dialogs Custom style -->
 
-    <style name="AppTextAppearance.Medium" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">48pt</item>
+
+    <style name="AppDialogWindowTitleBackground" >
+        <item name="android:background">@color/grey_black_1000</item>
+    </style>
+
+    <style name="AppTextAppearance.Medium" parent="@android:style/TextAppearance.Small">
+        <!--<item name="android:textSize">48pt</item>-->
     </style>
 
     <style name="AppWidget.Button.Borderless" parent="@android:style/Widget.Holo.Button.Borderless">
         <item name="android:textColor">@color/dialogs_text_blue</item>
         <item name="android:textAppearance">@style/AppTextAppearance.DialogButton</item>
-        <item name="android:background">@drawable/bg_rounded_corners</item>
+        <item name="android:background">@color/grey_black_1000</item>
     </style>
 
     <style name="AppTextAppearance.DialogButton" parent="@android:style/TextAppearance.Medium"></style>

@@ -13,6 +13,5 @@
 
     </style>
 
-    <style name="AppDialog" parent="android:Theme.Material.Dialog"/>
 
 </resources>
