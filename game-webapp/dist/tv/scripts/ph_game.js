@@ -177,7 +177,7 @@ BasicGame.Game.prototype = {
 
         if($.isEmptyObject(this.players)) {
             console.log("quitting since everyone left");
-            this.quitGame();
+            this.quitGame(false);
         }
     },
 
@@ -527,7 +527,7 @@ BasicGame.Game.prototype = {
         // Check if the game is over
         if(this.secondsLeft < 0) {
             this.secondsLeft = BasicGame.GAME_LENGTH;
-            this.quitGame();
+            this.quitGame(true);
         }
     },
 
@@ -786,28 +786,35 @@ BasicGame.Game.prototype = {
     },
 
     /**
-     * Ends the current game and relases resources
+     * Ends the current game and releases resources before moving on to the game over or main menu state depending on
+     * whether or not the game has just ended.
      *
      */
-    quitGame: function (pointer) {
+    quitGame: function (gameEnded) {
 
-        //  Here you should destroy anything you no longer need.
-        //  delete sprites, purge caches, free resources, all that good stuff.
-        //  Then move on to the game over state.
+        // Here we destroy everything that we no longer need. Delete sprites, purge caches, free resources, etc. Then
+        // move on to the game over or main menu state depending on whether or not the game has just ended.
 
+        // Destroy all the score labels
         for (var id in this.players) {
             this.players[id].destroy();
             if(this.isGameText) {
                 this.scoreLabels[id].destroy();
             }
         }
+
+        // Clear the players list
         this.players = {};
 
-        // Notify the Game Manager that the game is over.
-        GameManager.onGameOver(this.scores);
-
-        this.state.start('GameOver', true, false, this.scores, this.names);
-
+        // If the game just ended, notify the Game Manager that the game is over and transition to the Game Over state
+        if (gameEnded) {
+            GameManager.onGameOver(this.scores);
+            this.state.start('GameOver', true, false, this.scores, this.names);
+        }
+        // Else all the players left the game, go back to the main menu.
+        else {
+            this.state.start('MainMenu');
+        }
     }
 
 };
