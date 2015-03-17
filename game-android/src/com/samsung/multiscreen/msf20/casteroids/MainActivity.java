@@ -171,12 +171,10 @@ public class MainActivity extends Activity implements ConnectivityListener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SELECT_TV_RESULT_CODE) {
-
-            String selectedService = data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY);
-            // If the user selected a device...
             if (resultCode == SelectDeviceActivity.RESULT_OK) {
                 displayProgressIndicator();
-                connectivityManager.connect(selectedService);
+                // If the user selected a device...
+                connectivityManager.connect(data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY));
                 // Wait for the connect notification.
             } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
                 // Looks like something went wrong when trying to select a device to use
