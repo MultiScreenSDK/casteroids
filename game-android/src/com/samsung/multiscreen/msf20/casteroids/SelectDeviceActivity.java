@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -43,6 +44,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_select_device);
 
         //Get an instance of the ConnectivtyManager and register for connectivity updates.
@@ -139,7 +141,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 		// If we have at least one service, update the adapter
 		if ((services != null) && (services.length > 0)) {
 			// bind the list view with the services
-			avblServices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+			avblServices = new ArrayAdapter<String>(this, R.layout.list_item);
 			avblServices.addAll(services);
 			tvList.setAdapter(avblServices);
 		} 

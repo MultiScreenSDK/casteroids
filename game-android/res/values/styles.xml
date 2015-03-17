@@ -21,7 +21,9 @@
     </style>
 
     <!-- Pre-Lollipop devices will have Holo themed Dialogs -->
-    <style name="AppDialog" parent="android:Theme.Holo.Dialog"/>
+    <style name="AppDialog" parent="android:Theme.Holo.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 
     <!-- Casteroids styled dialogs -->
     <style name="CustomAppDialog" parent="AppDialog">
