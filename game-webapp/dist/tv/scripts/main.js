@@ -17,7 +17,17 @@ $(ConnectivityManager = function(){
         channel = service.channel('com.samsung.multiscreen.casteroids');
 
         channel.connect({name: 'TV'}, function (err) {
-            if(err) return console.error(err);
+            // If there was an error log the error and return.
+            if (err) {
+                return console.error(err);
+            }
+            // Else we successfully connected to the channel, broadcast a slot update.
+            else {
+                if (logToConsole) {
+                    console.log('connect success.');
+                }
+                sendSlotUpdate();
+            }
         });
 
         channel.on('connect', function(client){
