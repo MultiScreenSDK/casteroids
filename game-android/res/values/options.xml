@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="options_array">
+        <item>@string/how_to_play</item>
+        <item>@string/how_to_connect</item>
+    </string-array>
+</resources>
