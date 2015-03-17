@@ -30,11 +30,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!-- single instance of Main Activity. Otherwise it becomes hard to quit the app. -->
+        <!-- single task of Main Activity. Otherwise it becomes hard to quit the app. -->
         <activity
             android:name=".MainActivity"
             android:screenOrientation="landscape"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask">
         </activity>
         <activity
             android:name=".GameControllerActivity"
