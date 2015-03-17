@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
@@ -177,12 +176,10 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	Log.d(TAG, "resultCode="+resultCode);
         if (requestCode == SELECT_TV_RESULT_CODE) {
             if (resultCode == SelectDeviceActivity.RESULT_OK) {
                 displayProgressIndicator();
                 // If the user selected a device...
-            	Log.d(TAG, "serverName-="+data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY));
                 connectivityManager.connect(data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY));
                 // Wait for the connect notification.
             } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
@@ -236,12 +233,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
 	@Override
     public void onMessage(String eventName, String data, byte[] payload) {
-		if (BuildConfig.DEBUG) {
-			Log.d(TAG, "Received event '" + eventName + "'");
-		}
-
 		Event event = Event.getByName(eventName);
-
 		switch (event) {
 			case SLOT_UPDATE:
                 cancelProgressIndicator();
