@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
 /**
@@ -178,7 +179,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 // Wait for the connect notification.
             } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
                 // Looks like something went wrong when trying to select a device to use
-                Toast.makeText(this, "Failed to select device to connect to.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "Failed to select device to connect to.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -199,20 +200,20 @@ public class MainActivity extends Activity implements ConnectivityListener{
             case APPLICATION_CONNECTED:
                 cancelProgressIndicator();
                 // TODO: Remove toast
-                Toast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
                 // We are connected to the application move to the player info screen
                 launchIntent(PlayerInfoActivity.class);
                 break;
             case APPLICATION_DISCONNECTED:
                 cancelProgressIndicator();
 
-                Toast.makeText(this, "Application disconnected.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "Application disconnected.", Toast.LENGTH_SHORT).show();
                 break;
             case APPLICATION_CONNECT_FAILED:
                 cancelProgressIndicator();
 
                 // Notify the user that the connection attempt failed.
-                Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
 
                 // The application failed to connect or was disconnected, re-start discovery
                 connectivityManager.startDiscovery();
@@ -340,7 +341,7 @@ public class MainActivity extends Activity implements ConnectivityListener{
         //launchIntent(HowToPlayActivity.class); //FIXME
 
         //FIXME
-        Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
+        CustomToast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
         if(!connectivityManager.hasDiscoveredService()) {
             connectivityManager.startDiscovery();
         }
