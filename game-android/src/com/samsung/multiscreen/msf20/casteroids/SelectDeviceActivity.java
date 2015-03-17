@@ -134,16 +134,20 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
      * Binds the list view with the discovered services.
      */
     private void bindList() {
-        if (connectivityManager.hasDiscoveredService()) {
-            String[] services = connectivityManager.getDiscoveredServiceNames();
-            if ((services != null) && (services.length > 0)) {
-                //bind the list view with the services
-                avblServices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-                avblServices.addAll(services);
+		String[] services = connectivityManager.getDiscoveredServiceNames();
 
-                tvList.setAdapter(avblServices);
-            }
-        }
+		// If we have at least one service, update the adapter
+		if ((services != null) && (services.length > 0)) {
+			// bind the list view with the services
+			avblServices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+			avblServices.addAll(services);
+			tvList.setAdapter(avblServices);
+		} 
+		// Else there aren't any services, treat as an implicit cancel.
+		else {
+			setReturnValue(SelectDeviceActivity.RESULT_CANCELED, null);
+			finish();
+		}
     }
 
     private void setReturnValue(int result, String selectedService){
