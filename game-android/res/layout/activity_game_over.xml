@@ -30,7 +30,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="35sp"
-        android:text="@string/winner"
         android:id="@+id/winner_label"
         android:layout_below="@id/game_over_label"
         android:layout_marginTop="10dp"
