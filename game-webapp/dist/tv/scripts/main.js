@@ -21,7 +21,8 @@ $(ConnectivityManager = function(){
             if (err) {
                 return console.error(err);
             }
-            // Else we successfully connected to the channel, broadcast a slot update.
+            // Else we successfully connected to the channel, broadcast a slot update. For this application, the slot
+            // update is used to indicate to the client that the TV Application has been initialized and is ready to go.
             else {
                 if (logToConsole) {
                     console.log('connect success.');
@@ -35,7 +36,9 @@ $(ConnectivityManager = function(){
                 console.log('connect');
             }
 
-            // Send the slot update to the new client so it knows what slots are available.
+            // Send the slot update to the new client so it knows what slots are available. For this application, the
+            // slot update is used to indicate to the client that the TV Application has been initialized and is ready
+            // to go.
             sendSlotUpdate(client.id);
         });
 
@@ -52,7 +55,9 @@ $(ConnectivityManager = function(){
                 console.log('clientConnect');
             }
 
-            // Send the slot update to the new client sp it knows what slots are available.
+            // Send the slot update to the new client sp it knows what slots are available. For this application, the
+            // slot update is used to indicate to the client that the TV Application has been initialized and is ready
+            // to go.
             sendSlotUpdate(client.id);
         });
 
