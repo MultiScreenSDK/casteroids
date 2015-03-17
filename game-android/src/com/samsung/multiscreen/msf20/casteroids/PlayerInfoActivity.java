@@ -36,6 +36,7 @@ import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.model.JoinResponseData;
 import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
 import com.samsung.multiscreen.msf20.casteroids.model.SlotData;
+import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
@@ -292,7 +293,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             case APPLICATION_DISCONNECTED:
             case APPLICATION_CONNECT_FAILED:
                 //Notify the user that the connection was lost.
-                Toast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "Lost connection.", Toast.LENGTH_SHORT).show();
                 // We lost connect, return to the main activity.
                 finish();
                 break;
@@ -302,14 +303,14 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     @Override
     public void onMessage(String event, String data, byte[] payload) {
         if(event.equals(Event.JOIN_REQUEST.getName())){
-            Toast.makeText(this, "Joining game...", Toast.LENGTH_SHORT).show();
+            CustomToast.makeText(this, "Joining game...", Toast.LENGTH_SHORT).show();
         } else if (event.equals(Event.JOIN_RESPONSE.getName())){
 
             JoinResponseData joinResponseData = MessageDataHelper.decodeJoinResponseData(data);
             if(joinResponseData.isSuccessful()){
                 startGame(joinResponseData);
             } else {
-                Toast.makeText(this, "Couldn't join game. Try again.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "Couldn't join game. Try again.", Toast.LENGTH_SHORT).show();
                 bindAvailableSlots();
             }
         } else if (event.equals(Event.SLOT_UPDATE.getName())){
@@ -439,7 +440,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                 selectedSlotData = null;
 
                 //message the user
-                Toast.makeText(this, "The Color you selected is no longer available. Please select another one.", Toast.LENGTH_SHORT).show();
+                CustomToast.makeText(this, "The Color you selected is no longer available. Please select another one.", Toast.LENGTH_SHORT).show();
             }
 
             Button b = buttons[i];
@@ -457,12 +458,12 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     private boolean checkUserSelections() {
         String selectedName = nameText.getText().toString();
         if(TextUtils.isEmpty(selectedName)) {
-            Toast.makeText(this, "You must input your name", Toast.LENGTH_SHORT).show();
+            CustomToast.makeText(this, "You must input your name", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if(selectedSlotData == null) {
-            Toast.makeText(this, "You must choose a color", Toast.LENGTH_SHORT).show();
+            CustomToast.makeText(this, "You must choose a color", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -537,7 +538,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
                             //save the configuration
                             connectivityManager.sendConfigUpdate(configTypeMap);
-                            Toast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
+                            CustomToast.makeText(getApplicationContext(), "Saved Options", Toast.LENGTH_SHORT).show();
                         }
 
                         dialog.dismiss();
