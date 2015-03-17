@@ -281,21 +281,19 @@ public class MainActivity extends Activity implements ConnectivityListener{
         noTVDiscoveredButton.setVisibility(View.GONE);
 
         // Make sure the connectivity manager is in the correct state.
-        if (connectivityManager.hasDiscoveredService()) {
-            String[] services = connectivityManager.getDiscoveredServiceNames();
-            if ((services != null) && (services.length > 0)) {
-                boolean hasSingleService = services.length == 1;
-                if(hasSingleService){
-                    playButton.setVisibility(View.VISIBLE);
-                } else {
-                    //multiple services
-                    selectTVButton.setVisibility(View.VISIBLE);
-                }
-            }
-        } else {
-            //no tvs discovered yet
-            noTVDiscoveredButton.setVisibility(View.VISIBLE);
-        }
+		String[] services = connectivityManager.getDiscoveredServiceNames();
+		if ((services != null) && (services.length > 0)) {
+			boolean hasSingleService = services.length == 1;
+			if (hasSingleService) {
+				playButton.setVisibility(View.VISIBLE);
+			} else {
+				// multiple services
+				selectTVButton.setVisibility(View.VISIBLE);
+			}
+		} else {
+			// no tvs discovered yet
+			noTVDiscoveredButton.setVisibility(View.VISIBLE);
+		}
     }
 
 
