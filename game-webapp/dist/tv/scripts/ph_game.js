@@ -81,13 +81,12 @@ BasicGame.Game.prototype = {
 
         // Every 16th update cycle, check for points prompt expiring. We do not do this every update cycle to distribute
         // the work in order to maintain a high frames-per-second.
-        if (this.ticks % 16 == 0) {
-            if (this.pointsPrompt != undefined && this.pointsPrompt.exists && this.time.now > this.pointsExpire) {
-                this.pointsPrompt.destroy();
+        if (this.isPointsText && (this.ticks % 16 == 0)) {
+            if (this.pointsPrompt1 != undefined && this.pointsPrompt1.exists && this.time.now > this.pointsExpire1) {
+                this.pointsPrompt1.destroy();
             }
-            // check for points prompt expiring
-            if (this.pointsUpPrompt != undefined && this.pointsUpPrompt.exists && this.time.now > this.pointsUpExpire) {
-                this.pointsUpPrompt.destroy();
+            if (this.pointsPrompt2 != undefined && this.pointsPrompt2.exists && this.time.now > this.pointsExpire2) {
+                this.pointsPrompt2.destroy();
             }
         }
 
@@ -579,14 +578,14 @@ BasicGame.Game.prototype = {
         } else {
             this.scores[bullet.source] += BasicGame.PLAYER_HIT_SCORE;
             if(this.players[bullet.source] != undefined && this.isPointsText) {
-                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players[bullet.source].tint);
+                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players[bullet.source].tint, false);
             }
         }
         if(target.health <= 0) {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
                 if(this.isPointsText){
-                    this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].tint);
+                    this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].tint, false);
                 }
             }
 
@@ -606,12 +605,18 @@ BasicGame.Game.prototype = {
         // deduct points from players on hit
         if(target !== this.alien) {
             this.scores[target.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+
+            if (this.scores[target.id] < 0) {
+                this.scores[target.id] = 0;
+            }
+
             if(this.isGameText) {
                 this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
             }
+
             if(this.isPointsText){
                 var player = this.players[target.id];
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint, true);
             }
         }
 
@@ -667,13 +672,15 @@ BasicGame.Game.prototype = {
         // Deduct points from players on hit
         this.scores[player.id] -= BasicGame.PLAYER_HIT_DEDUCT;
 
-        // TODO: If two ships collide we get two negative points updates and the 2nd one will destroy the first one.
-        // TODO: The showPoints function needs to be updated to support this scenario.
+        if (this.scores[player.id] < 0) {
+            this.scores[player.id] = 0;
+        }
+
         if(this.isPointsText) {
             if (leftCollision) {
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint, true);
             } else {
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.tint);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.tint, false);
             }
         }
 
@@ -712,29 +719,32 @@ BasicGame.Game.prototype = {
      * @param {x} -
      * @param {y} -
      * @param {color} -
+     * @param {left} -
      */
-    showPoints: function (points, x, y, color) {
-        var sign = "+";
-        // TODO: If two ships collide we get two negagtive points updates and the 2nd one will destroy the first one.
-        if(points < 0) {
-            if(this.pointsPrompt != null || this.pointsPrompt != undefined) {
-                this.pointsPrompt.destroy();
+    showPoints: function (points, x, y, color, left) {
+        var sign = (points < 0) ? "" : "+";
+
+        // If the score should be on the left
+        if(left) {
+            if(this.pointsPrompt1 != null || this.pointsPrompt1 != undefined) {
+                this.pointsPrompt1.destroy();
             }
-            sign = "";
-            this.pointsPrompt = this.add.text( x-40, y, sign + points,
+            this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
                                               { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt.tint = color;
-            this.pointsPrompt.anchor.setTo(0.5, 0.5);
-            this.pointsExpire = this.time.now + 800;
-        } else {
-            if(this.pointsUpPrompt != null || this.pointsUpPrompt != undefined) {
-                this.pointsUpPrompt.destroy();
+            this.pointsPrompt1.tint = color;
+            this.pointsPrompt1.anchor.setTo(0.5, 0.5);
+            this.pointsExpire1 = this.time.now + 800;
+        }
+        // Else the score should be on the right
+        else {
+            if(this.pointsPrompt2 != null || this.pointsPrompt2 != undefined) {
+                this.pointsPrompt2.destroy();
             }
-            this.pointsUpPrompt = this.add.text( x+48, y, sign + points,
+            this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
                                                 { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsUpPrompt.tint = color;
-            this.pointsUpPrompt.anchor.setTo(0.5, 0.5);
-            this.pointsUpExpire = this.time.now + 800;
+            this.pointsPrompt2.tint = color;
+            this.pointsPrompt2.anchor.setTo(0.5, 0.5);
+            this.pointsExpire2 = this.time.now + 800;
         }
     },
 
