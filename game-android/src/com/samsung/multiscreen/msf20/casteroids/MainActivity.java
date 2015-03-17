@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
@@ -20,9 +21,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
  * Landing page for the game. Depending on the connectivity manager, it shows a
@@ -31,7 +34,7 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
  * @author Nik Bhattacharya
  *
  */
-public class MainActivity extends Activity implements ConnectivityListener{
+public class MainActivity extends Activity implements ConnectivityListener, MessageListener {
 
     /** Code to send to the next screen when calling startActivityForResult */
     private static final  int SELECT_TV_RESULT_CODE = 1000;
@@ -140,8 +143,10 @@ public class MainActivity extends Activity implements ConnectivityListener{
     protected void onResume() {
         super.onResume();
 
-        //Register for connectivity updates.
+        //Register for connectivity and message updates.
         connectivityManager.registerConnectivityListener(this);
+        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE);
+
 
         //capture the current state of the connection and show on the UI
         bindViews();
@@ -153,8 +158,9 @@ public class MainActivity extends Activity implements ConnectivityListener{
     protected void onPause() {
         super.onPause();
 
-        // Unregister self as a listener
+        // Unregister self as a connectivity and message update listener
         connectivityManager.unregisterConnectivityListener(this);
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE);
 
         animator.cancel();
     }
@@ -171,10 +177,12 @@ public class MainActivity extends Activity implements ConnectivityListener{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	Log.d(TAG, "resultCode="+resultCode);
         if (requestCode == SELECT_TV_RESULT_CODE) {
             if (resultCode == SelectDeviceActivity.RESULT_OK) {
                 displayProgressIndicator();
                 // If the user selected a device...
+            	Log.d(TAG, "serverName-="+data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY));
                 connectivityManager.connect(data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY));
                 // Wait for the connect notification.
             } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
@@ -198,12 +206,12 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 }
                 break;
             case APPLICATION_CONNECTED:
-                cancelProgressIndicator();
-                // TODO: Remove toast
-                CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-                // We are connected to the application move to the player info screen
-                launchIntent(PlayerInfoActivity.class);
-                break;
+				// TODO: Remove toast
+				CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
+				
+				// Wait for the slot update before moving to the next screen. The slot update is sent when the TV
+				// Application is initialized.
+				break;
             case APPLICATION_DISCONNECTED:
                 cancelProgressIndicator();
 
@@ -226,6 +234,25 @@ public class MainActivity extends Activity implements ConnectivityListener{
         bindViews();
     }
 
+	@Override
+    public void onMessage(String eventName, String data, byte[] payload) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Received event '" + eventName + "'");
+		}
+
+		Event event = Event.getByName(eventName);
+
+		switch (event) {
+			case SLOT_UPDATE:
+                cancelProgressIndicator();
+                
+                // The slot update indicates that the TV Application is initialized, move to the player info screen
+                launchIntent(PlayerInfoActivity.class);
+				break;
+			default:
+				// ignore
+		}
+    }
 
     /******************************************************************************************************************
      * Private methods
@@ -350,8 +377,5 @@ public class MainActivity extends Activity implements ConnectivityListener{
         intent.setClass(this, cls);
         startActivity(intent);
     }
-
-
-
-
+    
 }
