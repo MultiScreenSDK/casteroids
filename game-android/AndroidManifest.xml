@@ -38,7 +38,7 @@
         </activity>
         <activity
             android:name=".GameControllerActivity"
-            android:screenOrientation="landscape" android:hardwareAccelerated="false">
+            android:screenOrientation="landscape">
         </activity>
         <activity
             android:name=".HowToPlayActivity"

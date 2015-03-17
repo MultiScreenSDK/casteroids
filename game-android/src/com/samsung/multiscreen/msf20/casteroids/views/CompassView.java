@@ -121,7 +121,7 @@ public class CompassView extends View {
 
 
         //draw the inner stroke
-        canvas.drawCircle(centerX, centerY, innerRadius, innerStrokePaint);
+        //canvas.drawCircle(centerX, centerY, innerRadius, innerStrokePaint);
 
         //draw the outer stroke
         canvas.drawCircle(centerX, centerY, radius, outerStrokePaint);
