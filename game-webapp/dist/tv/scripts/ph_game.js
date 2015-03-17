@@ -606,9 +606,15 @@ BasicGame.Game.prototype = {
         // deduct points from players on hit
         if(target !== this.alien) {
             this.scores[target.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+
+            if (this.scores[target.id] < 0) {
+                this.scores[target.id] = 0;
+            }
+
             if(this.isGameText) {
                 this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
             }
+
             if(this.isPointsText){
                 var player = this.players[target.id];
                 this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint);
@@ -666,6 +672,10 @@ BasicGame.Game.prototype = {
     playerOut: function (player, leftCollision) {
         // Deduct points from players on hit
         this.scores[player.id] -= BasicGame.PLAYER_HIT_DEDUCT;
+
+        if (this.scores[player.id] < 0) {
+            this.scores[player.id] = 0;
+        }
 
         // TODO: If two ships collide we get two negative points updates and the 2nd one will destroy the first one.
         // TODO: The showPoints function needs to be updated to support this scenario.
