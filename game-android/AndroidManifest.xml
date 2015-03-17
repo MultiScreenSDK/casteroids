@@ -46,8 +46,10 @@
         </activity>
         <activity
             android:name=".SelectDeviceActivity"
+            android:screenOrientation="landscape"
             android:label="@string/title_activity_select_device"
-            android:theme="@style/AppDialog">
+            android:theme="@style/AppDialog"
+            >
         </activity>
         <activity
             android:name=".PlayerInfoActivity"
