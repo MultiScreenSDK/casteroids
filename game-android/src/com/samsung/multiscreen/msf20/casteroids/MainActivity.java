@@ -58,23 +58,14 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     /** References to buttons on the screen */
     private Button playButton, selectTVButton, noTVDiscoveredButton;
 
-    /** Reference to ImageButton */
-    private ImageButton gameOptionsButton;
-
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
 
     /** Reference to the root view */
     private View rootView;
 
-    /** How to play button animator */
-    private ObjectAnimator animator;
-
     ProgressDialog progressDialog;
 
-    /** Reference to the options **/
-    private ListView optionsView;
-    private AlertDialog optionsDialog;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -100,21 +91,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
         //get a reference to the root view
         rootView = findViewById(R.id.root_view);
-
-        // Initialize the how to play button
-        gameOptionsButton = (ImageButton) findViewById(R.id.game_options_button);
-        gameOptionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showGameOptions();
-            }
-        });
-
-        animator = ObjectAnimator.ofFloat(gameOptionsButton, "rotation", 360);
-        animator.setRepeatCount(ObjectAnimator.INFINITE);
-        animator.setRepeatMode(ObjectAnimator.RESTART);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(15000);
 
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
@@ -152,32 +128,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             runLollipopCode();
         }
-
-        // Init the options dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ListView listView = (ListView) getLayoutInflater().inflate(R.layout.dialog_options, null);
-        final TypefacedArrayAdapter adapter = new TypefacedArrayAdapter(this, getResources().getStringArray(R.array.options_array));
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) { // How to Play
-                    launchIntent(HowToPlayActivity.class);
-                    optionsDialog.dismiss();
-                } else if (position == 1) { // How to Connect
-                    // launchIntent(HowToConnectActivity.class); // TODO Create this class
-                    optionsDialog.dismiss();
-                }
-            }
-        });
-        builder.setView(listView);
-        optionsDialog = builder.create();
-
-        WindowManager.LayoutParams wmlp = optionsDialog.getWindow().getAttributes();
-        wmlp.gravity = Gravity.TOP | Gravity.LEFT;
-        wmlp.x = Math.round(gameOptionsButton.getX() + (gameOptionsButton.getWidth()/2));   //x position
-        wmlp.y = Math.round(gameOptionsButton.getY() + (gameOptionsButton.getHeight()/2));   //y position
-
     }
 
     @Override
@@ -191,8 +141,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
         //capture the current state of the connection and show on the UI
         bindViews();
-
-        animator.start();
     }
 
     @Override
@@ -202,8 +150,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         // Unregister self as a connectivity and message update listener
         connectivityManager.unregisterConnectivityListener(this);
         connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE);
-
-        animator.cancel();
     }
 
     @Override
@@ -212,8 +158,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
         //disconnect
         connectivityManager.disconnect();
-
-        animator.cancel();
     }
 
     @Override
@@ -380,10 +324,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 			bindViews();
 		}
 	}
-
-    private void showGameOptions() {
-        optionsDialog.show();
-    }
 
 
     private void showSelectTVScreen() {

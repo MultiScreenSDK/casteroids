@@ -5,17 +5,6 @@
     android:background="@drawable/casteroids"
     android:id="@+id/root_view">
 
-    <ImageButton
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:id="@+id/game_options_button"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/btn_others"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@null"/>
-
 
     <Button
         style="@style/AppButton"
