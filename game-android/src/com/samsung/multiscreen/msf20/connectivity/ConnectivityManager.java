@@ -6,8 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.CountDownTimer;
 import android.util.Log;
 
@@ -90,6 +95,12 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	// A map that stores the registered message listeners
 	private Map<String, List<MessageListener>> messageListenerMap = new HashMap<String, List<MessageListener>>();
 
+	// A flag that indicates whether or not the device is currently connected to a WiFi network.
+	private boolean isConnectedToWifi = false;
+
+	// A Broadcast receiver used to monitor WiFi connectivity changes.
+	private WifiBroadcastReceiver wifiReceiver = null;
+
 	/**
 	 * Constructor.
 	 * 
@@ -115,6 +126,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 		this.uri = Uri.parse(url);
 		this.channelId = channelId;
 		this.discoveryTimeoutMillis = discoveryTimeoutMillis;
+
+		// Start monitoring WiFi connectivity changes.
+		startMonitoringWifiConnectivity();
 	}
 
 	/**
@@ -168,6 +182,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 		}
 
 		synchronized (lock) {
+			// Stop monitoring WiFi connectivity changes.
+			stopMonitoringWifiConnectivity();
+
 			// Stop any discovery actions
 			stopDiscovery();
 
@@ -190,13 +207,18 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	/**
 	 * Start service discovery.
 	 */
-	public void startDiscovery() {
-		// If already searching, return.
-		if (isDiscovering()) {
-			return;
-		}
-
+	public boolean startDiscovery() {
 		synchronized (lock) {
+			// If already searching, return true (we are discovering).
+			if (isDiscovering()) {
+				return true;
+			}
+
+			// If are not connected to a WiFi network, return false (we are not discovering).
+			if (!isConnectedToWifi()) {
+				return false;
+			}
+			
 			if (BuildConfig.DEBUG) {
 				Log.d(TAG, "Starting discovery.");
 			}
@@ -222,6 +244,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
 		// Notify listeners that discovery started.
 		notifyConnectivityListeners(ConnectivityListener.DISCOVERY_STARTED);
+		
+		// Return true (we are discovering).
+		return true;
 	}
 
 	/**
@@ -234,14 +259,15 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 		}
 
 		synchronized (lock) {
-			if (BuildConfig.DEBUG) {
-				Log.d(TAG, "Stopping discovery.");
-			}
-
 			// Stop the discovery process after some amount of time, preferably once the user has selected a service to
 			// work with.
-			search.stop();
-			search = null;
+			if (search != null) {
+				if (BuildConfig.DEBUG) {
+					Log.d(TAG, "Stopping discovery.");
+				}
+				search.stop();
+				search = null;
+			}
 		}
 
 		// Notify listeners that discovery stopped.
@@ -321,8 +347,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 * @param millis
 	 */
 	private void startDiscoveryTimer(long millis) {
-		// Millis set to 0 or less is used as an indication not to limit
-		// discovery.
+		// Millis set to 0 or less is used as an indication not to limit discovery.
 		if (millis <= 0) {
 			return;
 		}
@@ -366,6 +391,11 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 */
 	public boolean connect(String serviceName) {
 		synchronized (lock) {
+			// If are not connected to a WiFi network, return false (we are not connecting).
+			if (!isConnectedToWifi()) {
+				return false;
+			}
+						
 			// If we just initiated a disconnected from an application, we cannot attempt to connect to it until we get
 			// the onDisconnect callback.
 			if (disconnect()) {
@@ -427,8 +457,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 * @see getDiscoveredServices
 	 */
 	protected boolean connect(Service service) {
-		// By connecting by name we will make sure the service is still
-		// available before attempting to connect.
+		// By connecting by name we will make sure the service is still available before attempting to connect.
 		return connect(service.getName());
 	}
 
@@ -444,13 +473,15 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 		}
 
 		synchronized (lock) {
-			if (BuildConfig.DEBUG) {
-				Log.d(TAG, "Attempting to disconnect from application '" + application.getId() + "'");
-			}
-
 			// Initiate the disconnect from the application. The disconnect will be confirmed by the onDisconnect()
 			// callback.
-			application.disconnect();
+			if (application != null) {
+				if (BuildConfig.DEBUG) {
+					Log.d(TAG, "Attempting to disconnect from application '" + application.getId() + "'");
+				}
+				application.disconnect();
+				application = null;
+			}
 		}
 
 		return true;
@@ -621,8 +652,8 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
 	/**
 	 * Normalizes the message data to a String. If the message data is a String it is casted to a String and returned.
-	 * If the message data is not a String, the toString() value of the Object is returned. If the message data is
-	 * NULL, then NULL is returned.
+	 * If the message data is not a String, the toString() value of the Object is returned. If the message data is NULL,
+	 * then NULL is returned.
 	 * 
 	 * @param message
 	 * @return
@@ -687,6 +718,118 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	public void setApplicationChanneId(String channelId) {
 		disconnect();
 		this.channelId = channelId;
+	}
+
+	/******************************************************************************************************************
+	 * WiFi Connectivity related methods
+	 */
+
+	/**
+	 * Returns whether or not the device is currently connected to a WiFi network.
+	 * 
+	 * @return
+	 */
+	public boolean isConnectedToWifi() {
+		return isConnectedToWifi;
+	}
+
+	/**
+	 * Starts monitoring WiFi connectivity changes.
+	 */
+	private void startMonitoringWifiConnectivity() {
+		if (wifiReceiver != null) {
+			return;
+		}
+
+		// Determine the current WiFi connectivity state.
+		android.net.ConnectivityManager cm = (android.net.ConnectivityManager) context
+		        .getSystemService(Context.CONNECTIVITY_SERVICE);
+		processNetworkInfo(cm.getActiveNetworkInfo());
+
+		// Monitor for WiFi connectivity changes.
+		wifiReceiver = new WifiBroadcastReceiver();
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+		context.registerReceiver(wifiReceiver, intentFilter);
+	}
+
+	/**
+	 * Stops monitoring WiFi connectivity changes.
+	 */
+	private void stopMonitoringWifiConnectivity() {
+		if (wifiReceiver == null) {
+			return;
+		}
+
+		context.unregisterReceiver(wifiReceiver);
+		wifiReceiver = null;
+	}
+
+	/**
+	 * Receives and processes WiFi connectivity change broadcasts.
+	 */
+	private class WifiBroadcastReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+
+			if (BuildConfig.DEBUG) {
+				Log.d(TAG, "Received intent: " + action);
+			}
+
+			try {
+				// If the network state changed, process the network info.
+				if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
+					NetworkInfo ni = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+					processNetworkInfo(ni);
+				}
+			}
+			// Catch and log all exceptions
+			catch (Exception e) {
+				Log.e(TAG, "Caught exception while processing a '" + action + "' intent. intent=" + intent, e);
+			}
+		}
+	}
+
+	/**
+	 * Determines whether or not the WiFi connectivity state changed and if so
+	 * 
+	 * @param ni
+	 */
+	private void processNetworkInfo(NetworkInfo ni) {
+		// Determine whether or not we are connected to a WiFi Network
+		boolean isConnectedToWifiUpdate = ((ni != null) && ni.isConnected() && (ni.getType() == android.net.ConnectivityManager.TYPE_WIFI));
+
+		// If the connectivity changed...
+		if (isConnectedToWifi != isConnectedToWifiUpdate) {
+
+			// Update the current status
+			isConnectedToWifi = isConnectedToWifiUpdate;
+
+			// Log out the WiFi state
+			if (BuildConfig.DEBUG) {
+				Log.v(TAG, "isConnectedToWifi=" + isConnectedToWifi);
+			}
+
+			// If we connected to a WiFi network, notify listeners.
+			if (isConnectedToWifi) {
+				// Notify listeners on the WiFi connectivity change.
+				notifyConnectivityListeners(ConnectivityListener.WIFI_CONNECTED);
+			}
+			// Else we are not connected to a WiFi network stop discovery, disconnect from any applications, and notify
+			// listeners.
+			else {
+				// Stop any discovery actions
+				stopDiscovery();
+
+				// Disconnect from any applications
+				disconnect();
+
+				// Notify listeners on the WiFi connectivity change.
+				notifyConnectivityListeners(ConnectivityListener.WIFI_DISCONNECTED);
+			}
+		}
 	}
 
 	/******************************************************************************************************************
