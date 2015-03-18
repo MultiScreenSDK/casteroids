@@ -19,10 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,7 +30,6 @@ import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.casteroids.utils.MaterialInterpolator;
 import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
@@ -182,6 +178,14 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     @Override
     public void onConnectivityUpdate(int eventId) {
         switch (eventId) {
+        	case WIFI_CONNECTED:
+                // Start discovery on the new WiFi network.
+                connectivityManager.startDiscovery();
+        		break;
+        	case WIFI_DISCONNECTED:
+                // Stop discovery since we are not connected to a WiFi network.
+                connectivityManager.stopDiscovery();
+        		break;
             case DISCOVERY_STOPPED:
                 // Restart discovery as long as we don't have a discovered service.
                 if (!connectivityManager.hasDiscoveredService()) {
@@ -285,20 +289,27 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         selectTVButton.setVisibility(View.GONE);
         noTVDiscoveredButton.setVisibility(View.GONE);
 
-        // Make sure the connectivity manager is in the correct state.
-		String[] services = connectivityManager.getDiscoveredServiceNames();
-		if ((services != null) && (services.length > 0)) {
-			boolean hasSingleService = services.length == 1;
-			if (hasSingleService) {
-				playButton.setVisibility(View.VISIBLE);
-			} else {
-				// multiple services
-				selectTVButton.setVisibility(View.VISIBLE);
-			}
-		} else {
-			// no tvs discovered yet
-			noTVDiscoveredButton.setVisibility(View.VISIBLE);
-		}
+        // If the device is connected to WiFi, enable the appropriate button.
+        if (connectivityManager.isConnectedToWifi()) {
+    		String[] services = connectivityManager.getDiscoveredServiceNames();
+    		if ((services != null) && (services.length > 0)) {
+    			boolean hasSingleService = services.length == 1;
+    			if (hasSingleService) {
+    				playButton.setVisibility(View.VISIBLE);
+    			} else {
+    				// multiple services
+    				selectTVButton.setVisibility(View.VISIBLE);
+    			}
+    		} else {
+    			// no tvs discovered yet
+    			noTVDiscoveredButton.setVisibility(View.VISIBLE);
+    		}
+        } 
+        // Else the device is not connected to WiFi, display a message to the user.
+        else {
+        	// TODO: Show some message to the user that WiFi is not connected
+        	return;
+        }
     }
 
 
