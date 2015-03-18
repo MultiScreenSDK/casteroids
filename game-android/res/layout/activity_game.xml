@@ -113,9 +113,9 @@
         android:layout_marginRight="100dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="30dp"
         android:textColor="#fff"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:visibility="invisible"
         android:gravity="center_horizontal"
         android:id="@+id/instructions_text" />

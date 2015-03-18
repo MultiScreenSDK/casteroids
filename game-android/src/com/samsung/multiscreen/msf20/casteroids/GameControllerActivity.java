@@ -277,7 +277,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             //show a toast for any non 0 wait time.
             if(numSeconds != 0) {
                 instructionsText.setVisibility(View.VISIBLE);
-                instructionsText.setText(getStyledString("Game starting in " + numSeconds + " seconds"));
+                instructionsText.setText(getStyledString("Game starting in " + numSeconds + ((numSeconds == 1) ? " second" : " seconds")));
             } else {
                 instructionsText.setVisibility(View.INVISIBLE);
             }
@@ -291,7 +291,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             //show a toast for any non 0 wait time.
             if(numSeconds != 0) {
                 instructionsText.setVisibility(View.VISIBLE);
-                instructionsText.setText(getStyledString("You are out. Prepare to re-enter in " + numSeconds + " seconds"));
+                instructionsText.setText(getStyledString("Game starting in " + numSeconds + ((numSeconds == 1) ? " second" : " seconds")));
 
                 deathOverlayView.setVisibility(View.VISIBLE);
 
