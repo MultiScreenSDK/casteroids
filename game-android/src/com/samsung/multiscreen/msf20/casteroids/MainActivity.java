@@ -18,6 +18,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
@@ -367,8 +368,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
     private void showGameOptions() {
         if(optionsView.getVisibility() == View.VISIBLE) {
-            ScaleAnimation scaleDown =  new ScaleAnimation(1f, 0.2f, 1f, 0.2f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f);
-            scaleDown.setDuration(300);
+            Animation scaleDown = AnimationUtils.loadAnimation(this, R.anim.shrink_to_top_right);
             scaleDown.setInterpolator(new MaterialInterpolator());
             scaleDown.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -388,9 +388,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
             });
             optionsView.startAnimation(scaleDown);
         } else {
-            ScaleAnimation scaleUp =  new ScaleAnimation(0.2f, 1f, 0.2f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f);
-            scaleUp.setDuration(300);
-            scaleUp.setFillAfter(true);
+            Animation scaleUp = AnimationUtils.loadAnimation(this, R.anim.grow_from_top_right);
             scaleUp.setInterpolator(new MaterialInterpolator());
             scaleUp.setAnimationListener(new Animation.AnimationListener() {
                 @Override
