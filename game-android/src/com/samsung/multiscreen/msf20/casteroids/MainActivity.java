@@ -25,14 +25,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.utils.MaterialInterpolator;
 import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
  * Landing page for the game. Depending on the connectivity manager, it shows a
@@ -41,7 +42,7 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
  * @author Nik Bhattacharya
  *
  */
-public class MainActivity extends Activity implements ConnectivityListener{
+public class MainActivity extends Activity implements ConnectivityListener, MessageListener {
 
     /** Code to send to the next screen when calling startActivityForResult */
     private static final  int SELECT_TV_RESULT_CODE = 1000;
@@ -167,8 +168,10 @@ public class MainActivity extends Activity implements ConnectivityListener{
     protected void onResume() {
         super.onResume();
 
-        //Register for connectivity updates.
+        //Register for connectivity and message updates.
         connectivityManager.registerConnectivityListener(this);
+        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE);
+
 
         //capture the current state of the connection and show on the UI
         bindViews();
@@ -180,8 +183,9 @@ public class MainActivity extends Activity implements ConnectivityListener{
     protected void onPause() {
         super.onPause();
 
-        // Unregister self as a listener
+        // Unregister self as a connectivity and message update listener
         connectivityManager.unregisterConnectivityListener(this);
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE);
 
         animator.cancel();
     }
@@ -225,12 +229,12 @@ public class MainActivity extends Activity implements ConnectivityListener{
                 }
                 break;
             case APPLICATION_CONNECTED:
-                cancelProgressIndicator();
-                // TODO: Remove toast
-                CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-                // We are connected to the application move to the player info screen
-                launchIntent(PlayerInfoActivity.class);
-                break;
+				// TODO: Remove toast
+				CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
+				
+				// Wait for the slot update before moving to the next screen. The slot update is sent when the TV
+				// Application is initialized.
+				break;
             case APPLICATION_DISCONNECTED:
                 cancelProgressIndicator();
 
@@ -253,6 +257,20 @@ public class MainActivity extends Activity implements ConnectivityListener{
         bindViews();
     }
 
+	@Override
+    public void onMessage(String eventName, String data, byte[] payload) {
+		Event event = Event.getByName(eventName);
+		switch (event) {
+			case SLOT_UPDATE:
+                cancelProgressIndicator();
+                
+                // The slot update indicates that the TV Application is initialized, move to the player info screen
+                launchIntent(PlayerInfoActivity.class);
+				break;
+			default:
+				// ignore
+		}
+    }
 
     /******************************************************************************************************************
      * Private methods
@@ -419,7 +437,6 @@ public class MainActivity extends Activity implements ConnectivityListener{
         startActivity(intent);
     }
 
-
     private class TypefacedArrayAdapter extends ArrayAdapter<String> {
 
         public TypefacedArrayAdapter(Context context, String[] objects) {
@@ -435,6 +452,4 @@ public class MainActivity extends Activity implements ConnectivityListener{
             return tv;
         }
     }
-
-
 }
