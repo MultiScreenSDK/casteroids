@@ -30,14 +30,15 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textNoSuggestions"
         android:ems="10"
         android:id="@+id/name_text"
         android:imeOptions="actionDone"
         android:gravity="center"
         android:layout_below="@+id/name_label"
         android:layout_alignLeft="@+id/color_label"
-        android:layout_alignStart="@+id/color_label" />
+        android:layout_alignStart="@+id/color_label"
+        />
 
     <Button
         style="@style/AppButton"

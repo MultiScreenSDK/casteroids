@@ -151,7 +151,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //Initialize the name edit text
         nameText = (EditText) findViewById(R.id.name_text);
-        nameText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        nameText.setFilters(new InputFilter[] {new InputFilter.AllCaps(), new InputFilter.LengthFilter(10)});
 
         //set the type on the various ui elements
         color1Button.setTypeface(customTypeface);
