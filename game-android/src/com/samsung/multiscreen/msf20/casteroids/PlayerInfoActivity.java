@@ -455,7 +455,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                 button.setAlpha(1.0f);
                 button.setEnabled(true);
             } else {
-                button.setAlpha(0.1f);
+                button.setAlpha(0.35f);
                 button.setEnabled(false);
             }
         }
