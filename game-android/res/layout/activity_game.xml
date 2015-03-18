@@ -14,7 +14,6 @@
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:padding="12dp"
         android:id="@+id/ship_view"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -22,7 +21,11 @@
         android:layout_marginLeft="10dp"
         android:src="@drawable/ship"
         android:scaleType="fitCenter"
-        android:background="@drawable/stroke"/>
+        android:background="@drawable/stroke"
+        android:paddingLeft="12dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="16dp" />
 
     <view
         class="com.samsung.multiscreen.msf20.casteroids.views.CompassView"
