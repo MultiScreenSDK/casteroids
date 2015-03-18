@@ -293,7 +293,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     private void bindViews(){
         playButton.setVisibility(View.GONE);
         selectTVButton.setVisibility(View.GONE);
-        noTVDiscoveredButton.setVisibility(View.GONE);
+        noTVDiscoveredButton.setVisibility(View.INVISIBLE);
         noTVlabel.setVisibility(View.GONE);
 
         // If the device is connected to WiFi, enable the appropriate button.
@@ -310,12 +310,14 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     		} else {
     			// no tvs discovered yet
     			noTVDiscoveredButton.setVisibility(View.VISIBLE);
+                noTVlabel.setText(R.string.no_tv_discovered);
                 noTVlabel.setVisibility(View.VISIBLE);
     		}
         } 
         // Else the device is not connected to WiFi, display a message to the user.
         else {
-        	// TODO: Show some message to the user that WiFi is not connected
+            noTVlabel.setText(R.string.wifi_disabled_warning);
+            noTVlabel.setVisibility(View.VISIBLE);
         	return;
         }
     }
