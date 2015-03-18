@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,7 +69,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     private Vibrator vibrator;
 
     /** References to various buttons */
-    private Button thrustButton, fireButton, quitButton;
+    private Button thrustButton, fireButton;
+
+    /** Reference to the quit button */
+    private ImageButton quitButton;
 
     /** Reference to toast shown on the screen */
     private Toast toast = null;
@@ -155,13 +159,12 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
         thrustButton = (Button) findViewById(R.id.thrust_button);
         fireButton = (Button) findViewById(R.id.fire_button);
-        quitButton = (Button) findViewById(R.id.pause_button);
+        quitButton = (ImageButton) findViewById(R.id.pause_button);
         instructionsText = (TextView) findViewById(R.id.instructions_text);
 
         //set the custom typefaces
         thrustButton.setTypeface(customTypeface);
         fireButton.setTypeface(customTypeface);
-        quitButton.setTypeface(customTypeface);
         instructionsText.setTypeface(customTypeface);
 
         //reference to the ship

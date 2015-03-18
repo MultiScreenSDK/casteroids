@@ -91,12 +91,13 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Quit"
+    <ImageButton
+        style="@style/GameButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/pause_button"
+        android:src="@drawable/btn_exit"
+        android:background="@null"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
