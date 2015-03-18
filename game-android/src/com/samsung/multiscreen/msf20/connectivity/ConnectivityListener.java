@@ -15,13 +15,15 @@ package com.samsung.multiscreen.msf20.connectivity;
 public interface ConnectivityListener {
 
     // Connectivity update event ids
-    public static final int DISCOVERY_STARTED = 1;
-    public static final int DISCOVERY_STOPPED = 2;
-    public static final int DISCOVERY_FOUND_SERVICE = 3;
-    public static final int DISCOVERY_LOST_SERVICE = 4;
-    public static final int APPLICATION_CONNECTED = 5;
-    public static final int APPLICATION_DISCONNECTED = 6;
-    public static final int APPLICATION_CONNECT_FAILED = 7;
+    public static final int WIFI_CONNECTED = 1;
+    public static final int WIFI_DISCONNECTED = 2;
+    public static final int DISCOVERY_STARTED = 3;
+    public static final int DISCOVERY_STOPPED = 4;
+    public static final int DISCOVERY_FOUND_SERVICE = 5;
+    public static final int DISCOVERY_LOST_SERVICE = 6;
+    public static final int APPLICATION_CONNECTED = 7;
+    public static final int APPLICATION_DISCONNECTED = 8;
+    public static final int APPLICATION_CONNECT_FAILED = 9;
 
     /**
      * Called any time a connectivity event occurs. <br>
