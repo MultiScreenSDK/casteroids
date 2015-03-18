@@ -445,7 +445,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             SlotData slot = data.get(i);
 
             //in case the current user selection is no longer valid
-            if(!slot.isAvailable() && selectedSlotData != null && /**(slot.equals(selectedSlotData))*/  slot.getColor().getColorInt() == selectedSlotData.getColor().getColorInt()) {
+            if(!slot.isAvailable() && selectedSlotData != null &&  slot.getColor().getColorInt() == selectedSlotData.getColor().getColorInt()) {
 
                 //animate the background back to the default color first
                 animateShipAndTextColor(selectedSlotData.getColor().getColorInt(), 0xffffffff);
