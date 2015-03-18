@@ -112,7 +112,6 @@
     <ImageView
         android:layout_width="160dp"
         android:layout_height="160dp"
-        android:padding="22dp"
         android:id="@+id/ship_view"
         android:src="@drawable/ship"
         android:scaleType="fitCenter"
@@ -121,6 +120,10 @@
         android:layout_toLeftOf="@+id/name_label"
         android:layout_toStartOf="@+id/name_label"
         android:layout_marginRight="40dp"
-        android:layout_marginEnd="40dp" />
+        android:layout_marginEnd="40dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="30dp" />
 
 </RelativeLayout>
