@@ -15,6 +15,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:layout_centerHorizontal="true"
+        android:visibility="invisible"
         />
 
     <TextView
@@ -23,6 +24,7 @@
         android:textSize="35sp"
         android:text="@string/winner"
         android:id="@+id/game_over_label"
+        android:gravity="center_horizontal"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
@@ -32,6 +34,7 @@
         android:textSize="35sp"
         android:id="@+id/winner_label"
         android:layout_below="@id/game_over_label"
+        android:gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true" />
 
@@ -43,6 +46,20 @@
         android:layout_margin="20dp"
         android:layout_below="@+id/winner_label"
         android:layout_centerHorizontal="true"></TableLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:textColor="#fff"
+        android:textSize="24sp"
+        android:visibility="invisible"
+        android:gravity="center_horizontal"
+        android:id="@+id/instructions_text" />
 
 
 </RelativeLayout>
