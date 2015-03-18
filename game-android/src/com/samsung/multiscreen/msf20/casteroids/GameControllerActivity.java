@@ -36,7 +36,7 @@ import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
 import com.samsung.multiscreen.msf20.casteroids.model.Rotate;
 import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
-import com.samsung.multiscreen.msf20.casteroids.views.CompassView;
+import com.samsung.multiscreen.msf20.casteroids.views.GyroView;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
@@ -96,7 +96,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     float[] mValues = new float[3];
 
     /** Visual indicator of the device orientation */
-    CompassView compassView;
+    GyroView compassView;
 
     /** Android SensorManager */
     SensorManager sensorManager;
@@ -144,7 +144,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         userSelectedColor= getIntent().getIntExtra("color", getResources().getColor(R.color.pink_400));
 
         //sensor code
-        compassView = (CompassView)this.findViewById(R.id.compass_view);
+        compassView = (GyroView)this.findViewById(R.id.compass_view);
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);

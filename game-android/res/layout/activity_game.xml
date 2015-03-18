@@ -28,7 +28,7 @@
         android:paddingBottom="16dp" />
 
     <view
-        class="com.samsung.multiscreen.msf20.casteroids.views.CompassView"
+        class="com.samsung.multiscreen.msf20.casteroids.views.GyroView"
         android:layout_width="340dp"
         android:layout_height="340dp"
         android:id="@+id/compass_view"
