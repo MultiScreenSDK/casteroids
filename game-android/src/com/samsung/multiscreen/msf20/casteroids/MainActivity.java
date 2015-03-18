@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
@@ -69,8 +72,9 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 
     ProgressDialog progressDialog;
 
-    /** Reference to the Spinner with the options **/
+    /** Reference to the options **/
     private ListView optionsView;
+    private AlertDialog optionsDialog;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -139,20 +143,6 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
             }
         });
 
-        optionsView = (ListView) findViewById(R.id.game_options_spinner);
-        final TypefacedArrayAdapter adapter = new TypefacedArrayAdapter(this, getResources().getStringArray(R.array.options_array));
-        optionsView.setAdapter(adapter);
-        optionsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) { // How to Play
-                    launchIntent(HowToPlayActivity.class);
-                } else if (position == 1) { // How to Connect
-                    // launchIntent(HowToConnectActivity.class); // TODO Create this class
-                }
-            }
-        });
-
         //set the various buttons and text labels with the typeface
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
@@ -162,6 +152,32 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             runLollipopCode();
         }
+
+        // Init the options dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        ListView listView = (ListView) getLayoutInflater().inflate(R.layout.dialog_options, null);
+        final TypefacedArrayAdapter adapter = new TypefacedArrayAdapter(this, getResources().getStringArray(R.array.options_array));
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) { // How to Play
+                    launchIntent(HowToPlayActivity.class);
+                    optionsDialog.dismiss();
+                } else if (position == 1) { // How to Connect
+                    // launchIntent(HowToConnectActivity.class); // TODO Create this class
+                    optionsDialog.dismiss();
+                }
+            }
+        });
+        builder.setView(listView);
+        optionsDialog = builder.create();
+
+        WindowManager.LayoutParams wmlp = optionsDialog.getWindow().getAttributes();
+        wmlp.gravity = Gravity.TOP | Gravity.LEFT;
+        wmlp.x = Math.round(gameOptionsButton.getX() + (gameOptionsButton.getWidth()/2));   //x position
+        wmlp.y = Math.round(gameOptionsButton.getY() + (gameOptionsButton.getHeight()/2));   //y position
+
     }
 
     @Override
@@ -366,50 +382,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 	}
 
     private void showGameOptions() {
-        if(optionsView.getVisibility() == View.VISIBLE) {
-            ScaleAnimation scaleDown =  new ScaleAnimation(1f, 0.2f, 1f, 0.2f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f);
-            scaleDown.setDuration(300);
-            scaleDown.setInterpolator(new MaterialInterpolator());
-            scaleDown.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    optionsView.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            optionsView.startAnimation(scaleDown);
-        } else {
-            ScaleAnimation scaleUp =  new ScaleAnimation(0.2f, 1f, 0.2f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f);
-            scaleUp.setDuration(300);
-            scaleUp.setFillAfter(true);
-            scaleUp.setInterpolator(new MaterialInterpolator());
-            scaleUp.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    optionsView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            optionsView.startAnimation(scaleUp);
-        }
+        optionsDialog.show();
     }
 
 

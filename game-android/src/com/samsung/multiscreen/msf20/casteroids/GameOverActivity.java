@@ -47,18 +47,11 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
     /** Reference to the root view */
     private View rootView;
 
-    /** Reference to the game over label */
-    private TextView gameOverLabel;
-
-    /** Reference to the winner label */
-    private TextView winnerLabel;
-
+    /** Reference to the text labels */
+    private TextView gameOverLabel, winnerLabel, instructionsText;
 
     /** Table that holds all the scores */
     TableLayout tableLayout;
-
-    /** Reference to toast shown on the screen */
-    private Toast toast = null;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -95,8 +88,12 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         //get a reference to the scores table
         tableLayout = (TableLayout)findViewById(R.id.scores_table);
 
+        instructionsText = (TextView) findViewById(R.id.instructions_text);
+
+
         // Initialize the play button
         mainScreenButton = (Button) findViewById(R.id.main_screen_button);
+
         mainScreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,6 +105,7 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         mainScreenButton.setTypeface(customTypeface);
         gameOverLabel.setTypeface(customTypeface);
         winnerLabel.setTypeface(customTypeface);
+        instructionsText.setTypeface(customTypeface);
 
         //if we are lollipop, do a custom animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -136,6 +134,10 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         connectivityManager.unregisterMessageListener(this, Event.GAME_START);
     }
 
+    @Override
+    public void onBackPressed() {
+        launchIntent(MainActivity.class);
+    }
 
     /******************************************************************************************************************
      * Connectivity and Game Message Listeners
@@ -155,16 +157,13 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
             //show countdown
             int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
 
-            if(toast != null) {
-                toast.cancel();
-            }
 
             //show a toast for any non 0 wait time.
             if(numSeconds != 0) {
-                toast = Toast.makeText(this, getStyledString("Game starting in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
+                instructionsText.setVisibility(View.VISIBLE);
+                instructionsText.setText(getStyledString("Game starting in " + numSeconds + ((numSeconds == 1) ? " second" : " seconds")));
             } else {
+                instructionsText.setVisibility(View.INVISIBLE);
                 Intent gameControllerActivity = new Intent();
                 gameControllerActivity.setClass(this, GameControllerActivity.class);
                 gameControllerActivity.putExtra("color", connectivityManager.getGameState().getJoinResponseData().getColor().getColorInt());
@@ -261,10 +260,6 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
 	}
 
     private void launchIntent(Class cls){
-
-        if(toast != null) {
-            toast.cancel();
-        }
 
         connectivityManager.sendQuitMessage();
         connectivityManager.disconnect();
