@@ -106,4 +106,19 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        android:gravity="center_horizontal"
+        android:id="@+id/instructions_text" />
+
+
 </RelativeLayout>

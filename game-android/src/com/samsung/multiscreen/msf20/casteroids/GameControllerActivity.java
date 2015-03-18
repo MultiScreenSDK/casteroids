@@ -74,8 +74,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Reference to the quit button */
     private ImageButton quitButton;
 
-    /** Reference to toast shown on the screen */
-    private Toast toast = null;
+    /** Reference to text labels*/
+    private TextView instructionsText;
 
     /** Reference to the ship */
     private ImageView shipView;
@@ -84,25 +84,25 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     private ImageView deathOverlayView;
 
     /** Device orientation */
-    float pitch = 0;
+    private float pitch = 0;
 
     /** Track device orientation */
-    float[] aValues = new float[3];
+    private float[] aValues = new float[3];
 
     /** Track device orientation */
-    float[] mValues = new float[3];
+    private float[] mValues = new float[3];
 
     /** Visual indicator of the device orientation */
-    GyroView compassView;
+    private GyroView compassView;
 
     /** Android SensorManager */
-    SensorManager sensorManager;
+    private SensorManager sensorManager;
 
     /** Accelerometer sensor */
-    Sensor accelerometer;
+    private Sensor accelerometer;
 
     /** Magnetic Field sensor */
-    Sensor magneticField;
+    private Sensor magneticField;
 
     /** Whether user input is enabled */
     private boolean isEnabled = true;
@@ -157,10 +157,12 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         thrustButton = (Button) findViewById(R.id.thrust_button);
         fireButton = (Button) findViewById(R.id.fire_button);
         quitButton = (ImageButton) findViewById(R.id.pause_button);
+        instructionsText = (TextView) findViewById(R.id.instructions_text);
 
         //set the custom typefaces
         thrustButton.setTypeface(customTypeface);
         fireButton.setTypeface(customTypeface);
+        instructionsText.setTypeface(customTypeface);
 
         //reference to the ship
         shipView = (ImageView)findViewById(R.id.ship_view);
@@ -271,15 +273,13 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             //show countdown
             int numSeconds = MessageDataHelper.decodeGameStartCountDownSeconds(data);
 
-            if(toast != null) {
-                toast.cancel();
-            }
 
             //show a toast for any non 0 wait time.
             if(numSeconds != 0) {
-                toast = Toast.makeText(this, getStyledString("Game starting in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
+                instructionsText.setVisibility(View.VISIBLE);
+                instructionsText.setText(getStyledString("Game starting in " + numSeconds + " seconds"));
+            } else {
+                instructionsText.setVisibility(View.INVISIBLE);
             }
 
             //Only 0 means we are in
@@ -288,15 +288,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             //show countdown
             int numSeconds = MessageDataHelper.decodePlayerOutCountDownSeconds(data);
 
-            if(toast != null) {
-                toast.cancel();
-            }
-
             //show a toast for any non 0 wait time.
             if(numSeconds != 0) {
-                toast = Toast.makeText(this, getStyledString("You are out. Prepare to re-enter in " + numSeconds + " seconds"), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
+                instructionsText.setVisibility(View.VISIBLE);
+                instructionsText.setText(getStyledString("You are out. Prepare to re-enter in " + numSeconds + " seconds"));
 
                 deathOverlayView.setVisibility(View.VISIBLE);
 
@@ -310,6 +305,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             if(numSeconds == 0){
                 processedPlayerOutEvent = false; //get ready for the next player out
                 deathOverlayView.setVisibility(View.GONE);
+                instructionsText.setVisibility(View.INVISIBLE);
             }
         }
     }
