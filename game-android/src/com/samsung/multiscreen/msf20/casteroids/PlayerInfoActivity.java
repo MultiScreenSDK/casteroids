@@ -1,5 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
+import java.util.List;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -40,8 +42,6 @@ import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
-import java.util.List;
-
 /**
  *
  * Screen where player enters name and chooses Color.
@@ -79,6 +79,9 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
 
+    /** A flag indicating whether or not this activity is waiting for a JOIN_RESULT event from the TV App. */
+    private boolean joinResultPending = false;
+    
     /** Reference to the slot selected by the player */
     private SlotData selectedSlotData = null;
 
@@ -148,7 +151,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
         //Initialize the name edit text
         nameText = (EditText) findViewById(R.id.name_text);
-        nameText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        nameText.setFilters(new InputFilter[] {new InputFilter.AllCaps(), new InputFilter.LengthFilter(10)});
 
         //set the type on the various ui elements
         color1Button.setTypeface(customTypeface);
@@ -197,7 +200,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.registerConnectivityListener(this);
 
         //register for SLOT changes
-        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
+        connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
 
         //rebind the data
         bindAvailableSlots();
@@ -218,7 +221,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.unregisterConnectivityListener(this);
 
         //unregister for SLOT changes
-        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
 
         animator.cancel();
 
@@ -244,6 +247,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             case R.id.play_button:
                 if(checkUserSelections()) {
                     connectivityManager.sendJoinRequestMessage(nameText.getText().toString(), selectedSlotData.getColor());
+                    joinResultPending = true;
                 }
                 break;
             case R.id.game_options_button:
@@ -302,26 +306,35 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     }
 
     @Override
-    public void onMessage(String event, String data, byte[] payload) {
-        if(event.equals(Event.JOIN_REQUEST.getName())){
-            CustomToast.makeText(this, "Joining game...", Toast.LENGTH_SHORT).show();
-        } else if (event.equals(Event.JOIN_RESPONSE.getName())){
-
-            JoinResponseData joinResponseData = MessageDataHelper.decodeJoinResponseData(data);
-            if(joinResponseData.isSuccessful()){
-                startGame(joinResponseData);
-            } else {
-                CustomToast.makeText(this, "Couldn't join game. Try again.", Toast.LENGTH_SHORT).show();
-                bindAvailableSlots();
-            }
-        } else if (event.equals(Event.SLOT_UPDATE.getName())){
-            bindAvailableSlots();
-        } else  if(event.equals(Event.CONFIG_UPDATE.getName())){
-            if(gameConfigDialog != null && gameConfigDialog.isShowing()) {
-                Toast.makeText(this, "Another player edited the game configuration", Toast.LENGTH_SHORT).show();
-                gameConfigDialog.dismiss();
-            }
-        }
+    public void onMessage(String eventName, String data, byte[] payload) {
+		Event event = Event.getByName(eventName);
+		switch (event) {
+			case JOIN_RESPONSE:
+	            JoinResponseData joinResponseData = MessageDataHelper.decodeJoinResponseData(data);
+	            if(joinResponseData.isSuccessful()){
+	                startGame(joinResponseData);
+	            } else {
+	                CustomToast.makeText(this, "Couldn't join game. Try again.", Toast.LENGTH_SHORT).show();
+	                bindAvailableSlots();
+	            }
+		        joinResultPending = false;
+				break;
+			case SLOT_UPDATE:
+				// Ignore SLOT_UPDATE events while we are waiting for a JOIN_RESPONSE event from the TV App. The 
+				// SLOT_UPDATE will be processed if the JOIN_RESPONSE indicates the join request was "unsuccessful".
+				if (!joinResultPending) {
+		            bindAvailableSlots();
+				}
+				break;
+			case CONFIG_UPDATE:
+	            if(gameConfigDialog != null && gameConfigDialog.isShowing()) {
+	                Toast.makeText(this, "Another player edited the game configuration", Toast.LENGTH_SHORT).show();
+	                gameConfigDialog.dismiss();
+	            }
+				break;
+			default:
+				// ignore
+		}
     }
 
 
@@ -432,7 +445,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             SlotData slot = data.get(i);
 
             //in case the current user selection is no longer valid
-            if(!slot.isAvailable() && selectedSlotData != null && /**(slot.equals(selectedSlotData))*/  slot.getColor().getColorInt() == selectedSlotData.getColor().getColorInt()) {
+            if(!slot.isAvailable() && selectedSlotData != null &&  slot.getColor().getColorInt() == selectedSlotData.getColor().getColorInt()) {
 
                 //animate the background back to the default color first
                 animateShipAndTextColor(selectedSlotData.getColor().getColorInt(), 0xffffffff);
@@ -485,6 +498,11 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         intent.setClass(this, GameControllerActivity.class);
         startActivity(intent);
 
+        // Even though these get unregistered when this activity is paused, that doesn't happen right away and we need 
+        // to make sure we don't process any more events at this point especially the SLOT_UPDATE event caused by this 
+        // client joining the game.
+        connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
+                
         //don't keep ourselves around
         finish();
     }
