@@ -453,8 +453,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
 
             if(slot.isAvailable()) {
                 button.setAlpha(1.0f);
+                button.setEnabled(true);
             } else {
                 button.setAlpha(0.1f);
+                button.setEnabled(false);
             }
         }
     }
