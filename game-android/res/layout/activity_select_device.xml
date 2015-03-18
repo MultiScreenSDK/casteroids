@@ -1,19 +1,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_rounded_corners"
     tools:context="com.samsung.multiscreen.msf20.casteroids.SelectDeviceActivity">
 
     <ListView
         android:id="@+id/select_device_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/select_tv_text"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/select_tv_text"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"/>
+        android:text="@string/title_activity_select_device"
+        android:visibility="gone"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
 
 </RelativeLayout>

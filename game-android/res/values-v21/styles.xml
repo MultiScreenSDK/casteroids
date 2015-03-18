@@ -10,6 +10,8 @@
 
     </style>
 
-    <style name="AppDialog" parent="android:Theme.Material.Dialog"/>
+    <style name="AppDialog" parent="android:Theme.Material.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 
 </resources>

@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -12,16 +13,24 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsung.multiscreen.msf20.casteroids.model.Event;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.utils.MaterialInterpolator;
 import com.samsung.multiscreen.msf20.casteroids.views.CustomToast;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
@@ -59,6 +68,9 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     private ObjectAnimator animator;
 
     ProgressDialog progressDialog;
+
+    /** Reference to the Spinner with the options **/
+    private ListView optionsView;
 
     /******************************************************************************************************************
      * Android Lifecycle methods
@@ -124,6 +136,20 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
             @Override
             public void onClick(View v) {
                 showNoTVDiscoveredScreen();
+            }
+        });
+
+        optionsView = (ListView) findViewById(R.id.game_options_spinner);
+        final TypefacedArrayAdapter adapter = new TypefacedArrayAdapter(this, getResources().getStringArray(R.array.options_array));
+        optionsView.setAdapter(adapter);
+        optionsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) { // How to Play
+                    launchIntent(HowToPlayActivity.class);
+                } else if (position == 1) { // How to Connect
+                    // launchIntent(HowToConnectActivity.class); // TODO Create this class
+                }
             }
         });
 
@@ -340,9 +366,50 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
 	}
 
     private void showGameOptions() {
-        //TODO:  Show all the options instead of going directly to how to play
+        if(optionsView.getVisibility() == View.VISIBLE) {
+            ScaleAnimation scaleDown =  new ScaleAnimation(1f, 0.2f, 1f, 0.2f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f);
+            scaleDown.setDuration(300);
+            scaleDown.setInterpolator(new MaterialInterpolator());
+            scaleDown.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
-        launchIntent(HowToPlayActivity.class);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    optionsView.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            optionsView.startAnimation(scaleDown);
+        } else {
+            ScaleAnimation scaleUp =  new ScaleAnimation(0.2f, 1f, 0.2f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f);
+            scaleUp.setDuration(300);
+            scaleUp.setFillAfter(true);
+            scaleUp.setInterpolator(new MaterialInterpolator());
+            scaleUp.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    optionsView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            optionsView.startAnimation(scaleUp);
+        }
     }
 
 
@@ -369,5 +436,20 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         intent.setClass(this, cls);
         startActivity(intent);
     }
-    
+
+    private class TypefacedArrayAdapter extends ArrayAdapter<String> {
+
+        public TypefacedArrayAdapter(Context context, String[] objects) {
+            super(context, R.layout.list_item, R.id.item_label, objects);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView tv = (TextView) super.getView(position, convertView, parent);
+            if(tv != null) {
+                tv.setTypeface(customTypeface);
+            }
+            return tv;
+        }
+    }
 }

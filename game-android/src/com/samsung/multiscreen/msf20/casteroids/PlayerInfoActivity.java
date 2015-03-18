@@ -221,6 +221,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         connectivityManager.unregisterMessageListener(this, Event.SLOT_UPDATE, Event.JOIN_REQUEST, Event.JOIN_RESPONSE, Event.CONFIG_UPDATE);
 
         animator.cancel();
+
     }
 
     @Override
@@ -363,12 +364,12 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         int newColor = slotData.getColor().getColorInt();
 
         //run an animation changing the color from old to new
-        animateBackgroundColor(prevColor, newColor);
+        animateShipAndTextColor(prevColor, newColor);
 
 
     }
 
-    private void animateBackgroundColor(int startColor, int endColor) {
+    private void animateShipAndTextColor(int startColor, int endColor) {
         //run an animation changing the color from old to new
         ObjectAnimator colorFade = ObjectAnimator.ofObject(shipView, "colorFilter", argbEvaluator, startColor, endColor);
         colorFade.setDuration(600);
@@ -431,10 +432,10 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
             SlotData slot = data.get(i);
 
             //in case the current user selection is no longer valid
-            if(!slot.isAvailable() && selectedSlotData != null && slot.equals(selectedSlotData)) {
+            if(!slot.isAvailable() && selectedSlotData != null && /**(slot.equals(selectedSlotData))*/  slot.getColor().getColorInt() == selectedSlotData.getColor().getColorInt()) {
 
                 //animate the background back to the default color first
-                animateBackgroundColor(selectedSlotData.getColor().getColorInt(), rootViewDefaultBackgoundColor);
+                animateShipAndTextColor(selectedSlotData.getColor().getColorInt(), 0xffffffff);
 
                 //clear out the selection
                 selectedSlotData = null;
@@ -443,15 +444,20 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
                 CustomToast.makeText(this, "The Color you selected is no longer available. Please select another one.", Toast.LENGTH_SHORT).show();
             }
 
-            Button b = buttons[i];
+            Button button = buttons[i];
             Color c = slot.getColor();
 
-            setCustomBackgroundColor(b, c.getColorInt(), strokeSize);
-            //b.setText(c.getName().toUpperCase());
-            b.setTextColor(c.getColorInt());
-            b.setTag(slot);
+            setCustomBackgroundColor(button, c.getColorInt(), strokeSize);
+            button.setTextColor(c.getColorInt());
+            button.setTag(slot);
 
-            b.setEnabled(slot.isAvailable());
+            if(slot.isAvailable()) {
+                button.setAlpha(1.0f);
+                button.setEnabled(true);
+            } else {
+                button.setAlpha(0.1f);
+                button.setEnabled(false);
+            }
         }
     }
 
