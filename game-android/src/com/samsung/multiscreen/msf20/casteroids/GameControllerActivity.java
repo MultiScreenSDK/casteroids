@@ -77,9 +77,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     /** Reference to toast shown on the screen */
     private Toast toast = null;
 
-    /** Reference to text labels*/
-    private TextView instructionsText;
-
     /** Reference to the ship */
     private ImageView shipView;
 
@@ -160,12 +157,10 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         thrustButton = (Button) findViewById(R.id.thrust_button);
         fireButton = (Button) findViewById(R.id.fire_button);
         quitButton = (ImageButton) findViewById(R.id.pause_button);
-        instructionsText = (TextView) findViewById(R.id.instructions_text);
 
         //set the custom typefaces
         thrustButton.setTypeface(customTypeface);
         fireButton.setTypeface(customTypeface);
-        instructionsText.setTypeface(customTypeface);
 
         //reference to the ship
         shipView = (ImageView)findViewById(R.id.ship_view);

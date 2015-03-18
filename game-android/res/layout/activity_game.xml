@@ -4,13 +4,6 @@
     tools:context="com.samsung.multiscreen.msf20.casteroids.GameControllerActivity"
     android:background="@drawable/casteroids">
 
-    <TextView android:text="@string/start_flying" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:id="@+id/instructions_text" />
-
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
