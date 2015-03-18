@@ -29,12 +29,22 @@
         android:drawableBottom="@drawable/cast"
         android:visibility="gone" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/no_tv_text"
+        android:text="@string/no_tv_discovered"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/info_button"
+        android:layout_marginBottom="10dp"
+        />
+
     <Button
         style="@style/AppButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:id="@+id/no_tv_button"
-        android:text="@string/no_tv_discovered"
+        android:id="@+id/info_button"
+        android:text="@string/info"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:layout_centerHorizontal="true"
@@ -46,7 +56,7 @@
         android:id="@+id/imageView"
         android:src="@drawable/img_casteroids"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 
 
 </RelativeLayout>

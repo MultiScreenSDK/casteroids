@@ -54,6 +54,9 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     /** References to buttons on the screen */
     private Button playButton, selectTVButton, noTVDiscoveredButton;
 
+    /** Reference to the no-tv label **/
+    private TextView noTVlabel;
+
     /** Reference to the custom typeface for the game */
     private Typeface customTypeface;
 
@@ -88,6 +91,8 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         //get a reference to the root view
         rootView = findViewById(R.id.root_view);
 
+        noTVlabel = (TextView) findViewById(R.id.no_tv_text);
+
         // Initialize the play button
         playButton = (Button) findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +112,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         });
 
         // Initialize the no TV discovered button
-        noTVDiscoveredButton = (Button) findViewById(R.id.no_tv_button);
+        noTVDiscoveredButton = (Button) findViewById(R.id.info_button);
         noTVDiscoveredButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +124,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         playButton.setTypeface(customTypeface);
         selectTVButton.setTypeface(customTypeface);
         noTVDiscoveredButton.setTypeface(customTypeface);
+        noTVlabel.setTypeface(customTypeface);
 
         //if we are lollipop, do a custom animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -288,6 +294,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         playButton.setVisibility(View.GONE);
         selectTVButton.setVisibility(View.GONE);
         noTVDiscoveredButton.setVisibility(View.GONE);
+        noTVlabel.setVisibility(View.GONE);
 
         // If the device is connected to WiFi, enable the appropriate button.
         if (connectivityManager.isConnectedToWifi()) {
@@ -303,6 +310,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     		} else {
     			// no tvs discovered yet
     			noTVDiscoveredButton.setVisibility(View.VISIBLE);
+                noTVlabel.setVisibility(View.VISIBLE);
     		}
         } 
         // Else the device is not connected to WiFi, display a message to the user.
@@ -346,13 +354,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     }
 
     private void showNoTVDiscoveredScreen() {
-        //launchIntent(HowToPlayActivity.class); //FIXME
-
-        //FIXME
-        CustomToast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
-        if(!connectivityManager.hasDiscoveredService()) {
-            connectivityManager.startDiscovery();
-        }
+        launchIntent(HowToConnectActivity.class);
     }
 
     private void launchIntent(Class cls){
