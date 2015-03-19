@@ -34,7 +34,7 @@ BasicGame.Game.prototype = {
     create: function () {
 
         //This game will run in Canvas mode, so let's gain a little speed and display
-        this.game.renderer.clearBeforeRender = false;
+        //this.game.renderer.clearBeforeRender = false;
         this.game.renderer.roundPixels = true;
 
         // If the GameManager has a config object, then update the configuration using its values. These configurations
@@ -352,9 +352,8 @@ BasicGame.Game.prototype = {
 
             if (this.isBackgroundTiled) {
                 // If tiled background...
-                this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'starfield');
-                //bgImage = "url(assets/starfield.png)";
-                //bgRepeat = "repeat";
+                bgImage = "url(assets/starfield.png)";
+                bgRepeat = "repeat";
             }
             // Else Single Image background...
             else {
