@@ -14,13 +14,13 @@ public enum ConfigType {
 
 	SOUND("isSoundEnabled", "Sound", false),
 	FPS("isFpsEnabled", "FPS", true),
-	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", false),
+	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", true),
 	TILED_BACKGROUND_IMAGE("isBackgroundImageTiled", "Tiled Background Image", true),
 	COLLISION_DETECTION("isCollisionDetectionEnabled", "Collision Detection", true),
 	ALIEN("isAlienEnabled", "Alien", true),
-	SPACESHIP_TINTING("isSpaceshipTintingEnabled", "Spaceship Tinting", true),
-	BULLET_TINTING("isBulletTintingEnabled", "Bullet Tinting", true),
-	GAME_TEXT("isGameTextEnabled", "Game Text", true),
+	SPACESHIP_TINTING("isSpaceshipTintingEnabled", "Spaceship Tinting", false),
+	BULLET_TINTING("isBulletTintingEnabled", "Bullet Tinting", false),
+	GAME_TEXT("isGameTextEnabled", "Game Text", false),
 	POINTS_TEXT("isPointsTextEnabled", "Points Text", false),
 	AGGRESSIVE_UPDATE_CYCLE("isAggressiveUpdateCycle", "Sacrifice Responsiveness for Performance", true);
 

@@ -9,11 +9,11 @@ BasicGame.Game = function (game) {
     // greatest impact on performance.
     this.isMuted = true;
     this.isAlien = true;
-    this.isPlayersTinting = true;
-    this.isBulletTinting = true;
-    this.isGameText = true;
+    this.isPlayersTinting = false;
+    this.isBulletTinting = false;
+    this.isGameText = false;
     this.isPointsText = false;
-    this.isBackground = false;
+    this.isBackground = true;
     this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
     this.isAggressiveUpdateCycle = true;
