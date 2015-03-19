@@ -1,4 +1,4 @@
-var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render }, true, false);
 
 function preload() {
 
@@ -54,6 +54,12 @@ function create() {
     //  Game input
     cursors = game.input.keyboard.createCursorKeys();
     game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
+
+
+    var bgImage = "url(assets/starfield.png)";
+    var bgRepeat = "repeat";
+    $("body").css("background-image", bgImage);
+    $("body").css("background-repeat", bgRepeat);
 
 }
 
