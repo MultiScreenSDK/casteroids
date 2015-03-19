@@ -561,7 +561,6 @@ BasicGame.Game.prototype = {
                     origin.bullet.source = origin.id;
                     origin.bullet.body.enabled = true;
                     origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
-                    origin.bullet.lifespan = origin.bulletRange;
                     origin.bullet.rotation = origin.rotation;
                     origin.bullet.visible = true;
                     if (this.isBulletTinting) {
@@ -571,6 +570,7 @@ BasicGame.Game.prototype = {
 
                 // Setup the bullet for its cameo appearance.
                 origin.bullet.reset(origin.body.x + this.halfShipDimens, origin.body.y + this.halfShipDimens);
+                origin.bullet.lifespan = origin.bulletRange;
                 this.game.physics.arcade.velocityFromRotation(origin.rotation, origin.bulletSpeed, origin.bullet.body.velocity);
                 origin.bulletTime = this.game.time.now + origin.bulletDelay;
                 if(!this.isMuted) {
