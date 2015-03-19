@@ -545,23 +545,34 @@ BasicGame.Game.prototype = {
      */
     fire: function(origin) {
         if ((origin.fireCount > 0) || (this.game.time.now > origin.bulletTime)) {
-            if (origin.fireCount > 0) {
-			    origin.fireCount--;
-			}
+
+            // Get an available bullet, if available.
             origin.bullet = origin.bullets.getFirstExists(false);
+
+            // If there is a bullet available...
             if (origin.bullet) {
-                origin.bullet.source = origin.id;
+                // Decrement the fire count
+                if (origin.fireCount > 0) {
+                    origin.fireCount--;
+                }
+
+                // Initialize the bullet if it wasn't already.
+                if (origin.bullet.source === undefined) {
+                    origin.bullet.source = origin.id;
+                    origin.bullet.body.enabled = true;
+                    origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
+                    origin.bullet.lifespan = origin.bulletRange;
+                    origin.bullet.rotation = origin.rotation;
+                    origin.bullet.visible = true;
+                    if (this.isBulletTinting) {
+                        origin.bullet.tint = origin.tint;
+                    }
+                }
+
+                // Setup the bullet for its cameo appearance.
                 origin.bullet.reset(origin.body.x + this.halfShipDimens, origin.body.y + this.halfShipDimens);
-                origin.bullet.visible = true;
-                origin.bullet.body.enabled = true;
-                origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
-                origin.bullet.lifespan = origin.bulletRange;
-                origin.bullet.rotation = origin.rotation;
                 this.game.physics.arcade.velocityFromRotation(origin.rotation, origin.bulletSpeed, origin.bullet.body.velocity);
                 origin.bulletTime = this.game.time.now + origin.bulletDelay;
-                if (this.isBulletTinting) {
-                    origin.bullet.tint = origin.tint;
-                }
                 if(!this.isMuted) {
                     this.sfx.play('shot');
                 }
