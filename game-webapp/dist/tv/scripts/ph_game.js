@@ -268,8 +268,8 @@ BasicGame.Game.prototype = {
                 if (currentPlayer.thrustCount > 0) {
                     currentPlayer.thrustCount--;
                 }
-                this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
-                    BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+                this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation, BasicGame.PLAYER_ACC_SPEED,
+                    currentPlayer.body.acceleration);
             } else {
                 // TODO fix null body
                 currentPlayer.body.acceleration.set(0);
@@ -547,8 +547,8 @@ BasicGame.Game.prototype = {
                 origin.bullet.body.enabled = true;
                 origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                 origin.bullet.lifespan = origin.bulletRange;
-                origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
-                this.game.physics.arcade.velocityFromRotation(origin.rotation-BasicGame.ORIENTATION_CORRECTION, origin.bulletSpeed, origin.bullet.body.velocity);
+                origin.bullet.rotation = origin.rotation;
+                this.game.physics.arcade.velocityFromRotation(origin.rotation, origin.bulletSpeed, origin.bullet.body.velocity);
                 origin.bulletTime = this.game.time.now + origin.bulletDelay;
                 if (this.isBulletTinting) {
                     origin.bullet.tint = origin.tint;
