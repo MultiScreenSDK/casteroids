@@ -37,7 +37,7 @@ BasicGame.Game.prototype = {
         this.game.renderer.roundPixels = true;
 
         // Disable keyboard input
-        game.input.enabled = false;
+        this.game.input.enabled = false;
 
         // If the GameManager has a config object, then update the configuration using its values. These configurations
         // were used during performance testing to enable/disable game features to see which had the greatest impact on
