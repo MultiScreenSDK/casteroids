@@ -21,6 +21,10 @@ BasicGame.MainMenu.prototype = {
         this.game.scale.parentIsWindow = true;
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
+        //This game will run in Canvas mode, so let's gain a little speed and display
+        this.game.renderer.clearBeforeRender = false;
+        this.game.renderer.roundPixels = true;
+
         //  This is the preparation screen where players have time to join the game
         var sprite = this.add.sprite(0, 0, 'titlepage');
         sprite.anchor.setTo(0, 0);
