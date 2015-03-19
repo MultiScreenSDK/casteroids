@@ -60,7 +60,7 @@ function create() {
 function update() {
     game.physics.arcade.accelerationFromRotation(sprite.rotation, 200, sprite.body.acceleration);
     sprite.body.angularVelocity = -300;
-    fireBullet();
+    //fireBullet();
     screenWrap(sprite);
     bullets.forEachExists(screenWrap, this);
 }
