@@ -32,9 +32,8 @@ BasicGame.Game.prototype = {
     },
 
     create: function () {
-
         //This game will run in Canvas mode, so let's gain a little speed and display
-        //this.game.renderer.clearBeforeRender = false;
+        this.game.renderer.clearBeforeRender = true;
         this.game.renderer.roundPixels = true;
 
         // If the GameManager has a config object, then update the configuration using its values. These configurations
