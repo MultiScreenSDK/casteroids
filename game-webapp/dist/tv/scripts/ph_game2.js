@@ -9,13 +9,15 @@ function preload() {
 }
 
 var sprite;
-var cursors;
 
 var bullet;
 var bullets;
 var bulletTime = 0;
 
 function create() {
+    // Settings to make the app full screen
+    this.game.scale.parentIsWindow = true;
+    this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
     //  This will run in Canvas mode, so let's gain a little speed and display
     game.renderer.clearBeforeRender = true;
@@ -24,12 +26,7 @@ function create() {
     //  We need arcade physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-
     this.game.time.advancedTiming = true;
-
-
-    //  A spacey background
-    //game.add.tileSprite(0, 0, game.width, game.height, 'space');
 
     //  Our ships bullets
     bullets = game.add.group();
@@ -51,11 +48,7 @@ function create() {
     sprite.body.drag.set(100);
     sprite.body.maxVelocity.set(200);
 
-    //  Game input
-    cursors = game.input.keyboard.createCursorKeys();
-    game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
-
-
+    // Set the background on the DOM
     var bgImage = "url(assets/starfield.png)";
     var bgRepeat = "repeat";
     $("body").css("background-image", bgImage);
@@ -63,12 +56,24 @@ function create() {
 
 }
 
+var tick = 0;
+
 function update() {
-    game.physics.arcade.accelerationFromRotation(sprite.rotation, 200, sprite.body.acceleration);
-    sprite.body.angularVelocity = -300;
-    fireBullet();
-    screenWrap(sprite);
-    bullets.forEachExists(screenWrap, this);
+    var turn = (tick % 3);
+
+    if (turn == 0) {
+        game.physics.arcade.accelerationFromRotation(sprite.rotation, 200, sprite.body.acceleration);
+        sprite.body.angularVelocity = -300;
+    }
+    else if (turn == 2) {
+        fireBullet();
+    }
+    else if (turn == 3) {
+        screenWrap(sprite);
+        bullets.forEachExists(screenWrap, this);
+    }
+
+    tick++;
 }
 
 function fireBullet () {
