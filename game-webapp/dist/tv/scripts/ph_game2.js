@@ -1,4 +1,4 @@
-var game = new Phaser.Game(1280, 720, Phaser.WEBGL, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 
@@ -18,7 +18,7 @@ var bulletTime = 0;
 function create() {
 
     //  This will run in Canvas mode, so let's gain a little speed and display
-    game.renderer.clearBeforeRender = false;
+    game.renderer.clearBeforeRender = true;
     game.renderer.roundPixels = true;
 
     //  We need arcade physics
@@ -29,7 +29,7 @@ function create() {
 
 
     //  A spacey background
-    game.add.tileSprite(0, 0, game.width, game.height, 'space');
+    //game.add.tileSprite(0, 0, game.width, game.height, 'space');
 
     //  Our ships bullets
     bullets = game.add.group();
