@@ -128,7 +128,7 @@ BasicGame.Game.prototype = {
 
             // Here I setup the bullets
             this.players[clientId].bullets = this.add.group();
-            //this.players[clientId].bullets.enableBody = true;
+            this.players[clientId].bullets.enableBody = true;
             //this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
             this.players[clientId].bulletTime = 0;
 
