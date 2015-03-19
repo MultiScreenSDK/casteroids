@@ -24,6 +24,10 @@ function create() {
     //  We need arcade physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
+
+    this.game.time.advancedTiming = true;
+
+
     //  A spacey background
     game.add.tileSprite(0, 0, game.width, game.height, 'space');
 
@@ -102,4 +106,5 @@ function screenWrap (sprite) {
 }
 
 function render() {
+    this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
 }
