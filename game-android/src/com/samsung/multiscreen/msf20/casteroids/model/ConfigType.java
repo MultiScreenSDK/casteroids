@@ -13,7 +13,7 @@ package com.samsung.multiscreen.msf20.casteroids.model;
 public enum ConfigType {
 
 	SOUND("isSoundEnabled", "Sound", false),
-	FPS("isFpsEnabled", "FPS", false),
+	FPS("isFpsEnabled", "FPS", true),
 	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", false),
 	TILED_BACKGROUND_IMAGE("isBackgroundImageTiled", "Tiled Background Image", true),
 	COLLISION_DETECTION("isCollisionDetectionEnabled", "Collision Detection", true),

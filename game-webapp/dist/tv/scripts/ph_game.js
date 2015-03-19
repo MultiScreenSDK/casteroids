@@ -17,7 +17,7 @@ BasicGame.Game = function (game) {
     this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
     this.isAggressiveUpdateCycle = true;
-    this.isFPSdebug = false;
+    this.isFPSdebug = true;
 };
 
 BasicGame.Game.prototype = {
