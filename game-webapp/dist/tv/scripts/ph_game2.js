@@ -65,10 +65,10 @@ function update() {
         game.physics.arcade.accelerationFromRotation(sprite.rotation, 200, sprite.body.acceleration);
         sprite.body.angularVelocity = -300;
     }
-    else if (turn == 2) {
+    else if (turn == 1) {
         fireBullet();
     }
-    else if (turn == 3) {
+    else if (turn == 2) {
         screenWrap(sprite);
         bullets.forEachExists(screenWrap, this);
     }
