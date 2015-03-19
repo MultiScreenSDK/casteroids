@@ -128,11 +128,11 @@ BasicGame.Game.prototype = {
 
             // Here I setup the bullets
             this.players[clientId].bullets = this.add.group();
-            this.players[clientId].bullets.enableBody = true;
-            this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
+            //this.players[clientId].bullets.enableBody = true;
+            //this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
             this.players[clientId].bulletTime = 0;
 
-            this.players[clientId].bullets.createMultiple(1, 'bullets');
+            this.players[clientId].bullets.createMultiple(20, 'bullets');
             this.players[clientId].bullets.setAll('anchor.x', 0.5);
             this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
