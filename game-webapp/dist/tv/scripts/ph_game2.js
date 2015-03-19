@@ -23,6 +23,9 @@ function create() {
     game.renderer.clearBeforeRender = true;
     game.renderer.roundPixels = true;
 
+    // Disable keyboard input
+    game.input.enabled = false;
+
     //  We need arcade physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
