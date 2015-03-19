@@ -417,7 +417,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         if (value) {
             gameConnectivityManager.sendThrustMessage(Thrust.ON);
         } else {
-            gameConnectivityManager.sendThrustMessage(Thrust.OFF);
+            gameConnectivityManager.sendThrustMessage(Thrust.ON);
         }
     }
 
@@ -428,7 +428,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             gameConnectivityManager.sendFireMessage(Fire.ON);
             vibrator.vibrate(10);
         } else {
-            gameConnectivityManager.sendFireMessage(Fire.OFF);
+            gameConnectivityManager.sendFireMessage(Fire.ON);
         }
     }
 
