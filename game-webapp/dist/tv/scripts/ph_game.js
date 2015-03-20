@@ -433,12 +433,22 @@ BasicGame.Game.prototype = {
 
 
     setupText: function () {
-        // Here I setup the labels and other texts
+        // Set up the countdown text
+        $('#countdown').css('color', "#cccccc");
+        $('#countdown').css('font-size', "36px");
+        $('#countdown').text('');
+
+        // Initialize the countdown text with the starting value
         if (this.isGameText) {
-            $('#countdown').css('color', "#cccccc");
-            $('#countdown').css('font-size', "36px");
-            $('#countdown').text("02:00");
+            var minutes = Math.floor(this.secondsLeft/60);
+            var seconds = this.secondsLeft - minutes * 60;
+            if(seconds < 10) {
+                seconds = '0'+seconds;
+            }
+            $('#countdown').text(minutes+":"+seconds);
         }
+
+        // Initialize objects
         this.scores = { };
         this.names = { };
     },
