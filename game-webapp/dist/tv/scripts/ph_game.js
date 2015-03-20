@@ -753,7 +753,7 @@ BasicGame.Game.prototype = {
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
                                               { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt1.tint = color;
+            //this.pointsPrompt1.tint = color;
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -764,7 +764,7 @@ BasicGame.Game.prototype = {
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
                                                 { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt2.tint = color;
+            //this.pointsPrompt2.tint = color;
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
