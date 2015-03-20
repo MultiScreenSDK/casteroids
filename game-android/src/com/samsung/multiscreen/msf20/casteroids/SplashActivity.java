@@ -78,7 +78,7 @@ public class SplashActivity extends Activity {
         ObjectAnimator unlockLock1 = ObjectAnimator.ofFloat(lock1, "rotation", -360);
         ObjectAnimator unlockLock2 = ObjectAnimator.ofFloat(lock2, "rotation", 720);
 
-        int unlockDoorsDuration = 1200;
+        int unlockDoorsDuration = 1600;
 
         AnimatorSet unlockDoors = new AnimatorSet();
         unlockDoors.playTogether(unlockLock1, unlockLock2);
@@ -94,7 +94,7 @@ public class SplashActivity extends Activity {
 
         AnimatorSet openDoors = new AnimatorSet();
         openDoors.playTogether(openLeftDoor, openRightDoor);
-        openDoors.setDuration(1300);
+        openDoors.setDuration(1700);
         openDoors.setInterpolator(new AccelerateInterpolator(1.2f));
         openDoors.setStartDelay(unlockDoorsDuration + 250 /** slight extra delay after the doors unlock */);
 
