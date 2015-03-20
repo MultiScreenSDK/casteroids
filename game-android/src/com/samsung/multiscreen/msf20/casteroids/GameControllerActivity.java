@@ -125,8 +125,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         //remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //make full screen
+        //make full screen and keep the screen on
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //xml layout
         setContentView(R.layout.activity_game);
@@ -417,7 +418,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         if (value) {
             gameConnectivityManager.sendThrustMessage(Thrust.ON);
         } else {
-            gameConnectivityManager.sendThrustMessage(Thrust.ON);
+            gameConnectivityManager.sendThrustMessage(Thrust.OFF);
         }
     }
 
@@ -428,7 +429,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
             gameConnectivityManager.sendFireMessage(Fire.ON);
             vibrator.vibrate(10);
         } else {
-            gameConnectivityManager.sendFireMessage(Fire.ON);
+            gameConnectivityManager.sendFireMessage(Fire.OFF);
         }
     }
 
