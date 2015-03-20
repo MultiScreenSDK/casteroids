@@ -34,8 +34,8 @@ body {
  */
 
 .row {
-    font-size: 36px;
-    text-align: center;
+    font-size: 32px;
+    margin-right: -20px;
     height: auto;
     overflow: auto;
 
