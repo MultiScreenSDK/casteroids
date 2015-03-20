@@ -826,13 +826,23 @@ BasicGame.Game.prototype = {
         // Here we destroy everything that we no longer need. Delete sprites, purge caches, free resources, etc. Then
         // move on to the game over or main menu state depending on whether or not the game has just ended.
 
-        // Destroy all the score labels
-        for (var id in this.players) {
-            this.players[id].destroy();
+        // Destroy the alien
+        if (this.isAlien) {
+            this.alien.bullets.destroy(true);
+            this.alien.destroy();
         }
 
-        // Clear the players list
+        // Destroy all the players
+        for (var id in this.players) {
+            this.players[id].bullets.destroy(true);
+            this.players[id].destroy();
+        }
         this.players = {};
+
+        // Destroy the audio
+        if (!this.isMuted) {
+            this.sfx.destroy(true);
+        }
 
         // If the game just ended, notify the Game Manager that the game is over and transition to the Game Over state
         if (gameEnded) {

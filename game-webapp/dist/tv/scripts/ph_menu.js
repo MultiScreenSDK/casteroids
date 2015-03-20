@@ -77,6 +77,9 @@ BasicGame.MainMenu.prototype = {
         this.anim.stop();
         this.game.tweens.remove(this.anim);
 
+        // Clean up the players group
+        this.players.destroy(true);
+
         // Start the game
         GameManager.onGameStart(0);
         this.secondsElapsed = 0; //reset
