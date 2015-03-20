@@ -146,7 +146,7 @@ BasicGame.Game.prototype = {
 
             if(this.isGameText) {
                 this.scoreLabels[clientId] = this.add.text(position * 320, 40, name + "\t\t0", style_score);
-                //this.scoreLabels[clientId].font = 'Wallpoet';
+                this.scoreLabels[clientId].font = 'Wallpoet';
             }
         }
     },
@@ -434,7 +434,7 @@ BasicGame.Game.prototype = {
         var style = { font: "36px Arial", fill: "#cccccc", align: "left" };
         if (this.isGameText) {
             this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
-            //this.timerLabel.font = 'Wallpoet';
+            this.timerLabel.font = 'Wallpoet';
         }
         this.scores = { };
         this.names = { };
