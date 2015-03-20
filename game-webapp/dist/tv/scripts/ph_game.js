@@ -114,6 +114,7 @@ BasicGame.Game.prototype = {
             var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
             this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
             this.players[clientId].id = clientId;
+            this.players[clientId].hexColor = hexColor;
             this.players[clientId].order = position;
             this.players[clientId].isThrusting = false;
             this.players[clientId].thrustCount = 0;
@@ -387,6 +388,7 @@ BasicGame.Game.prototype = {
 
         // Here I setup the computer controlled ship
         this.alien = this.game.add.sprite(0, 0, 'ufo');
+        this.alien.hexColor = '#000000';
 
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
@@ -554,6 +556,7 @@ BasicGame.Game.prototype = {
                 // Initialize the bullet if it wasn't already.
                 if (origin.bullet.source === undefined) {
                     origin.bullet.source = origin.id;
+                    origin.bullet.hexColor = origin.hexColor;
                     origin.bullet.body.enabled = true;
                     origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                     origin.bullet.rotation = origin.rotation;
@@ -590,14 +593,14 @@ BasicGame.Game.prototype = {
         } else {
             this.scores[bullet.source] += BasicGame.PLAYER_HIT_SCORE;
             if(this.players[bullet.source] != undefined && this.isPointsText) {
-                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players[bullet.source].tint, false);
+                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players.hexColor, false);
             }
         }
         if(target.health <= 0) {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
                 if(this.isPointsText){
-                    this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].tint, false);
+                    this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].hexColor, false);
                 }
             }
 
@@ -628,7 +631,7 @@ BasicGame.Game.prototype = {
 
             if(this.isPointsText){
                 var player = this.players[target.id];
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint, true);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.hexColor, true);
             }
         }
 
@@ -690,9 +693,9 @@ BasicGame.Game.prototype = {
 
         if(this.isPointsText) {
             if (leftCollision) {
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint, true);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.hexColor, true);
             } else {
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.tint, false);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.hexColor, false);
             }
         }
 
@@ -733,7 +736,7 @@ BasicGame.Game.prototype = {
      * @param {color} -
      * @param {left} -
      */
-    showPoints: function (points, x, y, color, left) {
+    showPoints: function (points, x, y, hexColor, left) {
         var sign = (points < 0) ? "" : "+";
 
         // If the score should be on the left
@@ -743,7 +746,8 @@ BasicGame.Game.prototype = {
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
                                               { font: '20px Wallpoet', fill: color, align: 'center'});
-            //this.pointsPrompt1.tint = color;
+            // TODO: Commented out because tinting causes performance issues.
+            //this.pointsPrompt1.tint = hexColor;
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -754,7 +758,8 @@ BasicGame.Game.prototype = {
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
                                                 { font: '20px Wallpoet', fill: color, align: 'center'});
-            //this.pointsPrompt2.tint = color;
+            // TODO: Commented out because tinting causes performance issues.
+            //this.pointsPrompt2.tint = hexColor;
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
