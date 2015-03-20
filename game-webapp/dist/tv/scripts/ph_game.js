@@ -145,8 +145,7 @@ BasicGame.Game.prototype = {
             this.names[clientId] = name;
 
             if(this.isGameText) {
-                this.scoreLabels[clientId] = this.add.text(position * 320, 40, name + "\t\t0", style_score);
-                this.scoreLabels[clientId].font = 'Wallpoet';
+                $('#player'+position).text(name + "\t\t0", style_score);
             }
         }
     },
@@ -164,9 +163,6 @@ BasicGame.Game.prototype = {
 
             this.players[clientId].destroy();
             delete this.players[clientId];
-            if(this.isGameText) {
-                this.scoreLabels[clientId].destroy();
-            }
         }
 
         if($.isEmptyObject(this.players)) {
@@ -366,9 +362,16 @@ BasicGame.Game.prototype = {
     setupPlayers: function () {
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
+
+            // Initialize the slot's score label
+            $('#player'+slot.position).css('color', slot.hexColor);
+            $('#player'+slot.position).text('');
+
+            // If the slot is taken, create a player for that slot.
             if (!slot.available) {
                 this.addPlayer(slot.position, slot.clientId, slot.name, slot.color, slot.colorCode, slot.hexColor);
             }
+
         }
     },
 
@@ -431,14 +434,13 @@ BasicGame.Game.prototype = {
 
     setupText: function () {
         // Here I setup the labels and other texts
-        var style = { font: "36px Arial", fill: "#cccccc", align: "left" };
         if (this.isGameText) {
-            this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
-            this.timerLabel.font = 'Wallpoet';
+            $('#countdown').css('color', "#cccccc");
+            $('#countdown').css('font-size', "36px");
+            $('#countdown').text("02:00");
         }
         this.scores = { };
         this.names = { };
-        this.scoreLabels = { };
     },
 
     /**
@@ -507,18 +509,19 @@ BasicGame.Game.prototype = {
                 seconds = '0'+seconds;
             }
 
-            this.timerLabel.setText(minutes+":"+seconds);
-            this.timerLabel.cacheAsBitmap = true;
+            $('#countdown').text(minutes+":"+seconds);
 
             if(this.secondsLeft <= 10) {
-                this.timerLabel.fontSize = 38;
-                this.timerLabel.fill = '#FFFF00';
+                $('#countdown').css('color', "#FFFF00");
+                $('#countdown').css('font-size', "38px");
+
                 if((this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3) && !this.isMuted) {
                     this.sfx.play("ping");
                 }
+
                 if(this.secondsLeft <= 3) {
-                    this.timerLabel.fontSize = 46;
-                    this.timerLabel.fill = '#FF0000';
+                    $('#countdown').css('color', "#FF0000");
+                    $('#countdown').css('font-size', "46px");
                 }
             }
         }
@@ -620,8 +623,7 @@ BasicGame.Game.prototype = {
             }
 
             if(this.isGameText) {
-                this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
-                this.scoreLabels[target.id].cacheAsBitmap = true;
+                $('#player'+target.order).text(this.names[target.id] + "\t\t"+this.scores[target.id]);
             }
 
             if(this.isPointsText){
@@ -631,10 +633,9 @@ BasicGame.Game.prototype = {
         }
 
         // update score labels if shot is not from the alien
-        var attacker = this.scoreLabels[bullet.source];
-        if(attacker != undefined && this.isGameText){
-            attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
-            attacker.cacheAsBitmap = true;
+        var attacker = this.players[bullet.source];
+        if(attacker !== undefined && this.isGameText) {
+            $('#player'+attacker.order).text(this.names[attacker.id] + "\t\t"+this.scores[attacker.id]);
         }
 
         bullet.kill();
@@ -697,8 +698,7 @@ BasicGame.Game.prototype = {
 
         // Update the player's score
         if(this.isGameText) {
-            this.scoreLabels[player.id].setText(this.names[player.id] + "\t\t"+this.scores[player.id]);
-            this.scoreLabels[player.id].cacheAsBitmap = true;
+            $('#player'+player.order).text(this.names[player.id] + "\t\t"+this.scores[player.id]);
         }
 
         // Explode the player
@@ -820,9 +820,6 @@ BasicGame.Game.prototype = {
         // Destroy all the score labels
         for (var id in this.players) {
             this.players[id].destroy();
-            if(this.isGameText) {
-                this.scoreLabels[id].destroy();
-            }
         }
 
         // Clear the players list

@@ -1,0 +1,52 @@
+/**
+ * Body
+ */
+
+body {
+	background: #000000;
+    color: #ffffff;
+	padding: 0px;
+	margin: 0px;
+    font-family: 'Wallpoet', cursive;
+}
+
+/**
+ * Countdown
+ */
+
+#countdown {
+    font-size: 36px;
+    text-align: center;
+    line-height: 50px;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 0;
+}
+
+/**
+ * Scores
+ */
+
+.row {
+    font-size: 36px;
+    text-align: center;
+    height: auto;
+    overflow: auto;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 50px;
+}
+
+.col {
+    float: left;
+    width: 25%;
+    position: relative;
+}
+
+.last {
+    float: right;
+    width: 25%;
+    position: relative;
+}

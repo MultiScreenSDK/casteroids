@@ -1,13 +1,14 @@
 <!doctype html>
 <html>
 <head>
+    <title>Casteroids (SmartTV)</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Castroids (SmartTV)</title>
     <meta name="viewport" content="width=1280, initial-scale=1">
 
-    <!--<link rel="stylesheet/less" type="text/css" href="styles/styles.less" />-->
-    <!--<script src="../vendor/less.min.js" type="text/javascript"></script>-->
+    <link href='http://fonts.googleapis.com/css?family=Wallpoet' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="styles/styles.css">
+
     <script src="../vendor/jquery.min.js"></script>
     <script src="../vendor/msf.min.js"></script>
     <script src="../vendor/phaser.min.js"></script>
@@ -19,6 +20,14 @@
     <script src="scripts/ph_manager.js"></script>
     <script src="scripts/main.js"></script>
 </head>
-<!-- TODO: Move styling to a CSS file -->
-<body id="game-section" style="background: #000000; padding: 0px; margin: 0px;"></body>
+
+<body>
+    <div id="countdown">00:00</div>
+    <div class="row">
+        <div id="player0" class="col">A</div>
+        <div id="player1" class="col">B</div>
+        <div id="player2" class="col">C</div>
+        <div id="player3" class="last">D</div>
+    </div>
+</body>
 </html>
