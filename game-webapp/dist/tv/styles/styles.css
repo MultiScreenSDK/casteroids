@@ -18,10 +18,15 @@ body {
     font-size: 36px;
     text-align: center;
     line-height: 50px;
+
+    /* Make sure the div does not impact the layout of the game canvas */
     position: absolute;
     width: 100%;
     right: 0;
     top: 0;
+
+    /* Display under the game canvas */
+    z-index: -100;
 }
 
 /**
@@ -33,10 +38,15 @@ body {
     text-align: center;
     height: auto;
     overflow: auto;
+
+    /* Make sure the div does not impact the layout of the game canvas */
     position: absolute;
     width: 100%;
     right: 0;
     top: 50px;
+
+    /* Display under the game canvas */
+    z-index: -110;
 }
 
 .col {
