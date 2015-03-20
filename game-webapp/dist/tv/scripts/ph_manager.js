@@ -137,7 +137,7 @@ $(GameManager = function(){
 
         // If in the Game state, add the Player to the game and notify the client that the game has already started.
         if (game.state.getCurrentState() === gameState) {
-            gameState.addPlayer(slot.position, clientId, name, slot.colorCode, slot.hexColor);
+            gameState.addPlayer(slot.position, clientId, name, slot.color, slot.colorCode, slot.hexColor);
             ConnectivityManager.onGameStarted(clientId);
         }
 

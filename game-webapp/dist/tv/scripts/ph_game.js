@@ -105,15 +105,17 @@ BasicGame.Game.prototype = {
      */
 
     // Add a player to the game.
-    addPlayer: function(position, clientId, name, colorCode, hexColor) {
+    addPlayer: function(position, clientId, name, color, colorCode, hexColor) {
         console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
             // Initialize the new player
-            this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
+            this.players[clientId] = this.game.add.sprite(0, 0, color);
+            this.players[clientId].width = this.shipDimens;
+            this.players[clientId].height = this.shipDimens;
+
             // Here I setup the user controlled ship
             var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
             var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-
             this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
             this.players[clientId].id = clientId;
             this.players[clientId].order = position;
@@ -379,7 +381,7 @@ BasicGame.Game.prototype = {
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
             if (!slot.available) {
-                this.addPlayer(slot.position, slot.clientId, slot.name, slot.colorCode, slot.hexColor);
+                this.addPlayer(slot.position, slot.clientId, slot.name, slot.color, slot.colorCode, slot.hexColor);
             }
         }
     },

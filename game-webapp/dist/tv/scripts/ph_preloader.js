@@ -36,9 +36,11 @@ BasicGame.Preloader.prototype = {
         this.load.image('titlepage', 'assets/casteroids.jpg');
         this.load.image('gameover', 'assets/casteroids2.jpg');
         this.load.image('starfield', 'assets/starfield.png');
-//        this.load.image('asteroid', 'assets/asteroid.png');
         this.load.image('bullets', 'assets/bullets.png');
-        this.load.image('ship', 'assets/ship.png');
+        this.load.image('red', 'assets/ship_red.png');
+        this.load.image('green', 'assets/ship_green.png');
+        this.load.image('yellow', 'assets/ship_yellow.png');
+        this.load.image('blue', 'assets/ship_blue.png');
         this.load.image('ufo', 'assets/ufo.png');
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
         this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
