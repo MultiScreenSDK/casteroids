@@ -59,6 +59,10 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	// The default time that service discovery can run. Set to 0 for no limit.
 	protected static final long DEFAULT_DISCOVERY_TIMEOUT_MILLIS = (1000 * 60); // 1 minute
 
+	// The connection timeout. This is needed to be notified when connection to the TV App is lost because the TV lost
+	// its WiFi connection or was turned off.
+	private static final int CONNECTION_TIMEOUT_MILLIS = (1000 * 5); // 5 seconds
+	
 	// Reference to the context.
 	protected final Context context;
 
@@ -423,6 +427,10 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 			// Get an instance of Application.
 			application = service.createApplication(uri, channelId);
 
+			// Set the connection timeout. This needs to be set in order to be notified when connection to the TV App is
+			// lost because the TV lost its WiFi connection or was turned off.
+			application.setConnectionTimeout(CONNECTION_TIMEOUT_MILLIS);
+			
 			// Listen for the connect/disconnect events
 			application.setOnConnectListener(this);
 			application.setOnDisconnectListener(this);
