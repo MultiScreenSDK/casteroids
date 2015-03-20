@@ -414,9 +414,6 @@ BasicGame.Game.prototype = {
         }
 
         // Here I setup audio
-        this.shot = this.game.add.audio("shot");
-        this.shot.play();
-
         this.sfx = this.game.add.audio("sfx");
         this.sfx.allowMultiple = true;
 
@@ -564,8 +561,7 @@ BasicGame.Game.prototype = {
                 this.game.physics.arcade.velocityFromRotation(origin.rotation, origin.bulletSpeed, origin.bullet.body.velocity);
                 origin.bulletTime = this.game.time.now + origin.bulletDelay;
                 if(!this.isMuted) {
-                    //this.sfx.play('shot');
-                    this.shot.play();
+                    this.sfx.play('shot');
                 }
             }
         }
