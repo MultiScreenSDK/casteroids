@@ -22,11 +22,11 @@ BasicGame.MainMenu.prototype = {
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
         //  This is the preparation screen where players have time to join the game
-        var sprite = this.add.sprite(0, 0, 'titlepage');
-        sprite.anchor.setTo(0, 0);
+        //var sprite = this.add.sprite(0, 0, 'titlepage');
+        //sprite.anchor.setTo(0, 0);
 
-        this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
-        this.anim.start();
+        //this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
+        //this.anim.start();
 
         this.players = this.game.add.group();
 
@@ -74,8 +74,8 @@ BasicGame.MainMenu.prototype = {
 
     startGame: function () {
         // Clean up the background animation
-        this.anim.stop();
-        this.game.tweens.remove(this.anim);
+        //this.anim.stop();
+        //this.game.tweens.remove(this.anim);
 
         // Start the game
         GameManager.onGameStart(0);
