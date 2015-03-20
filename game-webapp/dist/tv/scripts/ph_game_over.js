@@ -16,11 +16,11 @@ BasicGame.GameOver.prototype = {
     },
     
     create: function () {
-        //var sprite = this.add.sprite(0, 0, 'gameover');
-        //sprite.anchor.setTo(0, 0);
+        var sprite = this.add.sprite(0, 0, 'gameover');
+        sprite.anchor.setTo(0, 0);
 
-        //this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 10000, Phaser.Easing.Linear.None,  true, 50, -1, true);
-        //this.anim.start();
+        this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 10000, Phaser.Easing.Linear.None,  true, 50, -1, true);
+        this.anim.start();
 
         var gameOver_label = "GAME OVER";
         var prompt_label = "Game will restart in 5 seconds";
@@ -84,8 +84,8 @@ BasicGame.GameOver.prototype = {
 
     startGame: function () {
         // Clean up the background animation
-        //this.anim.stop();
-        //this.game.tweens.remove(this.anim);
+        this.anim.stop();
+        this.game.tweens.remove(this.anim);
 
         // Start the game
         GameManager.onGameStart(0);
