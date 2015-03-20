@@ -9,8 +9,6 @@ BasicGame.Game = function (game) {
     // greatest impact on performance.
     this.isMuted = true;
     this.isAlien = true;
-    this.isPlayersTinting = false;
-    this.isBulletTinting = false;
     this.isGameText = false;
     this.isPointsText = false;
     this.isBackground = true;
@@ -46,8 +44,6 @@ BasicGame.Game.prototype = {
         if (this.config !== undefined) {
             this.isMuted = !this.config.isSoundEnabled;
             this.isAlien = this.config.isAlienEnabled;
-            this.isPlayersTinting = this.config.isSpaceshipTintingEnabled;
-            this.isBulletTinting = this.config.isBulletTintingEnabled;
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
             this.isBackground = this.config.isBackgroundImageEnabled;
@@ -123,9 +119,6 @@ BasicGame.Game.prototype = {
             this.players[clientId].thrustCount = 0;
             this.players[clientId].isFiring = false;
             this.players[clientId].fireCount = 0;
-            if(this.isPlayersTinting) {
-                this.players[clientId].tint = colorCode;
-            }
             this.players[clientId].anchor.set(0.5);
             this.physics.enable(this.players[clientId], Phaser.Physics.ARCADE);
             this.players[clientId].body.drag.set(BasicGame.PLAYER_DRAG);
@@ -505,7 +498,7 @@ BasicGame.Game.prototype = {
 
     /**
      * Keeps track of the game countdown timer and handles last-10-seconds alert
-     * with a sound, red tint and increased size.
+     * with a sound, red color and increased size.
      *
      */
     updateTimer: function updateTimer() {
@@ -565,9 +558,6 @@ BasicGame.Game.prototype = {
                     origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
                     origin.bullet.rotation = origin.rotation;
                     origin.bullet.visible = true;
-                    if (this.isBulletTinting) {
-                        origin.bullet.tint = origin.tint;
-                    }
                 }
 
                 // Setup the bullet for its cameo appearance.
