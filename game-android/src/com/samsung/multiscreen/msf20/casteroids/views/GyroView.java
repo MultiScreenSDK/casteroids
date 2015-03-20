@@ -177,7 +177,7 @@ public class GyroView extends View {
         centerX = getMeasuredWidth()  / 2.0f;
         centerY = getMeasuredHeight()/ 2.0f;
         float originalRadius = Math.min(centerX, centerY);
-        radius =  originalRadius* 0.96f;
+        radius =  originalRadius* 0.98f;
         innerRadius = (int)(radius - (radius * 0.05));
 
         pitchOval = new RectF(originalRadius*0.05f,originalRadius*0.05f,(originalRadius-0.05f)*2,(originalRadius-0.05f)*2);
