@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -270,7 +271,16 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     }
 
     private void displayProgressIndicator() {
-        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
+        progressDialog = new ProgressDialog(MainActivity.this, R.style.CustomAppDialog);
+        TextView title = new TextView(this);
+        title.setText(R.string.title_connecting);
+        title.setTextColor(getResources().getColor(R.color.dialogs_text_blue));
+        title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
+        title.setPadding(30, 30, 0, 0);
+        title.setTypeface(customTypeface);
+        progressDialog.setCustomTitle(title);
+        progressDialog.setMessage("Please Wait ...");
+        progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
@@ -279,7 +289,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
                 connectivityManager.startDiscovery();
             }
         });
-
+        progressDialog.show();
     }
 
     private void cancelProgressIndicator() {
