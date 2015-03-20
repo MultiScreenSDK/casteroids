@@ -144,8 +144,9 @@ BasicGame.Game.prototype = {
             this.scores[clientId] = 0;
             this.names[clientId] = name;
 
+            // Initialize the player's score label
             if(this.isGameText) {
-                $('#player'+position).text(name + "\t\t0", style_score);
+                $('#player'+position).text(name + "\t\t0");
             }
         }
     },
@@ -155,6 +156,11 @@ BasicGame.Game.prototype = {
         if (this.game !== undefined) {
             // Look up the player.
             var currentPlayer = this.players[clientId];
+
+            // Clear the player's score label
+            if(this.isGameText) {
+                $('#player'+position).text('');
+            }
 
             // If the player was not found, ignore and return.
             if (currentPlayer == null) {
