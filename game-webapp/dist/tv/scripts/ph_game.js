@@ -139,7 +139,7 @@ BasicGame.Game.prototype = {
             this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
-            var style_score = { font: "12px", fill: "#fff", align: "center" };
+            var style_score = { font: "12px", fill: hexColor, align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
             console.log("game.addPlayer.position");
@@ -152,7 +152,7 @@ BasicGame.Game.prototype = {
                 this.scoreLabels[clientId].font = 'Wallpoet';
                 console.log("game.addPlayer.hexColor");
                 console.log(hexColor);
-                this.scoreLabels[clientId].fill = hexColor;
+                //this.scoreLabels[clientId].fill = hexColor;
                 console.log(this.scoreLabels[clientId]);
             }
         }
@@ -742,8 +742,8 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt1.destroy();
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
-                                              { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt1.tint = color;
+                                              { font: '20px Wallpoet', fill: color, align: 'center'});
+            //this.pointsPrompt1.tint = color;
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -753,8 +753,8 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt2.destroy();
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
-                                                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt2.tint = color;
+                                                { font: '20px Wallpoet', fill: color, align: 'center'});
+            //this.pointsPrompt2.tint = color;
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
