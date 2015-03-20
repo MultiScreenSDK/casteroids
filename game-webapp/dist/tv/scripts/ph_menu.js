@@ -39,6 +39,7 @@ BasicGame.MainMenu.prototype = {
         this.loadingText.strokeThickness = 2;
         this.loadingText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
         this.loadingText.anchor.setTo(0.5, 0.5);
+        this.loadingText.cacheAsBitmap = true;
     },
 
     update: function () {
@@ -63,6 +64,7 @@ BasicGame.MainMenu.prototype = {
 
             this.secondsElapsed = 0; //reset
             this.loadingText.setText("Waiting for Players to join")
+            this.loadingText.cacheAsBitmap = true;
         }
     },
 
@@ -84,6 +86,7 @@ BasicGame.MainMenu.prototype = {
     updateTimer: function () {
         var secondsToStart = BasicGame.GAME_COUNTDOWN_LENGTH - this.secondsElapsed;
         this.loadingText.setText("Game starting in " + secondsToStart + (secondsToStart==1 ? " second" : " seconds"));
+        this.loadingText.cacheAsBitmap = true;
         GameManager.onGameStart(secondsToStart);
         if (this.secondsElapsed == BasicGame.GAME_COUNTDOWN_LENGTH) {
             this.startGame();
@@ -108,6 +111,7 @@ BasicGame.MainMenu.prototype = {
                 playerText.stroke = '#000000';
                 playerText.strokeThickness = 2;
                 playerText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
+                playerText.cacheAsBitmap = true;
                 this.players.add(playerText);
             }
         }
