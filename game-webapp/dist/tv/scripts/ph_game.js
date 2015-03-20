@@ -140,13 +140,14 @@ BasicGame.Game.prototype = {
             this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
-            var style_score = { font: "36px Arial", fill: hexColor, align: "center" };
+            var style_score = { font: "36px Arial", fill: "#ccc", align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
 
             if(this.isGameText) {
                 this.scoreLabels[clientId] = this.add.text(position * 320, 40, name + "\t\t0", style_score);
                 this.scoreLabels[clientId].font = 'Wallpoet';
+                this.scoreLabels[clientId].addColor(hexColor, 0);
             }
         }
     },
@@ -737,9 +738,9 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt1.destroy();
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
-                                              { font: '25px Arial', fill: hexColor, align: 'center'});
+                                              { font: '25px Arial', fill: "#ccc", align: 'center'});
             // TODO: Commented out because tinting causes performance issues.
-            //this.pointsPrompt1.tint = hexColor;
+            this.pointsPrompt1.addColor(hexColor, 0);
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -751,7 +752,7 @@ BasicGame.Game.prototype = {
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
                                                 { font: '25px Arial', fill: hexColor, align: 'center'});
             // TODO: Commented out because tinting causes performance issues.
-            //this.pointsPrompt2.tint = hexColor;
+            this.pointsPrompt2.addColor(hexColor, 0);
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
