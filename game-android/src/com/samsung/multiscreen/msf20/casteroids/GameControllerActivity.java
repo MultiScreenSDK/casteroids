@@ -212,11 +212,8 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
         //stop the sensor listeners as it can drain the battery if you don't
         sensorManager.unregisterListener(sensorEventListener);
-    }
 
-    @Override
-    public void onBackPressed() {
-        sendQuitMessage(true); //send quit game message and disconnect.
+        sendQuitMessage(true);
     }
 
     @Override
@@ -440,6 +437,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
      */
     public void quitGame(View view) {
         sendQuitMessage(true);
+        finish();
     }
 
     /**
@@ -449,7 +447,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
      */
     private void sendQuitMessage(boolean disconnect) {
         gameConnectivityManager.sendQuitMessage();
-        finish();
         if(disconnect) {
             gameConnectivityManager.disconnect();
         }
