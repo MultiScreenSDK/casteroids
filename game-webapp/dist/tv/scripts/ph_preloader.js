@@ -45,6 +45,8 @@ BasicGame.Preloader.prototype = {
         this.load.spritesheet('explosion', 'assets/explosion.png', 32, 32);
         this.load.spritesheet('explosionBig', 'assets/explosion_big.png', 64, 64);
         this.load.audio('sfx', 'assets/fx_mixdown.ogg');
+        this.load.audio('shot', 'assets/shot.mp3');
+
 
     },
 
