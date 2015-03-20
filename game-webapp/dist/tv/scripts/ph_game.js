@@ -508,6 +508,8 @@ BasicGame.Game.prototype = {
             }
 
             this.timerLabel.setText(minutes+":"+seconds);
+            this.timerLabel.cacheAsBitmap = true;
+
             if(this.secondsLeft <= 10) {
                 this.timerLabel.fontSize = 38;
                 this.timerLabel.fill = '#FFFF00';
@@ -619,6 +621,7 @@ BasicGame.Game.prototype = {
 
             if(this.isGameText) {
                 this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
+                this.scoreLabels[target.id].cacheAsBitmap = true;
             }
 
             if(this.isPointsText){
@@ -631,6 +634,7 @@ BasicGame.Game.prototype = {
         var attacker = this.scoreLabels[bullet.source];
         if(attacker != undefined && this.isGameText){
             attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
+            attacker.cacheAsBitmap = true;
         }
 
         bullet.kill();
@@ -694,6 +698,7 @@ BasicGame.Game.prototype = {
         // Update the player's score
         if(this.isGameText) {
             this.scoreLabels[player.id].setText(this.names[player.id] + "\t\t"+this.scores[player.id]);
+            this.scoreLabels[player.id].cacheAsBitmap = true;
         }
 
         // Explode the player
