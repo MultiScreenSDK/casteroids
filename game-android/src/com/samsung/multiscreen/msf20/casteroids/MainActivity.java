@@ -270,7 +270,10 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     }
 
     private void displayProgressIndicator() {
-        progressDialog = ProgressDialog.show(MainActivity.this, "Connecting", "Please Wait ...", true);
+        progressDialog = new ProgressDialog(MainActivity.this, R.style.CustomAppDialog);
+        progressDialog.setTitle("Connecting");
+        progressDialog.setMessage("Please Wait ...");
+        progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
@@ -279,7 +282,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
                 connectivityManager.startDiscovery();
             }
         });
-
+        progressDialog.show();
     }
 
     private void cancelProgressIndicator() {
