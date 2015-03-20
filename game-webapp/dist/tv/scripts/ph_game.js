@@ -745,7 +745,7 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt1.destroy();
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
-                                              { font: '20px Wallpoet', fill: color, align: 'center'});
+                                              { font: '20px Wallpoet', fill: hexColor, align: 'center'});
             // TODO: Commented out because tinting causes performance issues.
             //this.pointsPrompt1.tint = hexColor;
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
@@ -757,7 +757,7 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt2.destroy();
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
-                                                { font: '20px Wallpoet', fill: color, align: 'center'});
+                                                { font: '20px Wallpoet', fill: hexColor, align: 'center'});
             // TODO: Commented out because tinting causes performance issues.
             //this.pointsPrompt2.tint = hexColor;
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
