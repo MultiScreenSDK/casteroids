@@ -14,8 +14,8 @@ public enum ConfigType {
 
 	SOUND("isSoundEnabled", "Sound", false),
 	FPS("isFpsEnabled", "FPS", true),
+	SHORT_GAME("isShortGameEnabled", "Short Game", false),
 	BACKGROUND_IMAGE("isBackgroundImageEnabled", "Background Image", true),
-	TILED_BACKGROUND_IMAGE("isBackgroundImageTiled", "Tiled Background Image", true),
 	COLLISION_DETECTION("isCollisionDetectionEnabled", "Collision Detection", true),
 	ALIEN("isAlienEnabled", "Alien", true),
 	GAME_TEXT("isGameTextEnabled", "Game Text", true),

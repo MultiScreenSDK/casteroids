@@ -1,5 +1,6 @@
 var BasicGame = {
     GAME_LENGTH: 120,
+    SHORT_GAME_LENGTH: 30,
     GAME_COUNTDOWN_LENGTH: 5,
     GAME_OVER_DELAY: 5000,
     HIT_POW: 10,

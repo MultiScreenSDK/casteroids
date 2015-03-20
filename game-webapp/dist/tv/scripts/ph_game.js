@@ -12,10 +12,10 @@ BasicGame.Game = function (game) {
     this.isGameText = true;
     this.isPointsText = false;
     this.isBackground = true;
-    this.isBackgroundTiled = true;
     this.isCollisionsDetection = true;
     this.isAggressiveUpdateCycle = true;
     this.isFPSdebug = true;
+    this.isShortGame = false;
 };
 
 BasicGame.Game.prototype = {
@@ -47,11 +47,14 @@ BasicGame.Game.prototype = {
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
             this.isBackground = this.config.isBackgroundImageEnabled;
-            this.isBackgroundTiled = this.config.isBackgroundImageTiled;
             this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
             this.isAggressiveUpdateCycle = this.config.isAggressiveUpdateCycle;
             this.isFPSdebug = this.config.isFpsEnabled;
+            this.isShortGame = this.config.isShortGameEnabled;
         }
+
+        // Set the length of this game
+        this.secondsLeft = this.isShortGame ? BasicGame.SHORT_GAME_LENGTH : BasicGame.GAME_LENGTH;
 
         // If the FPS debug flag is enabled, then advanced timing is required. Showing the FPS is is useful when
         // performance testing/tuning the application.
@@ -159,7 +162,7 @@ BasicGame.Game.prototype = {
 
             // Clear the player's score label
             if(this.isGameText) {
-                $('#player'+position).text('');
+                $('#player'+this.players[clientId].order).text('');
             }
 
             // If the player was not found, ignore and return.
@@ -340,18 +343,8 @@ BasicGame.Game.prototype = {
 
         // If background is enabled...
         if (this.isBackground) {
-
-
-            if (this.isBackgroundTiled) {
-                // If tiled background...
-                bgImage = "url(assets/starfield.png)";
-                bgRepeat = "repeat";
-            }
-            // Else Single Image background...
-            else {
-                bgImage = "url(assets/starfield_full.jpg)";
-                bgRepeat = "no-repeat";
-            }
+            bgImage = "url(assets/starfield.png)";
+            bgRepeat = "repeat";
         }
 
         // Update the body
@@ -544,7 +537,7 @@ BasicGame.Game.prototype = {
 
         // Check if the game is over
         if(this.secondsLeft < 0) {
-            this.secondsLeft = BasicGame.GAME_LENGTH;
+            this.secondsLeft = this.isShortGame ? BasicGame.SHORT_GAME_LENGTH : BasicGame.GAME_LENGTH;
             this.quitGame(true);
         }
     },
