@@ -22,5 +22,6 @@
     <string name="how_to_connect_text">Make sure your TV and mobile device are on the same WiFi network.\n\nThis game is enabled in J series 2015 Samsung Smart TVs.
 J9500, J9100, J9000, J8500, J7500, J7100, J6700, J6500, J6300, J6200, J5500, J5000</string>
     <string name="wifi_disabled_warning">Turn on Wi-Fi</string>
+    <string name="title_connecting">Connecting</string>
 
 </resources>
