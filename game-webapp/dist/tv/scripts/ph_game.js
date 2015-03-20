@@ -146,21 +146,13 @@ BasicGame.Game.prototype = {
             this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
-            var style_score = { font: "12px", fill: hexColor, align: "center" };
+            var style_score = { font: "36px Arial", fill: hexColor, align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            console.log("game.addPlayer.position");
-            console.log(position);
 
             if(this.isGameText) {
-                console.log("game.addPlayer.scoreLabels");
-                console.log(this.scoreLabels);
                 this.scoreLabels[clientId] = this.add.text(position * 320, 40, name + "\t\t0", style_score);
-                this.scoreLabels[clientId].font = 'Wallpoet';
-                console.log("game.addPlayer.hexColor");
-                console.log(hexColor);
-                //this.scoreLabels[clientId].fill = hexColor;
-                console.log(this.scoreLabels[clientId]);
+                //this.scoreLabels[clientId].font = 'Wallpoet';
             }
         }
     },
@@ -444,10 +436,10 @@ BasicGame.Game.prototype = {
 
     setupText: function () {
         // Here I setup the labels and other texts
-        var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
+        var style = { font: "36px Arial", fill: "#cccccc", align: "left" };
         if (this.isGameText) {
             this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
-            this.timerLabel.font = 'Wallpoet';
+            //this.timerLabel.font = 'Wallpoet';
         }
         this.scores = { };
         this.names = { };
@@ -752,8 +744,7 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt1.destroy();
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
-                                              { font: '20px Wallpoet', fill: color, align: 'center'});
-            //this.pointsPrompt1.tint = color;
+                                              { font: '30px', fill: color, align: 'center'});
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -763,8 +754,7 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt2.destroy();
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
-                                                { font: '20px Wallpoet', fill: color, align: 'center'});
-            //this.pointsPrompt2.tint = color;
+                                                { font: '30px', fill: color, align: 'center'});
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
