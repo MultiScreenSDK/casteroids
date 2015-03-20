@@ -18,7 +18,7 @@ public enum ConfigType {
 	TILED_BACKGROUND_IMAGE("isBackgroundImageTiled", "Tiled Background Image", true),
 	COLLISION_DETECTION("isCollisionDetectionEnabled", "Collision Detection", true),
 	ALIEN("isAlienEnabled", "Alien", true),
-	GAME_TEXT("isGameTextEnabled", "Game Text", false),
+	GAME_TEXT("isGameTextEnabled", "Game Text", true),
 	POINTS_TEXT("isPointsTextEnabled", "Points Text", false),
 	AGGRESSIVE_UPDATE_CYCLE("isAggressiveUpdateCycle", "Sacrifice Responsiveness for Performance", true);
 

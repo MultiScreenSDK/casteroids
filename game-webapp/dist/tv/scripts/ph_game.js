@@ -9,7 +9,7 @@ BasicGame.Game = function (game) {
     // greatest impact on performance.
     this.isMuted = true;
     this.isAlien = true;
-    this.isGameText = false;
+    this.isGameText = true;
     this.isPointsText = false;
     this.isBackground = true;
     this.isBackgroundTiled = true;
