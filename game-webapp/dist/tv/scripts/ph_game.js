@@ -508,10 +508,10 @@ BasicGame.Game.prototype = {
      */
     updateTimer: function updateTimer() {
         // Decrement the countdown
-        this.secondsLeft -= (this.secondsLeft > 0) ? 1 : 0;
+        this.secondsLeft--;
 
         // If the game text is enabled, display the countdown.
-        if (this.isGameText) {
+        if (this.secondsLeft >= 0 && this.isGameText) {
             var minutes = Math.floor(this.secondsLeft/60);
             var seconds = this.secondsLeft - minutes * 60;
             if(seconds < 10) {
