@@ -514,6 +514,7 @@ BasicGame.Game.prototype = {
         if (this.isGameText) {
             var minutes = Math.floor(this.secondsLeft/60);
             var seconds = this.secondsLeft - minutes * 60;
+            seconds = (seconds < 0) ? 0 : seconds;
             if(seconds < 10) {
                 seconds = '0'+seconds;
             }
