@@ -6,6 +6,7 @@ BasicGame.MainMenu = function (game) {
 
 BasicGame.MainMenu.prototype = {
 
+    sprite: null,
     anim: null,
 
     /******************************************************************************************************************
@@ -22,10 +23,10 @@ BasicGame.MainMenu.prototype = {
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
         //  This is the preparation screen where players have time to join the game
-        var sprite = this.add.sprite(0, 0, 'titlepage');
-        sprite.anchor.setTo(0, 0);
+        this.sprite = this.add.sprite(0, 0, 'titlepage');
+        this.sprite.anchor.setTo(0, 0);
 
-        this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
+        this.anim = this.game.add.tween(this.sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
         this.anim.start();
 
         this.players = this.game.add.group();
@@ -76,6 +77,9 @@ BasicGame.MainMenu.prototype = {
         // Clean up the background animation
         this.anim.stop();
         this.game.tweens.remove(this.anim);
+
+        // Destroy the background
+        this.sprite.destroy();
 
         // Clean up the players group
         this.players.destroy(true);
