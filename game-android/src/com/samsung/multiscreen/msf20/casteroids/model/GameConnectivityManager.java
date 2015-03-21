@@ -25,11 +25,11 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	//LOCALHOST
 	//private static final String TV_APP_URL = "http://127.0.0.1:63343/game-webapp/dist/tv/index.html";
 
-    //PROD
-    private static final String TV_APP_URL = "http://multiscreen.samsung.com/casteroids/tv/index.html";
-
     //DEV
-	//private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
+    private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
+
+    //PROD
+    //private static final String TV_APP_URL = "http://multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
 	private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.casteroids";
