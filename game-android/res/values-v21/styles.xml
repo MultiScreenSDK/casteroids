@@ -8,10 +8,12 @@
         <item name="android:windowContentTransitions">true</item>
 
         <!-- specify shared element transitions -->
-        <item name="android:windowSharedElementEnterTransition">
-            @android:transition/move</item>
-        <item name="android:windowSharedElementExitTransition">
-            @android:transition/move</item>
+
+        <!-- Disable this for now -->
+        <!--<item name="android:windowSharedElementEnterTransition">
+            @android:transition/move</item> -->
+        <!--<item name="android:windowSharedElementExitTransition">
+            @android:transition/move</item> -->
 
     </style>
 
