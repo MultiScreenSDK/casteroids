@@ -19,7 +19,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -212,8 +211,11 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
 
         //stop the sensor listeners as it can drain the battery if you don't
         sensorManager.unregisterListener(sensorEventListener);
+    }
 
-        sendQuitMessage(true);
+    @Override
+    public void onBackPressed() {
+        sendQuitMessage(true); //send quit game message and disconnect.
     }
 
     @Override
@@ -330,7 +332,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         int threshold = 5;
         //strength value ranging from 0 to 20 based on the given threshold and pitch.
         int strength = (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
-        
+
         if(pitch > -threshold && pitch < threshold) {
             if(turningRight) {
                 setTurningRight(false, 0);
@@ -362,14 +364,14 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     private void handleDown(int id) {
 
         handleEvent(id, /** Down */
-        true);
+                true);
         Log.v(TAG, toString());
     }
 
     private void handleUp(int id) {
 
         handleEvent(id, /** Down */
-        false);
+                false);
         Log.v(TAG, toString());
     }
 
@@ -437,7 +439,6 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
      */
     public void quitGame(View view) {
         sendQuitMessage(true);
-        finish();
     }
 
     /**
@@ -447,6 +448,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
      */
     private void sendQuitMessage(boolean disconnect) {
         gameConnectivityManager.sendQuitMessage();
+        finish();
         if(disconnect) {
             gameConnectivityManager.disconnect();
         }
