@@ -84,6 +84,8 @@ BasicGame.MainMenu.prototype = {
         // Clean up the players group
         this.players.destroy(true);
 
+        this.loadingText.destroy();
+
         // Start the game
         GameManager.onGameStart(0);
         this.secondsElapsed = 0; //reset

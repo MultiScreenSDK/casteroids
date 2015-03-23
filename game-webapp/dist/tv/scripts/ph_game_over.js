@@ -37,14 +37,15 @@ BasicGame.GameOver.prototype = {
 
         var heightIncrement = 40;
 
+        this.scoreLabels = array();
         var scores = GameManager.getLastScoreData();
         for (var i = 0; i < scores.length; i++) {
             heightIncrement = heightIncrement + 60;
             var scoreStyle = { font: "12px", fill: scores[i].hexColor, align: "left" };
-            var scoreText = this.add.text(this.game.width / 2, heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
-            scoreText.anchor.setTo(0.5, 0.0);
-            scoreText.font = 'Revalia';
-            scoreText.cacheAsBitmap = true;
+            this.scoreLabels[i] = this.add.text(this.game.width / 2, heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
+            this.scoreLabels[i].anchor.setTo(0.5, 0.0);
+            this.scoreLabels[i].font = 'Revalia';
+            this.scoreLabels[i].cacheAsBitmap = true;
         }
 
         var playersConnected = false;
@@ -90,6 +91,9 @@ BasicGame.GameOver.prototype = {
 
         // Destroy the background
         this.sprite.destroy();
+
+        this.gameOverText.destroy();
+        this.scoreLabels.destroy();
 
         // Start the game
         GameManager.onGameStart(0);
