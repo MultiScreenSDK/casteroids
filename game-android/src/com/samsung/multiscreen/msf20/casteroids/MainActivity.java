@@ -313,6 +313,8 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     			boolean hasSingleService = services.length == 1;
     			if (hasSingleService) {
     				playButton.setVisibility(View.VISIBLE);
+                    noTVlabel.setText(services[0]);
+                    noTVlabel.setVisibility(View.VISIBLE);
     			} else {
     				// multiple services
     				selectTVButton.setVisibility(View.VISIBLE);
