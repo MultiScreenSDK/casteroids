@@ -37,7 +37,7 @@ BasicGame.GameOver.prototype = {
 
         var heightIncrement = 40;
 
-        this.scoreLabels = array();
+        this.scoreLabels = new Array();
         var scores = GameManager.getLastScoreData();
         for (var i = 0; i < scores.length; i++) {
             heightIncrement = heightIncrement + 60;
@@ -93,7 +93,12 @@ BasicGame.GameOver.prototype = {
         this.sprite.destroy();
 
         this.gameOverText.destroy();
-        this.scoreLabels.destroy();
+
+        for (var i = 0; i < this.scoreLabels.length; i++) {
+            this.scoreLabels[i].destroy();
+        }
+        this.scoreLabels = new Array();
+
 
         // Start the game
         GameManager.onGameStart(0);
