@@ -5,6 +5,7 @@ BasicGame.GameOver = function (game) {
 
 BasicGame.GameOver.prototype = {
 
+    sprite: null,
     anim: null,
 
     /******************************************************************************************************************
@@ -16,10 +17,10 @@ BasicGame.GameOver.prototype = {
     },
     
     create: function () {
-        var sprite = this.add.sprite(0, 0, 'gameover');
-        sprite.anchor.setTo(0, 0);
+        this.sprite = this.add.sprite(0, 0, 'gameover');
+        this.sprite.anchor.setTo(0, 0);
 
-        this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 10000, Phaser.Easing.Linear.None,  true, 50, -1, true);
+        this.anim = this.game.add.tween(this.sprite.scale).to({x:1.1, y:1.1}, 10000, Phaser.Easing.Linear.None,  true, 50, -1, true);
         this.anim.start();
 
         var gameOver_label = "GAME OVER";
@@ -32,6 +33,7 @@ BasicGame.GameOver.prototype = {
         this.gameOverText = this.add.text(this.game.width / 2, this.game.height / 2 + 120, prompt_label, style);
         this.gameOverText.anchor.setTo(0.5, 0.0);
         this.gameOverText.font = 'Revalia';
+        this.gameOverText.cacheAsBitmap = true;
 
         var heightIncrement = 40;
 
@@ -42,6 +44,7 @@ BasicGame.GameOver.prototype = {
             var scoreText = this.add.text(this.game.width / 2, heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
             scoreText.anchor.setTo(0.5, 0.0);
             scoreText.font = 'Revalia';
+            scoreText.cacheAsBitmap = true;
         }
 
         var playersConnected = false;
@@ -84,6 +87,9 @@ BasicGame.GameOver.prototype = {
         // Clean up the background animation
         this.anim.stop();
         this.game.tweens.remove(this.anim);
+
+        // Destroy the background
+        this.sprite.destroy();
 
         // Start the game
         GameManager.onGameStart(0);

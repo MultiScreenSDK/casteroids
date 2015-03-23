@@ -6,6 +6,7 @@ BasicGame.MainMenu = function (game) {
 
 BasicGame.MainMenu.prototype = {
 
+    sprite: null,
     anim: null,
 
     /******************************************************************************************************************
@@ -22,10 +23,10 @@ BasicGame.MainMenu.prototype = {
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
         //  This is the preparation screen where players have time to join the game
-        var sprite = this.add.sprite(0, 0, 'titlepage');
-        sprite.anchor.setTo(0, 0);
+        this.sprite = this.add.sprite(0, 0, 'titlepage');
+        this.sprite.anchor.setTo(0, 0);
 
-        this.anim = this.game.add.tween(sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
+        this.anim = this.game.add.tween(this.sprite.scale).to({x:1.1, y:1.1}, 20000, Phaser.Easing.Linear.None,  true, 3000, -1, true);
         this.anim.start();
 
         this.players = this.game.add.group();
@@ -39,6 +40,7 @@ BasicGame.MainMenu.prototype = {
         this.loadingText.strokeThickness = 2;
         this.loadingText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
         this.loadingText.anchor.setTo(0.5, 0.5);
+        this.loadingText.cacheAsBitmap = true;
     },
 
     update: function () {
@@ -63,6 +65,7 @@ BasicGame.MainMenu.prototype = {
 
             this.secondsElapsed = 0; //reset
             this.loadingText.setText("Waiting for Players to join")
+            this.loadingText.cacheAsBitmap = true;
         }
     },
 
@@ -75,6 +78,12 @@ BasicGame.MainMenu.prototype = {
         this.anim.stop();
         this.game.tweens.remove(this.anim);
 
+        // Destroy the background
+        this.sprite.destroy();
+
+        // Clean up the players group
+        this.players.destroy(true);
+
         // Start the game
         GameManager.onGameStart(0);
         this.secondsElapsed = 0; //reset
@@ -84,6 +93,7 @@ BasicGame.MainMenu.prototype = {
     updateTimer: function () {
         var secondsToStart = BasicGame.GAME_COUNTDOWN_LENGTH - this.secondsElapsed;
         this.loadingText.setText("Game starting in " + secondsToStart + (secondsToStart==1 ? " second" : " seconds"));
+        this.loadingText.cacheAsBitmap = true;
         GameManager.onGameStart(secondsToStart);
         if (this.secondsElapsed == BasicGame.GAME_COUNTDOWN_LENGTH) {
             this.startGame();
@@ -108,6 +118,7 @@ BasicGame.MainMenu.prototype = {
                 playerText.stroke = '#000000';
                 playerText.strokeThickness = 2;
                 playerText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
+                playerText.cacheAsBitmap = true;
                 this.players.add(playerText);
             }
         }

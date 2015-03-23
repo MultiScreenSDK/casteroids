@@ -15,7 +15,7 @@ $(GameManager = function(){
     "use strict";
 
     // Create the Game object.
-    var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'casteroids', null, true);
+    var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'casteroids', null, true, false);
 
     //Add States to the Game object.
     //the first argument is the name of the state and the second is the name of the function to call inside such state.
@@ -137,7 +137,7 @@ $(GameManager = function(){
 
         // If in the Game state, add the Player to the game and notify the client that the game has already started.
         if (game.state.getCurrentState() === gameState) {
-            gameState.addPlayer(slot.position, clientId, name, slot.colorCode, slot.hexColor);
+            gameState.addPlayer(slot.position, clientId, name, slot.color, slot.colorCode, slot.hexColor);
             ConnectivityManager.onGameStarted(clientId);
         }
 

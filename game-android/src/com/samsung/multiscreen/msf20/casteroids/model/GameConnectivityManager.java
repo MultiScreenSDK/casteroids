@@ -10,8 +10,8 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 /**
- * This class extends the ConnectivityManager with Castroids game specific logic. It serves as a layer of abstraction
- * between the Castroids game logic and the connectivity and transport logic in a way where the the game does not know
+ * This class extends the ConnectivityManager with Casteroids game specific logic. It serves as a layer of abstraction
+ * between the Casteroids game logic and the connectivity and transport logic in a way where the the game does not know
  * anything about the underlying protocols or SDK being used.
  * 
  * @author Dan McCafferty
@@ -22,9 +22,14 @@ public class GameConnectivityManager extends ConnectivityManager implements Conn
 	// An singleton instance of this class
 	private static GameConnectivityManager instance = null;
 
-	// The URL where the TV application lives
-	//private static final String TV_APP_URL = "http://127.0.0.1:63342/game-webapp/dist/tv/index.html";
-	private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
+	//LOCALHOST
+	//private static final String TV_APP_URL = "http://127.0.0.1:63343/game-webapp/dist/tv/index.html";
+
+    //DEV
+    private static final String TV_APP_URL = "http://dev-multiscreen.samsung.com/casteroids/tv/index.html";
+
+    //PROD
+    //private static final String TV_APP_URL = "http://multiscreen.samsung.com/casteroids/tv/index.html";
 
 	// The Channel ID for the TV application
 	private static final String TV_APP_CHANNEL_ID = "com.samsung.multiscreen.casteroids";

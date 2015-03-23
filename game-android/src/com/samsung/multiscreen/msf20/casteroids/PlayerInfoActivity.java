@@ -497,7 +497,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         Intent intent = new Intent();
         intent.putExtra("color", data.getColor().getColorInt());
         intent.setClass(this, GameControllerActivity.class);
-        startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this, shipView, "shipView").toBundle());
+        startActivity(intent); /** , ActivityOptionsCompat.makeSceneTransitionAnimation(this, shipView, "shipView").toBundle()); */
 
         // Even though these get unregistered when this activity is paused, that doesn't happen right away and we need 
         // to make sure we don't process any more events at this point especially the SLOT_UPDATE event caused by this 

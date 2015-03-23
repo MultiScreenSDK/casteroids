@@ -9,15 +9,13 @@ BasicGame.Game = function (game) {
     // greatest impact on performance.
     this.isMuted = true;
     this.isAlien = true;
-    this.isPlayersTinting = true;
-    this.isBulletTinting = true;
     this.isGameText = true;
     this.isPointsText = false;
-    this.isBackground = false;
-    this.isBackgroundTiled = true;
+    this.isBackground = true;
     this.isCollisionsDetection = true;
     this.isAggressiveUpdateCycle = true;
-    this.isFPSdebug = false;
+    this.isFPSdebug = true;
+    this.isShortGame = false;
 };
 
 BasicGame.Game.prototype = {
@@ -32,6 +30,13 @@ BasicGame.Game.prototype = {
     },
 
     create: function () {
+        //This game will run in Canvas mode, so let's gain a little speed and display
+        this.game.renderer.clearBeforeRender = true;
+        this.game.renderer.roundPixels = true;
+
+        // Disable keyboard input
+        this.game.input.enabled = false;
+
         // If the GameManager has a config object, then update the configuration using its values. These configurations
         // were used during performance testing to enable/disable game features to see which had the greatest impact on
         // performance.
@@ -39,16 +44,17 @@ BasicGame.Game.prototype = {
         if (this.config !== undefined) {
             this.isMuted = !this.config.isSoundEnabled;
             this.isAlien = this.config.isAlienEnabled;
-            this.isPlayersTinting = this.config.isSpaceshipTintingEnabled;
-            this.isBulletTinting = this.config.isBulletTintingEnabled;
             this.isGameText = this.config.isGameTextEnabled;
             this.isPointsText = this.config.isPointsTextEnabled;
             this.isBackground = this.config.isBackgroundImageEnabled;
-            this.isBackgroundTiled = this.config.isBackgroundImageTiled;
             this.isCollisionsDetection = this.config.isCollisionDetectionEnabled;
             this.isAggressiveUpdateCycle = this.config.isAggressiveUpdateCycle;
             this.isFPSdebug = this.config.isFpsEnabled;
+            this.isShortGame = this.config.isShortGameEnabled;
         }
+
+        // Set the length of this game
+        this.secondsLeft = this.isShortGame ? BasicGame.SHORT_GAME_LENGTH : BasicGame.GAME_LENGTH;
 
         // If the FPS debug flag is enabled, then advanced timing is required. Showing the FPS is is useful when
         // performance testing/tuning the application.
@@ -98,25 +104,25 @@ BasicGame.Game.prototype = {
      */
 
     // Add a player to the game.
-    addPlayer: function(position, clientId, name, colorCode, hexColor) {
+    addPlayer: function(position, clientId, name, color, colorCode, hexColor) {
         console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
             // Initialize the new player
-            this.players[clientId] = this.game.add.sprite(0, 0, 'ship');
+            this.players[clientId] = this.game.add.sprite(0, 0, color);
+            this.players[clientId].width = this.shipDimens;
+            this.players[clientId].height = this.shipDimens;
+
             // Here I setup the user controlled ship
             var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
             var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
-
             this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
             this.players[clientId].id = clientId;
+            this.players[clientId].hexColor = hexColor;
             this.players[clientId].order = position;
             this.players[clientId].isThrusting = false;
             this.players[clientId].thrustCount = 0;
             this.players[clientId].isFiring = false;
             this.players[clientId].fireCount = 0;
-            if(this.isPlayersTinting) {
-                this.players[clientId].tint = colorCode;
-            }
             this.players[clientId].anchor.set(0.5);
             this.physics.enable(this.players[clientId], Phaser.Physics.ARCADE);
             this.players[clientId].body.drag.set(BasicGame.PLAYER_DRAG);
@@ -132,26 +138,18 @@ BasicGame.Game.prototype = {
             this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
             this.players[clientId].bulletTime = 0;
 
-            this.players[clientId].bullets.createMultiple(20, 'bullets');
+            this.players[clientId].bullets.createMultiple(10, 'bullets');
             this.players[clientId].bullets.setAll('anchor.x', 0.5);
             this.players[clientId].bullets.setAll('anchor.y', 0.5);
 
             // Initialize the new player's text
-            var style_score = { font: "12px", fill: "#fff", align: "center" };
+            var style_score = { font: "36px Arial", fill: hexColor, align: "center" };
             this.scores[clientId] = 0;
             this.names[clientId] = name;
-            console.log("game.addPlayer.position");
-            console.log(position);
 
+            // Initialize the player's score label
             if(this.isGameText) {
-                console.log("game.addPlayer.scoreLabels");
-                console.log(this.scoreLabels);
-                this.scoreLabels[clientId] = this.add.text(position * 320, 40, name + "\t\t0", style_score);
-                this.scoreLabels[clientId].font = 'Wallpoet';
-                console.log("game.addPlayer.hexColor");
-                console.log(hexColor);
-                this.scoreLabels[clientId].fill = hexColor;
-                console.log(this.scoreLabels[clientId]);
+                $('#player'+position).text(name + "\t\t0");
             }
         }
     },
@@ -162,6 +160,11 @@ BasicGame.Game.prototype = {
             // Look up the player.
             var currentPlayer = this.players[clientId];
 
+            // Clear the player's score label
+            if(this.isGameText) {
+                $('#player'+this.players[clientId].order).text('');
+            }
+
             // If the player was not found, ignore and return.
             if (currentPlayer == null) {
                 return;
@@ -169,9 +172,6 @@ BasicGame.Game.prototype = {
 
             this.players[clientId].destroy();
             delete this.players[clientId];
-            if(this.isGameText) {
-                this.scoreLabels[clientId].destroy();
-            }
         }
 
         if($.isEmptyObject(this.players)) {
@@ -268,8 +268,8 @@ BasicGame.Game.prototype = {
                 if (currentPlayer.thrustCount > 0) {
                     currentPlayer.thrustCount--;
                 }
-                this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation-BasicGame.ORIENTATION_CORRECTION,
-                    BasicGame.PLAYER_ACC_SPEED, currentPlayer.body.acceleration);
+                this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation, BasicGame.PLAYER_ACC_SPEED,
+                    currentPlayer.body.acceleration);
             } else {
                 // TODO fix null body
                 currentPlayer.body.acceleration.set(0);
@@ -343,16 +343,8 @@ BasicGame.Game.prototype = {
 
         // If background is enabled...
         if (this.isBackground) {
-            // If tiled background...
-            if (this.isBackgroundTiled) {
-                bgImage = "url(assets/starfield.png)";
-                bgRepeat = "repeat";
-            }
-            // Else Single Image background...
-            else {
-                bgImage = "url(assets/starfield_full.jpg)";
-                bgRepeat = "no-repeat";
-            }
+            bgImage = "url(assets/starfield.png)";
+            bgRepeat = "repeat";
         }
 
         // Update the body
@@ -369,9 +361,16 @@ BasicGame.Game.prototype = {
     setupPlayers: function () {
         for (var i in GameManager.slots) {
             var slot = GameManager.slots[i];
+
+            // Initialize the slot's score label
+            $('#player'+slot.position).css('color', slot.hexColor);
+            $('#player'+slot.position).text('');
+
+            // If the slot is taken, create a player for that slot.
             if (!slot.available) {
-                this.addPlayer(slot.position, slot.clientId, slot.name, slot.colorCode, slot.hexColor);
+                this.addPlayer(slot.position, slot.clientId, slot.name, slot.color, slot.colorCode, slot.hexColor);
             }
+
         }
     },
 
@@ -383,6 +382,7 @@ BasicGame.Game.prototype = {
 
         // Here I setup the computer controlled ship
         this.alien = this.game.add.sprite(0, 0, 'ufo');
+        this.alien.hexColor = '#000000';
 
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
@@ -432,15 +432,24 @@ BasicGame.Game.prototype = {
 
 
     setupText: function () {
-        // Here I setup the labels and other texts
-        var style = { font: "14px Arial", fill: "#cccccc", align: "left" };
+        // Set up the countdown text
+        $('#countdown').css('color', "#cccccc");
+        $('#countdown').css('font-size', "36px");
+        $('#countdown').text('');
+
+        // Initialize the countdown text with the starting value
         if (this.isGameText) {
-            this.timerLabel = this.add.text((this.game.width/2)-10, 5, "02:00", style);
-            this.timerLabel.font = 'Wallpoet';
+            var minutes = Math.floor(this.secondsLeft/60);
+            var seconds = this.secondsLeft - minutes * 60;
+            if(seconds < 10) {
+                seconds = '0'+seconds;
+            }
+            $('#countdown').text(minutes+":"+seconds);
         }
+
+        // Initialize objects
         this.scores = { };
         this.names = { };
-        this.scoreLabels = { };
     },
 
     /**
@@ -494,7 +503,7 @@ BasicGame.Game.prototype = {
 
     /**
      * Keeps track of the game countdown timer and handles last-10-seconds alert
-     * with a sound, red tint and increased size.
+     * with a sound, red color and increased size.
      *
      */
     updateTimer: function updateTimer() {
@@ -502,30 +511,33 @@ BasicGame.Game.prototype = {
         this.secondsLeft--;
 
         // If the game text is enabled, display the countdown.
-        if (this.isGameText) {
+        if (this.secondsLeft >= 0 && this.isGameText) {
             var minutes = Math.floor(this.secondsLeft/60);
             var seconds = this.secondsLeft - minutes * 60;
             if(seconds < 10) {
                 seconds = '0'+seconds;
             }
 
-            this.timerLabel.setText(minutes+":"+seconds);
+            $('#countdown').text(minutes+":"+seconds);
+
             if(this.secondsLeft <= 10) {
-                this.timerLabel.fontSize = 38;
-                this.timerLabel.fill = '#FFFF00';
+                $('#countdown').css('color', "#FFFF00");
+                $('#countdown').css('font-size', "38px");
+
                 if((this.secondsLeft == 10 || this.secondsLeft == 5 || this.secondsLeft < 3) && !this.isMuted) {
                     this.sfx.play("ping");
                 }
+
                 if(this.secondsLeft <= 3) {
-                    this.timerLabel.fontSize = 46;
-                    this.timerLabel.fill = '#FF0000';
+                    $('#countdown').css('color', "#FF0000");
+                    $('#countdown').css('font-size', "46px");
                 }
             }
         }
 
         // Check if the game is over
         if(this.secondsLeft < 0) {
-            this.secondsLeft = BasicGame.GAME_LENGTH;
+            this.secondsLeft = this.isShortGame ? BasicGame.SHORT_GAME_LENGTH : BasicGame.GAME_LENGTH;
             this.quitGame(true);
         }
     },
@@ -536,23 +548,32 @@ BasicGame.Game.prototype = {
      */
     fire: function(origin) {
         if ((origin.fireCount > 0) || (this.game.time.now > origin.bulletTime)) {
-            if (origin.fireCount > 0) {
-			    origin.fireCount--;
-			}
+
+            // Get an available bullet, if available.
             origin.bullet = origin.bullets.getFirstExists(false);
+
+            // If there is a bullet available...
             if (origin.bullet) {
-                origin.bullet.source = origin.id;
-                origin.bullet.reset(origin.body.x + this.halfShipDimens, origin.body.y + this.halfShipDimens);
-                origin.bullet.visible = true;
-                origin.bullet.body.enabled = true;
-                origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
-                origin.bullet.lifespan = origin.bulletRange;
-                origin.bullet.rotation = origin.rotation + BasicGame.ORIENTATION_CORRECTION;
-                this.game.physics.arcade.velocityFromRotation(origin.rotation-BasicGame.ORIENTATION_CORRECTION, origin.bulletSpeed, origin.bullet.body.velocity);
-                origin.bulletTime = this.game.time.now + origin.bulletDelay;
-                if (this.isBulletTinting) {
-                    origin.bullet.tint = origin.tint;
+                // Decrement the fire count
+                if (origin.fireCount > 0) {
+                    origin.fireCount--;
                 }
+
+                // Initialize the bullet if it wasn't already.
+                if (origin.bullet.source === undefined) {
+                    origin.bullet.source = origin.id;
+                    origin.bullet.hexColor = origin.hexColor;
+                    origin.bullet.body.enabled = true;
+                    origin.bullet.body.setSize(BasicGame.BULLET_HITBOX_WIDTH, BasicGame.BULLET_HITBOX_HEIGHT, 0, 0);
+                    origin.bullet.rotation = origin.rotation;
+                    origin.bullet.visible = true;
+                }
+
+                // Setup the bullet for its cameo appearance.
+                origin.bullet.reset(origin.body.x + this.halfShipDimens, origin.body.y + this.halfShipDimens);
+                origin.bullet.lifespan = origin.bulletRange;
+                this.game.physics.arcade.velocityFromRotation(origin.rotation, origin.bulletSpeed, origin.bullet.body.velocity);
+                origin.bulletTime = this.game.time.now + origin.bulletDelay;
                 if(!this.isMuted) {
                     this.sfx.play('shot');
                 }
@@ -578,14 +599,14 @@ BasicGame.Game.prototype = {
         } else {
             this.scores[bullet.source] += BasicGame.PLAYER_HIT_SCORE;
             if(this.players[bullet.source] != undefined && this.isPointsText) {
-                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players[bullet.source].tint, false);
+                this.showPoints(BasicGame.PLAYER_HIT_SCORE, this.players[target.id].x, this.players[target.id].y, this.players.hexColor, false);
             }
         }
         if(target.health <= 0) {
             if(target == this.alien) {
                 this.scores[bullet.source] += BasicGame.ALIEN_DESTROY_SCORE;
                 if(this.isPointsText){
-                    this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].tint, false);
+                    this.showPoints(BasicGame.ALIEN_DESTROY_SCORE, target.body.x, target.body.y, this.players[bullet.source].hexColor, false);
                 }
             }
 
@@ -611,19 +632,19 @@ BasicGame.Game.prototype = {
             }
 
             if(this.isGameText) {
-                this.scoreLabels[target.id].setText(this.names[target.id] + "\t\t"+this.scores[target.id]);
+                $('#player'+target.order).text(this.names[target.id] + "\t\t"+this.scores[target.id]);
             }
 
             if(this.isPointsText){
                 var player = this.players[target.id];
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint, true);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.hexColor, true);
             }
         }
 
         // update score labels if shot is not from the alien
-        var attacker = this.scoreLabels[bullet.source];
-        if(attacker != undefined && this.isGameText){
-            attacker.setText(this.names[bullet.source] + "\t\t"+this.scores[bullet.source]);
+        var attacker = this.players[bullet.source];
+        if(attacker !== undefined && this.isGameText) {
+            $('#player'+attacker.order).text(this.names[attacker.id] + "\t\t"+this.scores[attacker.id]);
         }
 
         bullet.kill();
@@ -678,15 +699,15 @@ BasicGame.Game.prototype = {
 
         if(this.isPointsText) {
             if (leftCollision) {
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.tint, true);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y, player.hexColor, true);
             } else {
-                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.tint, false);
+                this.showPoints(-BasicGame.PLAYER_HIT_DEDUCT, player.x, player.y + (player.height / 2), player.hexColor, false);
             }
         }
 
         // Update the player's score
         if(this.isGameText) {
-            this.scoreLabels[player.id].setText(this.names[player.id] + "\t\t"+this.scores[player.id]);
+            $('#player'+player.order).text(this.names[player.id] + "\t\t"+this.scores[player.id]);
         }
 
         // Explode the player
@@ -721,7 +742,7 @@ BasicGame.Game.prototype = {
      * @param {color} -
      * @param {left} -
      */
-    showPoints: function (points, x, y, color, left) {
+    showPoints: function (points, x, y, hexColor, left) {
         var sign = (points < 0) ? "" : "+";
 
         // If the score should be on the left
@@ -730,8 +751,8 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt1.destroy();
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
-                                              { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt1.tint = color;
+                                              { font: '20px Wallpoet', fill: hexColor, align: 'center'});
+            // TODO: Commented out because tinting causes performance issues.
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -741,8 +762,8 @@ BasicGame.Game.prototype = {
                 this.pointsPrompt2.destroy();
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
-                                                { font: '20px Wallpoet', fill: "#ffffff", align: 'center'});
-            this.pointsPrompt2.tint = color;
+                                                { font: '25px Arial', fill: hexColor, align: 'center'});
+            // TODO: Commented out because tinting causes performance issues.
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
@@ -805,16 +826,23 @@ BasicGame.Game.prototype = {
         // Here we destroy everything that we no longer need. Delete sprites, purge caches, free resources, etc. Then
         // move on to the game over or main menu state depending on whether or not the game has just ended.
 
-        // Destroy all the score labels
-        for (var id in this.players) {
-            this.players[id].destroy();
-            if(this.isGameText) {
-                this.scoreLabels[id].destroy();
-            }
+        // Destroy the alien
+        if (this.isAlien) {
+            this.alien.bullets.destroy(true);
+            this.alien.destroy();
         }
 
-        // Clear the players list
+        // Destroy all the players
+        for (var id in this.players) {
+            this.players[id].bullets.destroy(true);
+            this.players[id].destroy();
+        }
         this.players = {};
+
+        // Destroy the audio
+        if (!this.isMuted) {
+            this.sfx.destroy(true);
+        }
 
         // If the game just ended, notify the Game Manager that the game is over and transition to the Game Over state
         if (gameEnded) {

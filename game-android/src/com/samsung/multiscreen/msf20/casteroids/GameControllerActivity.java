@@ -19,7 +19,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -125,8 +124,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         //remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //make full screen
+        //make full screen and keep the screen on
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //xml layout
         setContentView(R.layout.activity_game);
@@ -332,7 +332,7 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         int threshold = 5;
         //strength value ranging from 0 to 20 based on the given threshold and pitch.
         int strength = (int)(((Math.abs(pitch)-threshold) * 20.0f) / (90.0f - threshold));
-        
+
         if(pitch > -threshold && pitch < threshold) {
             if(turningRight) {
                 setTurningRight(false, 0);
@@ -364,14 +364,14 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
     private void handleDown(int id) {
 
         handleEvent(id, /** Down */
-        true);
+                true);
         Log.v(TAG, toString());
     }
 
     private void handleUp(int id) {
 
         handleEvent(id, /** Down */
-        false);
+                false);
         Log.v(TAG, toString());
     }
 
