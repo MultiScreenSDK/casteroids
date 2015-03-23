@@ -99,6 +99,9 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	// A map that stores the registered message listeners
 	private Map<String, List<MessageListener>> messageListenerMap = new HashMap<String, List<MessageListener>>();
 
+	//
+	private String wifiNetworkName = null;
+	
 	// A flag that indicates whether or not the device is currently connected to a WiFi network.
 	private boolean isConnectedToWifi = false;
 
@@ -733,6 +736,16 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 */
 
 	/**
+	 * Return's the current WiFi networks name or NULL if not connected to a WiFi network.
+	 * 
+	 * @return
+	 * @see isConnectedToWifi()
+	 */
+	public String getWifiNetworkName() {
+		return wifiNetworkName;
+	}
+	
+	/**
 	 * Returns whether or not the device is currently connected to a WiFi network.
 	 * 
 	 * @return
@@ -808,16 +821,18 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	private void processNetworkInfo(NetworkInfo ni) {
 		// Determine whether or not we are connected to a WiFi Network
 		boolean isConnectedToWifiUpdate = ((ni != null) && ni.isConnected() && (ni.getType() == android.net.ConnectivityManager.TYPE_WIFI));
-
+		wifiNetworkName = null;
+		
 		// If the connectivity changed...
 		if (isConnectedToWifi != isConnectedToWifiUpdate) {
 
-			// Update the current status
+			// Update the current WiFi network information
+			wifiNetworkName = isConnectedToWifiUpdate ? ni.getExtraInfo() : null;
 			isConnectedToWifi = isConnectedToWifiUpdate;
 
 			// Log out the WiFi state
 			if (BuildConfig.DEBUG) {
-				Log.v(TAG, "isConnectedToWifi=" + isConnectedToWifi);
+				Log.v(TAG, "wifiNetworkName=" + wifiNetworkName + ", isConnectedToWifi=" + isConnectedToWifi);
 			}
 
 			// If we connected to a WiFi network, notify listeners.
