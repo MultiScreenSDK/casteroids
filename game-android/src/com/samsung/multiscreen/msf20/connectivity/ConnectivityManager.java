@@ -62,7 +62,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	// The connection timeout. This is needed to be notified when connection to the TV App is lost because the TV lost
 	// its WiFi connection or was turned off.
 	private static final int CONNECTION_TIMEOUT_MILLIS = (1000 * 5); // 5 seconds
-	
+
 	// Reference to the context.
 	protected final Context context;
 
@@ -101,7 +101,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
 	//
 	private String wifiNetworkName = null;
-	
+
 	// A flag that indicates whether or not the device is currently connected to a WiFi network.
 	private boolean isConnectedToWifi = false;
 
@@ -225,7 +225,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 			if (!isConnectedToWifi()) {
 				return false;
 			}
-			
+
 			if (BuildConfig.DEBUG) {
 				Log.d(TAG, "Starting discovery.");
 			}
@@ -251,7 +251,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 
 		// Notify listeners that discovery started.
 		notifyConnectivityListeners(ConnectivityListener.DISCOVERY_STARTED);
-		
+
 		// Return true (we are discovering).
 		return true;
 	}
@@ -402,7 +402,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 			if (!isConnectedToWifi()) {
 				return false;
 			}
-						
+
 			// If we just initiated a disconnected from an application, we cannot attempt to connect to it until we get
 			// the onDisconnect callback.
 			if (disconnect()) {
@@ -433,7 +433,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 			// Set the connection timeout. This needs to be set in order to be notified when connection to the TV App is
 			// lost because the TV lost its WiFi connection or was turned off.
 			application.setConnectionTimeout(CONNECTION_TIMEOUT_MILLIS);
-			
+
 			// Listen for the connect/disconnect events
 			application.setOnConnectListener(this);
 			application.setOnDisconnectListener(this);
@@ -744,7 +744,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	public String getWifiNetworkName() {
 		return wifiNetworkName;
 	}
-	
+
 	/**
 	 * Returns whether or not the device is currently connected to a WiFi network.
 	 * 
@@ -822,7 +822,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 		// Determine whether or not we are connected to a WiFi Network
 		boolean isConnectedToWifiUpdate = ((ni != null) && ni.isConnected() && (ni.getType() == android.net.ConnectivityManager.TYPE_WIFI));
 		wifiNetworkName = null;
-		
+
 		// If the connectivity changed...
 		if (isConnectedToWifi != isConnectedToWifiUpdate) {
 

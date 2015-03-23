@@ -16,7 +16,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.MotionEvent;

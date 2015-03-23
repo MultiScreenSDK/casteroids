@@ -1,5 +1,7 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +40,6 @@ import com.samsung.multiscreen.msf20.casteroids.model.Thrust;
 import com.samsung.multiscreen.msf20.casteroids.views.GyroView;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
-
-import java.util.ArrayList;
 
 /**
  * The game controller screen for Casteroids.

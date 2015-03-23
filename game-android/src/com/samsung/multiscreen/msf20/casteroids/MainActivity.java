@@ -1,10 +1,8 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,19 +11,14 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.LinearInterpolator;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -200,9 +193,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
                 }
                 break;
             case APPLICATION_CONNECTED:
-				// TODO: Remove toast
 				CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-				
 				// Wait for the slot update before moving to the next screen. The slot update is sent when the TV
 				// Application is initialized.
 				break;
