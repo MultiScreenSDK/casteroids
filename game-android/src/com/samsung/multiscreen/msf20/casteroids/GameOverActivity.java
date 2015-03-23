@@ -1,5 +1,9 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -14,17 +18,23 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
-import com.samsung.multiscreen.msf20.casteroids.model.*;
+import com.samsung.multiscreen.msf20.casteroids.model.Event;
+import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.GameState;
+import com.samsung.multiscreen.msf20.casteroids.model.MessageDataHelper;
+import com.samsung.multiscreen.msf20.casteroids.model.ScoreData;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * GameOver page for the game. This screen shows the scores for the various players

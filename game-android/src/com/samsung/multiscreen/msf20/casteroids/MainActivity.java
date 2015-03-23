@@ -1,10 +1,8 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,19 +11,14 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.LinearInterpolator;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,7 +57,11 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     /** Reference to the root view */
     private View rootView;
 
-    ProgressDialog progressDialog;
+    /** Reference to the connecting dialog */
+    private ProgressDialog progressDialog;
+
+    /** Flag to stop discovery from restarting */
+    private boolean preventDiscoveryFromRestarting = false;
 
 
     /******************************************************************************************************************
@@ -141,6 +138,14 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         connectivityManager.registerConnectivityListener(this);
         connectivityManager.registerMessageListener(this, Event.SLOT_UPDATE);
 
+        //if we are not discovering and don't have a flag to tell us not to restart discovery
+        //go for it
+        if(!connectivityManager.isDiscovering() && !preventDiscoveryFromRestarting){
+            connectivityManager.startDiscovery();
+        }
+
+        //we always want discovery to go, unless specifically told not to. So remove this prevention flag
+        preventDiscoveryFromRestarting = false;
 
         //capture the current state of the connection and show on the UI
         bindViews();
@@ -171,6 +176,9 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
                 // If the user selected a device...
                 connectivityManager.connect(data.getStringExtra(SelectDeviceActivity.SELECTED_SERVICE_KEY));
                 // Wait for the connect notification.
+
+                //Stop discovery from restarting
+                preventDiscoveryFromRestarting = true;
             } else if (resultCode == SelectDeviceActivity.RESULT_ERROR) {
                 // Looks like something went wrong when trying to select a device to use
                 CustomToast.makeText(this, "Failed to select device to connect to.", Toast.LENGTH_SHORT).show();
@@ -200,9 +208,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
                 }
                 break;
             case APPLICATION_CONNECTED:
-				// TODO: Remove toast
 				CustomToast.makeText(this, "Successfully connected.", Toast.LENGTH_SHORT).show();
-				
 				// Wait for the slot update before moving to the next screen. The slot update is sent when the TV
 				// Application is initialized.
 				break;
