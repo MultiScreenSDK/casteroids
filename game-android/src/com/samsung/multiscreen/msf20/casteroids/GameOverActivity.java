@@ -22,6 +22,8 @@ import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 import com.samsung.multiscreen.msf20.connectivity.MessageListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -214,35 +216,13 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
         if(scoreDataList == null || scoreDataList.size() < 1) {
             return;
         }
-        for (int i=0; i<scoreDataList.size(); i++){
-            TableRow tr = (TableRow)getLayoutInflater().inflate(R.layout.view_score, null);
-
+        Collections.sort(scoreDataList);
+        for (int i=0; i<scoreDataList.size(); i++) {
             ScoreData data = scoreDataList.get(i);
             if(highscore == null || data.getScore() > highscore.getScore()) {
                 highscore = data;
             } else {
-                //get references to the various cells in the table row
-                TextView positionText = (TextView) tr.findViewById(R.id.position_text);
-                TextView nameText = (TextView) tr.findViewById(R.id.name_text);
-                TextView scoreText = (TextView) tr.findViewById(R.id.score_text);
-
-                //bind the color
-                int playerColor = data.getColor().getColorInt();
-                positionText.setTextColor(playerColor);
-                nameText.setTextColor(playerColor);
-                scoreText.setTextColor(playerColor);
-
-                //bind the font
-                positionText.setTypeface(customTypeface);
-                nameText.setTypeface(customTypeface);
-                scoreText.setTypeface(customTypeface);
-
-                //bind the values
-                //positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
-                nameText.setText(data.getName());
-                scoreText.setText("" + data.getScore()); //number, hence the empty quotes for coercion to a string
-
-                tableLayout.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                tableLayout.addView(createPlayerRow(data), new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             }
         }
         if(highscore != null) {
@@ -250,9 +230,43 @@ public class GameOverActivity extends Activity implements ConnectivityListener, 
             winnerLabel.setText(winnerText);
             winnerLabel.setTextColor(highscore.getColor().getColorInt());
             gameOverLabel.setTextColor(highscore.getColor().getColorInt());
+            // Check for first place ties
+            if(scoreDataList.size() > 1 && highscore.getScore() == scoreDataList.get(1).getScore()) {
+                tableLayout.addView(createPlayerRow(highscore), 0, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                winnerLabel.setVisibility(View.INVISIBLE);
+                gameOverLabel.setVisibility(View.INVISIBLE);
+            } else {
+                winnerLabel.setVisibility(View.VISIBLE);
+                gameOverLabel.setVisibility(View.VISIBLE);
+            }
         } else {
             Log.e(TAG, "High score is null");
         }
+    }
+
+    private TableRow createPlayerRow(ScoreData score) {
+        TableRow tr = (TableRow)getLayoutInflater().inflate(R.layout.view_score, null);//get references to the various cells in the table row
+        TextView positionText = (TextView) tr.findViewById(R.id.position_text);
+        TextView nameText = (TextView) tr.findViewById(R.id.name_text);
+        TextView scoreText = (TextView) tr.findViewById(R.id.score_text);
+
+        //bind the color
+        int playerColor = score.getColor().getColorInt();
+        positionText.setTextColor(playerColor);
+        nameText.setTextColor(playerColor);
+        scoreText.setTextColor(playerColor);
+
+        //bind the font
+        positionText.setTypeface(customTypeface);
+        nameText.setTypeface(customTypeface);
+        scoreText.setTypeface(customTypeface);
+
+        //bind the values
+        //positionText.setText("" + (i+1)); //number, hence the empty quotes for coercion to a string
+        nameText.setText(score.getName());
+        scoreText.setText("" + score.getScore()); //number, hence the empty quotes for coercion to a string
+
+        return tr;
     }
 
     private void onMainScreenButtonClick() {
