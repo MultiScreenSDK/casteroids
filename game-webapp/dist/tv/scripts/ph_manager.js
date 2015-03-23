@@ -233,6 +233,7 @@ $(GameManager = function(){
         getLastScoreData: function() { return lastScoreData; },
 
         // Player Join/Quit Methods
+        getPlayerCount: function() { return Object.keys(clientIdToSlotMap).length; },
         addPlayer: function(clientId, name, color) { return addPlayer(clientId, name, color); },
         removePlayer: function(clientId) { return removePlayer(clientId); },
 

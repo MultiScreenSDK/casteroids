@@ -41,6 +41,9 @@ BasicGame.MainMenu.prototype = {
         this.loadingText.setShadow(5, 5, 'rgba(0,0,0,0.5)', 2);
         this.loadingText.anchor.setTo(0.5, 0.5);
         this.loadingText.cacheAsBitmap = true;
+
+        // Initialize the players
+        this.onPlayerUpdate(GameManager.getPlayerCount());
     },
 
     update: function () {
@@ -54,7 +57,7 @@ BasicGame.MainMenu.prototype = {
     onPlayerUpdate: function (count) {
         console.log("onPlayerUpdate " + count);
         this.updateConnectedPlayers(count);
-        if (count > 0) {
+        if (this.players.length > 0) {
             if (!this.menuTimer.running) {
                 this.menuTimer = this.game.time.events.repeat(Phaser.Timer.SECOND, BasicGame.GAME_COUNTDOWN_LENGTH + 1, this.updateTimer, this);
             }
