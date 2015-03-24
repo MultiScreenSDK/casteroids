@@ -17,7 +17,7 @@
         android:layout_alignParentRight="true"
         android:id="@+id/item_serial"
         android:textColor="@color/grey_500"
-        android:text="asdasdasd"
+        android:text="-"
         android:textSize="10dp"
         android:padding="2dp"
         />

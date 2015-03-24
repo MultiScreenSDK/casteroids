@@ -62,16 +62,24 @@ public class HowToConnectActivity extends Activity {
 
         discoveredDevicesListView = (ListView) findViewById(R.id.discovered_devices_list);
 
-        List<UPNPDevice> discoveredDevices = UPNPConnectivityManager.getInstance(this).getDiscoveredDevices();
-
-        TypefacedArrayAdapter typefacedArrayAdapter = new TypefacedArrayAdapter(this, discoveredDevices);
-        discoveredDevicesListView.setAdapter(typefacedArrayAdapter);
-
         String wifi_name = getIntent().getStringExtra(EXTRA_WIFI_NAME);
-        if(wifi_name != null) {
-            String appended_label = discoveredTextView.getText() +" " + wifi_name;
-            discoveredTextView.setText(appended_label);
+
+        List<UPNPDevice> discoveredDevices = UPNPConnectivityManager.getInstance(this).getDiscoveredDevices();
+        if(discoveredDevices.size()>1) {
+            TypefacedArrayAdapter typefacedArrayAdapter = new TypefacedArrayAdapter(this, discoveredDevices);
+            discoveredDevicesListView.setAdapter(typefacedArrayAdapter);
+
+            if(wifi_name != null) {
+                String appended_label = discoveredTextView.getText() +" " + wifi_name;
+                discoveredTextView.setText(appended_label);
+                discoveredTextView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            discoveredDevicesListView.setVisibility(View.GONE);
+            discoveredTextView.setVisibility(View.INVISIBLE);
         }
+
+
     }
 
     /******************************************************************************************************************
