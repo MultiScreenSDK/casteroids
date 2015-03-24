@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -16,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.connectivity.UPNPConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.UPNPDevice;
 
 import java.util.List;
 
@@ -61,7 +59,7 @@ public class HowToConnectActivity extends Activity {
 
         discoveredDevicesListView = (ListView) findViewById(R.id.discovered_devices_list);
 
-        List<String> discoveredDevices = UPNPConnectivityManager.getInstance(this).getDiscoveredDevices();
+        List<UPNPDevice> discoveredDevices = UPNPConnectivityManager.getInstance(this).getDiscoveredDevices();
 
         TypefacedArrayAdapter typefacedArrayAdapter = new TypefacedArrayAdapter(this, discoveredDevices);
         discoveredDevicesListView.setAdapter(typefacedArrayAdapter);
@@ -71,9 +69,9 @@ public class HowToConnectActivity extends Activity {
     /******************************************************************************************************************
      * Inner Classes
      */
-    private class TypefacedArrayAdapter extends ArrayAdapter<String> {
+    private class TypefacedArrayAdapter extends ArrayAdapter<UPNPDevice> {
 
-        public TypefacedArrayAdapter(Context context, List<String> objects) {
+        public TypefacedArrayAdapter(Context context, List<UPNPDevice> objects) {
             super(context, R.layout.list_item, R.id.item_label, objects);
         }
 

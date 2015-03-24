@@ -2,10 +2,12 @@ package com.samsung.multiscreen.msf20.connectivity;
 
 import android.content.Context;
 import android.util.Log;
+import com.samsung.multiscreen.msf20.casteroids.model.UPNPDevice;
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceImpl;
 import org.fourthline.cling.android.AndroidUpnpServiceConfiguration;
 import org.fourthline.cling.model.message.header.STAllHeader;
+import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.registry.Registry;
@@ -40,7 +42,7 @@ public class UPNPConnectivityManager implements RegistryListener {
     private UpnpService upnpService;
 
     // The list of discovered devices
-    private List<String> discoveredDevices;
+    private List<UPNPDevice> discoveredDevices;
 
 
     /**
@@ -123,7 +125,7 @@ public class UPNPConnectivityManager implements RegistryListener {
     @Override
     public void remoteDeviceAdded(Registry registry, RemoteDevice remoteDevice) {
         Log.v(TAG, "Remote Device Added: " + remoteDevice.getDisplayString());
-        discoveredDevices.add(remoteDevice.getDisplayString());
+        addDevice(remoteDevice);
     }
 
     @Override
@@ -134,19 +136,19 @@ public class UPNPConnectivityManager implements RegistryListener {
     @Override
     public void remoteDeviceRemoved(Registry registry, RemoteDevice remoteDevice) {
         Log.v(TAG, "Remote Device Removed: " + remoteDevice.getDisplayString());
-        discoveredDevices.remove(remoteDevice.getDisplayString());
+        removeDevice(remoteDevice);
     }
 
     @Override
     public void localDeviceAdded(Registry registry, LocalDevice localDevice) {
         Log.v(TAG, "Local Device Added: " + localDevice.getDisplayString());
-        discoveredDevices.add(localDevice.getDisplayString());
+        addDevice(localDevice);
     }
 
     @Override
     public void localDeviceRemoved(Registry registry, LocalDevice localDevice) {
         Log.v(TAG, "Local Device Removed: " + localDevice.getDisplayString());
-        discoveredDevices.remove(localDevice.getDisplayString());
+        removeDevice(localDevice);
     }
 
     @Override
@@ -164,7 +166,39 @@ public class UPNPConnectivityManager implements RegistryListener {
      *
      * @return A list of UPNP discovered devices
      */
-    public List<String> getDiscoveredDevices() {
+    public List<UPNPDevice> getDiscoveredDevices() {
         return discoveredDevices;
+    }
+
+    private void addDevice(Device remoteDevice) {
+        UPNPDevice upnpDevice = createUPNPDevice(remoteDevice);
+        if (!discoveredDevices.contains(upnpDevice)) {
+            discoveredDevices.add(upnpDevice);
+        }
+    }
+
+    private void removeDevice(Device device) {
+        UPNPDevice upnpDevice = createUPNPDevice(device);
+        discoveredDevices.remove(upnpDevice);
+
+    }
+
+    private UPNPDevice createUPNPDevice(Device device) {
+        UPNPDevice upnpDevice = new UPNPDevice();
+        if (device.getType() != null) {
+            upnpDevice.setDeviceType(device.getType().getType());
+        }
+        if (device.getDetails() != null) {
+            if (device.getDetails().getManufacturerDetails() != null) {
+                upnpDevice.setManufacturer(device.getDetails().getManufacturerDetails().getManufacturer());
+            }
+            if (device.getDetails().getModelDetails() != null) {
+                upnpDevice.setModelName(device.getDetails().getModelDetails().getModelName());
+                upnpDevice.setModelNumber(device.getDetails().getModelDetails().getModelNumber());
+            }
+            upnpDevice.setSerialNumber(device.getDetails().getSerialNumber());
+            upnpDevice.setFriendlyName(device.getDetails().getFriendlyName());
+        }
+        return upnpDevice;
     }
 }
