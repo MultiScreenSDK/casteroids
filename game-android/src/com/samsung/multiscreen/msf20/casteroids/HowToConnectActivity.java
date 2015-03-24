@@ -10,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.connectivity.UPNPConnectivityManager;
@@ -77,11 +78,17 @@ public class HowToConnectActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            TextView tv = (TextView) super.getView(position, convertView, parent);
-            if(tv != null) {
-                tv.setTypeface(customTypeface);
+            RelativeLayout itemView = (RelativeLayout) getLayoutInflater().inflate(R.layout.list_item, parent, false);
+            if(itemView != null) {
+                TextView labelView = (TextView) itemView.findViewById(R.id.item_label);
+                TextView serialView = (TextView) itemView.findViewById(R.id.item_serial);
+                labelView.setTypeface(customTypeface);
+                serialView.setTypeface(customTypeface);
+                UPNPDevice current = getItem(position);
+                labelView.setText(current.getFriendlyName());
+                serialView.setText(current.getSerialNumber());
             }
-            return tv;
+            return itemView;
         }
     }
 }

@@ -26,11 +26,13 @@
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="220px"
+            android:layout_height="100dp"
             android:layout_marginTop="5dp"
             android:id="@+id/discovered_devices_list"
             android:divider="@color/grey_200"
-            android:dividerHeight="1px"/>
+            android:dividerHeight="1px"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            />
 
         <TextView
             android:layout_width="match_parent"
