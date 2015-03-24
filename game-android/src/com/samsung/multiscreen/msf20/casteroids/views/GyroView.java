@@ -27,6 +27,7 @@ public class GyroView extends View {
     private int gyroColor;
     private RectF pitchOval;
     private float centerX, centerY, radius, innerRadius;
+    private boolean drawInnerStroke = false;
 
     /**
      * Constructor.
@@ -121,9 +122,10 @@ public class GyroView extends View {
         canvas.drawArc(pitchOval, 0, 180, true, gyroPaint);
         canvas.restore();
 
-
         //draw the inner stroke
-        canvas.drawCircle(centerX, centerY, radius, innerStrokePaint);
+        if(drawInnerStroke) {
+            canvas.drawCircle(centerX, centerY, radius, innerStrokePaint);
+        }
 
         //draw the outer stroke
         canvas.drawCircle(centerX, centerY, radius, outerStrokePaint);
