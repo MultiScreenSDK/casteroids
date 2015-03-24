@@ -386,7 +386,7 @@ BasicGame.Game.prototype = {
 
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
-        var randAngle = this.rnd.integerInRange(0, 360)
+        var randAngle = this.rnd.integerInRange(0, 360);
 
         this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
         this.alien.anchor.setTo(0.5);
