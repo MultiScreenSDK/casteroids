@@ -159,6 +159,9 @@ public class GameControllerActivity extends Activity implements View.OnTouchList
         quitButton = (ImageButton) findViewById(R.id.pause_button);
         instructionsText = (TextView) findViewById(R.id.instructions_text);
 
+        //hide the quit button
+        quitButton.setVisibility(View.INVISIBLE);
+
         //set the custom typefaces
         thrustButton.setTypeface(customTypeface);
         fireButton.setTypeface(customTypeface);
