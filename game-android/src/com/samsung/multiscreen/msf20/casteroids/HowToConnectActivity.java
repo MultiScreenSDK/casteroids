@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.samsung.multiscreen.msf20.connectivity.ConnectivityManager;
 import com.samsung.multiscreen.msf20.connectivity.UPNPConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.model.UPNPDevice;
 
@@ -27,6 +28,7 @@ import java.util.List;
  */
 public class HowToConnectActivity extends Activity {
 
+    public static final String EXTRA_WIFI_NAME = "howtoconnect.wifi_name";
     private ListView discoveredDevicesListView;
 
     Typeface customTypeface;
@@ -65,6 +67,9 @@ public class HowToConnectActivity extends Activity {
         TypefacedArrayAdapter typefacedArrayAdapter = new TypefacedArrayAdapter(this, discoveredDevices);
         discoveredDevicesListView.setAdapter(typefacedArrayAdapter);
 
+        String wifi_name = getIntent().getStringExtra(EXTRA_WIFI_NAME);
+        String appended_label = discoveredTextView.getText() +" " + wifi_name;
+        discoveredTextView.setText(appended_label);
     }
 
     /******************************************************************************************************************

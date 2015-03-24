@@ -24,6 +24,6 @@
     <string name="wifi_disabled_warning">Turn on Wi-Fi</string>
     <string name="title_connecting">Connecting</string>
     <string name="how_to_connect_title">Make sure your TV and mobile device are on the same WiFi network</string>
-    <string name="how_to_connect_discovered">Found devices on same WiFi network:</string>
+    <string name="how_to_connect_discovered">Found devices on WiFi network</string>
 
 </resources>

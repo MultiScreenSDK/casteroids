@@ -374,7 +374,11 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     }
 
     private void showNoTVDiscoveredScreen() {
-        launchIntent(HowToConnectActivity.class);
+        String wifiName = connectivityManager.getWifiNetworkName();
+        Intent intent = new Intent(this, HowToConnectActivity.class);
+        intent.putExtra(HowToConnectActivity.EXTRA_WIFI_NAME, wifiName);
+        startActivity(intent);
+
     }
 
     private void launchIntent(Class cls){
