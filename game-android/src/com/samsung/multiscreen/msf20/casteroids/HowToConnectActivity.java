@@ -68,8 +68,10 @@ public class HowToConnectActivity extends Activity {
         discoveredDevicesListView.setAdapter(typefacedArrayAdapter);
 
         String wifi_name = getIntent().getStringExtra(EXTRA_WIFI_NAME);
-        String appended_label = discoveredTextView.getText() +" " + wifi_name;
-        discoveredTextView.setText(appended_label);
+        if(wifi_name != null) {
+            String appended_label = discoveredTextView.getText() +" " + wifi_name;
+            discoveredTextView.setText(appended_label);
+        }
     }
 
     /******************************************************************************************************************
