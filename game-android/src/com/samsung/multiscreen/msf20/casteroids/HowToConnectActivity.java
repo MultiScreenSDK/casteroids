@@ -11,7 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.samsung.multiscreen.msf20.connectivity.UPNPConnectivityManager;
+
+import java.util.List;
 
 /**
  *
@@ -21,6 +27,10 @@ import android.widget.TextView;
  * @author Nik Bhattacharya
  */
 public class HowToConnectActivity extends Activity {
+
+    private ListView discoveredDevicesListView;
+
+    Typeface customTypeface;
 
 
     /******************************************************************************************************************
@@ -39,14 +49,41 @@ public class HowToConnectActivity extends Activity {
 
         //xml layout
         setContentView(R.layout.activity_how_to_connect);
-        TextView textView = (TextView) findViewById(R.id.how_to_connect_help);
-        Typeface customTypeface = ((GameApplication) getApplication()).getCustomTypeface();
-        textView.setTypeface(customTypeface);
+
+        TextView titleTextView = (TextView) findViewById(R.id.how_to_connect_title_text);
+        TextView discoveredTextView = (TextView) findViewById(R.id.how_to_connect_discovered_text);
+        TextView supportedTextView = (TextView) findViewById(R.id.how_to_connect_help_text);
+
+        customTypeface = ((GameApplication) getApplication()).getCustomTypeface();
+        titleTextView.setTypeface(customTypeface);
+        discoveredTextView.setTypeface(customTypeface);
+        supportedTextView.setTypeface(customTypeface);
+
+        discoveredDevicesListView = (ListView) findViewById(R.id.discovered_devices_list);
+
+        List<String> discoveredDevices = UPNPConnectivityManager.getInstance(this).getDiscoveredDevices();
+
+        TypefacedArrayAdapter typefacedArrayAdapter = new TypefacedArrayAdapter(this, discoveredDevices);
+        discoveredDevicesListView.setAdapter(typefacedArrayAdapter);
 
     }
 
     /******************************************************************************************************************
      * Inner Classes
      */
+    private class TypefacedArrayAdapter extends ArrayAdapter<String> {
 
+        public TypefacedArrayAdapter(Context context, List<String> objects) {
+            super(context, R.layout.list_item, R.id.item_label, objects);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView tv = (TextView) super.getView(position, convertView, parent);
+            if(tv != null) {
+                tv.setTypeface(customTypeface);
+            }
+            return tv;
+        }
+    }
 }

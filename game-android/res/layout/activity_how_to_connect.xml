@@ -6,12 +6,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_rounded_corners"
+        android:orientation="vertical"
         android:padding="20dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/how_to_connect_help"
-            android:text="@string/how_to_connect_text"
+            android:id="@+id/how_to_connect_title_text"
+            android:text="@string/how_to_connect_title"
             android:textColor="@color/grey_white_1000"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/how_to_connect_discovered_text"
+            android:text="@string/how_to_connect_discovered"
+            android:textColor="@color/grey_white_1000"
+            android:textSize="11dp"
+            android:layout_marginTop="5dp"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="220px"
+            android:layout_marginTop="5dp"
+            android:id="@+id/discovered_devices_list"
+            android:divider="@color/grey_200"
+            android:dividerHeight="1px"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/how_to_connect_help_text"
+            android:text="@string/how_to_connect_text"
+            android:textColor="@color/grey_white_1000"
+            android:textSize="11dp"/>
     </LinearLayout>
 </ScrollView>

@@ -386,12 +386,13 @@ BasicGame.Game.prototype = {
 
         var randX = this.rnd.integerInRange(20, this.game.width - 20);
         var randY = this.rnd.integerInRange(20, this.game.height - 20);
-        var randAngle = this.rnd.integerInRange(0, 100);
+        var randAngle = this.rnd.integerInRange(0, 360)
 
         this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
         this.alien.anchor.setTo(0.5);
         this.physics.enable(this.alien, Phaser.Physics.ARCADE);
-        this.alien.angle = randAngle;
+        this.alien.rotation = randAngle;
+        this.alien.body.rotation = randAngle;
         this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
         this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
 
@@ -813,7 +814,8 @@ BasicGame.Game.prototype = {
         this.alien.x = randX;
         this.alien.y = randY;
         this.alien.revive(BasicGame.ALIEN_HP);
-        this.alien.angle = randAngle;
+        this.alien.rotation = randAngle;
+        this.alien.body.rotation = randAngle;
     },
 
     /**

@@ -382,20 +382,4 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
         intent.setClass(this, cls);
         startActivity(intent);
     }
-
-    private class TypefacedArrayAdapter extends ArrayAdapter<String> {
-
-        public TypefacedArrayAdapter(Context context, String[] objects) {
-            super(context, R.layout.list_item, R.id.item_label, objects);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView tv = (TextView) super.getView(position, convertView, parent);
-            if(tv != null) {
-                tv.setTypeface(customTypeface);
-            }
-            return tv;
-        }
-    }
 }
