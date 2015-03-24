@@ -141,7 +141,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 		// If we have at least one service, update the adapter
 		if ((services != null) && (services.length > 0)) {
 			// bind the list view with the services
-			avblServices = new ArrayAdapter<String>(this, R.layout.list_item);
+			avblServices = new ArrayAdapter<String>(this, R.layout.list_item_tv);
 			avblServices.addAll(services);
 			tvList.setAdapter(avblServices);
 		} 

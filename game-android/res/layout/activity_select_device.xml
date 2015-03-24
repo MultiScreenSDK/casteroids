@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/select_tv_text"
         android:divider="#FFFFFF"
-        android:dividerHeight="2px"
+        android:dividerHeight="1dp"
         />
 
     <TextView
