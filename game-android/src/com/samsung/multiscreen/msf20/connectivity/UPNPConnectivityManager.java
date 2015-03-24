@@ -170,19 +170,38 @@ public class UPNPConnectivityManager implements RegistryListener {
         return discoveredDevices;
     }
 
-    private void addDevice(Device remoteDevice) {
-        UPNPDevice upnpDevice = createUPNPDevice(remoteDevice);
+    /**
+     * Adds the device to the list of discovered devices if it has
+     * not already been added
+     *
+     * @param device The device to add
+     */
+    private void addDevice(Device device) {
+        UPNPDevice upnpDevice = createUPNPDevice(device);
         if (!discoveredDevices.contains(upnpDevice)) {
             discoveredDevices.add(upnpDevice);
         }
     }
 
+    /**
+     * Removes the device to the list of discovered devices
+     *
+     * @param device The device to remove
+     */
     private void removeDevice(Device device) {
         UPNPDevice upnpDevice = createUPNPDevice(device);
         discoveredDevices.remove(upnpDevice);
 
     }
 
+    /**
+     * Creates a normalized UPNPDevice for the given
+     * device
+     *
+     * @param device The device to normalize
+     *
+     * @return The normalized UPNPDevice
+     */
     private UPNPDevice createUPNPDevice(Device device) {
         UPNPDevice upnpDevice = new UPNPDevice();
         if (device.getType() != null) {
