@@ -393,6 +393,8 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 * @param serviceName
 	 *            The name of the service to connect to.
 	 * @return Returns true if attempted to connect to an application otherwise false.
+     *
+     * @see getDiscoveredServiceNames()
 	 */
 	public boolean connect(String serviceName) {
 		synchronized (lock) {
@@ -462,6 +464,8 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 * @param service
 	 *            The Service object to connect to.
 	 * @return Returns true if attempted to connect to an application otherwise false.
+     *
+     * @see getDiscoveredServices()
 	 */
 	protected boolean connect(Service service) {
 		// By connecting by name we will make sure the service is still available before attempting to connect.
