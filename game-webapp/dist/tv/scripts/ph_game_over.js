@@ -35,7 +35,7 @@ BasicGame.GameOver.prototype = {
         this.gameOverText.font = 'Revalia';
         this.gameOverText.cacheAsBitmap = true;
 
-        var heightIncrement = 20;
+        var heightIncrement = 40;
 
         this.scoreLabels = new Array();
         var scores = GameManager.getLastScoreData();
@@ -43,7 +43,7 @@ BasicGame.GameOver.prototype = {
             return b.score - a.score;
         });
         for (var i = 0; i < scores.length; i++) {
-            heightIncrement = heightIncrement + (i==1 ? 80: 60);
+            heightIncrement = heightIncrement + 60;
             var scoreStyle = { font: "12px", fill: scores[i].hexColor, align: "left" };
             this.scoreLabels[i] = this.add.text(this.game.width / 2, heightIncrement, scores[i].name + " : " + scores[i].score, scoreStyle);
             this.scoreLabels[i].anchor.setTo(0.5, 0.0);
