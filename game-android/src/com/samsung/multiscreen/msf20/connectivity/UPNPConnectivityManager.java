@@ -178,8 +178,10 @@ public class UPNPConnectivityManager implements RegistryListener {
      */
     private void addDevice(Device device) {
         UPNPDevice upnpDevice = createUPNPDevice(device);
-        if (!discoveredDevices.contains(upnpDevice)) {
-            discoveredDevices.add(upnpDevice);
+        synchronized (lock) {
+            if (!discoveredDevices.contains(upnpDevice)) {
+                discoveredDevices.add(upnpDevice);
+            }
         }
     }
 
@@ -190,7 +192,9 @@ public class UPNPConnectivityManager implements RegistryListener {
      */
     private void removeDevice(Device device) {
         UPNPDevice upnpDevice = createUPNPDevice(device);
-        discoveredDevices.remove(upnpDevice);
+        synchronized (lock) {
+            discoveredDevices.remove(upnpDevice);
+        }
 
     }
 
