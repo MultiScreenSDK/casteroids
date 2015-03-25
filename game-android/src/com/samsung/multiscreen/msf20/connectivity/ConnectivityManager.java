@@ -314,7 +314,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	 * 
 	 * @return
 	 */
-	protected List<Service> getDiscoveredServices() {
+	public List<Service> getDiscoveredServices() {
 		return new ArrayList<Service>(serviceMap.values());
 	}
 
