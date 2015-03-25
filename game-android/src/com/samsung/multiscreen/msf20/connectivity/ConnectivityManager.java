@@ -821,7 +821,7 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 	private void processNetworkInfo(NetworkInfo ni) {
 		// Determine whether or not we are connected to a WiFi Network
 		boolean isConnectedToWifiUpdate = ((ni != null) && ni.isConnected() && (ni.getType() == android.net.ConnectivityManager.TYPE_WIFI));
-		wifiNetworkName = null;
+		wifiNetworkName = isConnectedToWifiUpdate ? wifiNetworkName : null;
 
 		// If the connectivity changed...
 		if (isConnectedToWifi != isConnectedToWifiUpdate) {
@@ -829,11 +829,6 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 			// Update the current WiFi network information
 			wifiNetworkName = isConnectedToWifiUpdate ? ni.getExtraInfo() : null;
 			isConnectedToWifi = isConnectedToWifiUpdate;
-
-			// Log out the WiFi state
-			if (BuildConfig.DEBUG) {
-				Log.v(TAG, "wifiNetworkName=" + wifiNetworkName + ", isConnectedToWifi=" + isConnectedToWifi);
-			}
 
 			// If we connected to a WiFi network, notify listeners.
 			if (isConnectedToWifi) {
@@ -853,6 +848,11 @@ public class ConnectivityManager implements OnConnectListener, OnDisconnectListe
 				notifyConnectivityListeners(ConnectivityListener.WIFI_DISCONNECTED);
 			}
 		}
+		
+		// Log out the WiFi state
+		if (BuildConfig.DEBUG) {
+			Log.v(TAG, "wifiNetworkName=" + wifiNetworkName + ", isConnectedToWifi=" + isConnectedToWifi);
+		}		
 	}
 
 	/******************************************************************************************************************
