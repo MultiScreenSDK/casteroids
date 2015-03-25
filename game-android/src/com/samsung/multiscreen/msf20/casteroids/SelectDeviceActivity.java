@@ -1,17 +1,24 @@
 package com.samsung.multiscreen.msf20.casteroids;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
+import com.samsung.multiscreen.msf20.casteroids.model.UPNPDevice;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
+
+import java.util.List;
 
 /**
  * Activity that lets the user connect to a Device. Shown as a Dialog to the user
@@ -35,6 +42,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 
     /** List Adapter that holds the names of all the available services */
     private ArrayAdapter<String> avblServices = null;
+    private Typeface customTypeface;
 
 
     /******************************************************************************************************************
@@ -49,6 +57,8 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 
         //Get an instance of the ConnectivtyManager and register for connectivity updates.
         connectivityManager = GameConnectivityManager.getInstance(getApplicationContext());
+
+        customTypeface = ((GameApplication) getApplication()).getCustomTypeface();
 
         //Store UI references
         userMessageText = (TextView) findViewById(R.id.select_tv_text);
@@ -141,8 +151,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
 		// If we have at least one service, update the adapter
 		if ((services != null) && (services.length > 0)) {
 			// bind the list view with the services
-			avblServices = new ArrayAdapter<String>(this, R.layout.list_item_tv);
-			avblServices.addAll(services);
+			avblServices = new TypefacedArrayAdapter(this, services);
 			tvList.setAdapter(avblServices);
 		} 
 		// Else there aren't any services, treat as an implicit cancel.
@@ -156,5 +165,22 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
         Intent intent = new Intent();
         intent.putExtra(SELECTED_SERVICE_KEY, selectedService);
         setResult(result, intent);
+    }
+
+    /******************************************************************************************************************
+     * Inner Classes
+     */
+    private class TypefacedArrayAdapter extends ArrayAdapter<String> {
+
+        public TypefacedArrayAdapter(Context context, String[] objects) {
+            super(context, R.layout.list_item_tv, R.id.item_label, objects);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View labelView = super.getView(position, convertView, parent);
+            ((TextView) labelView).setTypeface(customTypeface);
+            return labelView;
+        }
     }
 }

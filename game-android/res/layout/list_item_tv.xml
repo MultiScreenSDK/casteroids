@@ -9,4 +9,4 @@
     android:textColor="@color/dialogs_text_blue"
     android:text="-"
     android:textSize="20sp"
-    android:padding="8dp" />
+    android:padding="14dp" />
