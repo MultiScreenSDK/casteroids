@@ -13,6 +13,7 @@
         android:layout_below="@+id/select_tv_text"
         android:divider="#FFFFFF"
         android:dividerHeight="1dp"
+        android:padding="8dp"
         />
 
     <TextView

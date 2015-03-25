@@ -5,7 +5,6 @@ import android.graphics.Typeface;
 import android.util.Log;
 
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.connectivity.UPNPConnectivityManager;
 import com.samsung.multiscreen.msf20.casteroids.utils.ThreadUtils;
 
 /**
@@ -21,7 +20,6 @@ public class GameApplication extends Application {
 
     /** Reference to the connectivity manager */
     private GameConnectivityManager connectivityManager = null;
-    private UPNPConnectivityManager upnpConnectivityManager = null;
 
     /** Custom typeface used in the application */
     private Typeface customTypeface, customTypeface2;
@@ -40,15 +38,6 @@ public class GameApplication extends Application {
 
         if(!ThreadUtils.runningOnUiThread()) {
             throw new RuntimeException("The Application needs to be running on the UI Thread");
-        }
-
-        try {
-            upnpConnectivityManager = UPNPConnectivityManager.getInstance(getApplicationContext());
-            upnpConnectivityManager.startDiscovery();
-        } catch (Exception e) {
-            // Not critical to the game, if we run in to any issue with the UPNP discovery, continue
-            // loading the game
-            Log.e(TAG, "Error discovering UPNP devices", e);
         }
 
         // Get an instance of the ConnectivtyManager

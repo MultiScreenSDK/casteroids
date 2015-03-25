@@ -11,11 +11,6 @@ apply plugin: 'android'
 dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/android-msf-api-2.0.13.jar')
-    compile files('libs/seamless-http-1.1.0.jar')
-    compile files('libs/seamless-util-1.1.0.jar')
-    compile files('libs/seamless-xml-1.1.0.jar')
-    compile files('libs/jetty-server-8.1.8.jar')
-    compile files('libs/cling-core-2.0.1.jar')
 }
 
 android {
