@@ -11,11 +11,10 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.samsung.multiscreen.Service;
 import com.samsung.multiscreen.msf20.casteroids.model.GameConnectivityManager;
-import com.samsung.multiscreen.msf20.casteroids.model.UPNPDevice;
 import com.samsung.multiscreen.msf20.connectivity.ConnectivityListener;
 
 import java.util.List;
@@ -41,7 +40,9 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
     private ListView tvList;
 
     /** List Adapter that holds the names of all the available services */
-    private ArrayAdapter<String> avblServices = null;
+    private ArrayAdapter<Service> avblServices = null;
+
+    /** Reference to the custom typeface */
     private Typeface customTypeface;
 
 
@@ -89,8 +90,8 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(avblServices != null) {
             try {
-                String service = avblServices.getItem(position);
-                setReturnValue(SelectDeviceActivity.RESULT_OK, service);
+                String serviceName = avblServices.getItem(position).getName();
+                setReturnValue(SelectDeviceActivity.RESULT_OK, serviceName);
             } catch (Exception ex) {
                 setReturnValue(SelectDeviceActivity.RESULT_ERROR, null);
             }
@@ -146,10 +147,10 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
      * Binds the list view with the discovered services.
      */
     private void bindList() {
-		String[] services = connectivityManager.getDiscoveredServiceNames();
+        List<Service> services = connectivityManager.getDiscoveredServices();
 
-		// If we have at least one service, update the adapter
-		if ((services != null) && (services.length > 0)) {
+        // If we have at least one service, update the adapter
+		if ((services != null) && (services.size() > 0)) {
 			// bind the list view with the services
 			avblServices = new TypefacedArrayAdapter(this, services);
 			tvList.setAdapter(avblServices);
@@ -170,17 +171,29 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
     /******************************************************************************************************************
      * Inner Classes
      */
-    private class TypefacedArrayAdapter extends ArrayAdapter<String> {
+    private class TypefacedArrayAdapter extends ArrayAdapter<Service> {
 
-        public TypefacedArrayAdapter(Context context, String[] objects) {
-            super(context, R.layout.list_item_tv, R.id.item_label, objects);
+        public TypefacedArrayAdapter(Context context, List<Service> objects) {
+            super(context, R.layout.list_item, R.id.item_label, objects);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View labelView = super.getView(position, convertView, parent);
-            ((TextView) labelView).setTypeface(customTypeface);
-            return labelView;
+            if(convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.list_item_tv, parent, false);
+            }
+
+            View itemView = convertView;
+            if(itemView != null) {
+                TextView labelView = (TextView) itemView.findViewById(R.id.item_label);
+                TextView serialView = (TextView) itemView.findViewById(R.id.item_serial);
+                labelView.setTypeface(customTypeface);
+                serialView.setTypeface(customTypeface);
+                Service current = getItem(position);
+                labelView.setText((current.getType() != null? "[" + current.getType() + "] ": "") + current.getName());
+                serialView.setText(current.getId());
+            }
+            return itemView;
         }
     }
 }
