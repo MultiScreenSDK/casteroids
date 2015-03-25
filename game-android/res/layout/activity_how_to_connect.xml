@@ -18,26 +18,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/how_to_connect_discovered_text"
-            android:text="@string/how_to_connect_discovered"
-            android:textColor="@color/grey_white_1000"
-            android:textSize="11dp"
-            android:layout_marginTop="5dp"/>
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="5dp"
-            android:id="@+id/discovered_devices_list"
-            android:divider="@color/grey_200"
-            android:dividerHeight="1px"
-            android:fadeScrollbars="false"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:id="@+id/how_to_connect_help_text"
             android:text="@string/how_to_connect_text"

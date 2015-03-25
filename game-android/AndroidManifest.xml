@@ -42,10 +42,6 @@
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name=".HowToPlayActivity"
-            android:screenOrientation="landscape" >
-        </activity>
-        <activity
             android:name=".HowToConnectActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppDialog">

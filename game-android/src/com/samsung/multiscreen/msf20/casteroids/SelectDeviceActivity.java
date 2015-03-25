@@ -24,6 +24,8 @@ import java.util.List;
  * using the Theme.Dialog style.
  *
  * @author Nik Bhattacharya
+ * @author Ali Khan
+ * @author Adrian Hernandez
  */
 public class SelectDeviceActivity extends Activity implements ConnectivityListener, AdapterView.OnItemClickListener {
 
