@@ -103,7 +103,17 @@ BasicGame.Game.prototype = {
      * Game Callback functions
      */
 
-    // Add a player to the game.
+    /**
+     * Called to add a player to the game. At the start of the game this is called from the setupPlayers method. If a
+     * player joins during a game its called by the GameManager.
+     *
+     * @param position
+     * @param clientId
+     * @param name
+     * @param color
+     * @param colorCode
+     * @param hexColor
+     */
     addPlayer: function(position, clientId, name, color, colorCode, hexColor) {
         if (this.game !== undefined) {
             // Initialize the new player
@@ -111,7 +121,7 @@ BasicGame.Game.prototype = {
             this.players[clientId].width = this.shipDimens;
             this.players[clientId].height = this.shipDimens;
 
-            // Here I setup the user controlled ship
+            // Setup the user controlled ship
             var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
             var randY = this.rnd.integerInRange(this.shipDimens, this.game.height - (this.shipDimens*2));
             this.players[clientId].reset(randX, randY, BasicGame.PLAYER_HP);
@@ -131,7 +141,7 @@ BasicGame.Game.prototype = {
             this.players[clientId].bulletRange = BasicGame.PLAYER_FIRE_RANGE;
             this.players[clientId].bulletDelay = BasicGame.PLAYER_FIRE_DELAY;
 
-            // Here I setup the bullets
+            // Setup the bullets
             this.players[clientId].bullets = this.add.group();
             this.players[clientId].bullets.enableBody = true;
             this.players[clientId].bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -153,7 +163,12 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Remove a player from the game.
+    /**
+     * Called to remove a player from the game. Called by the GameManager when it is informed that a player decided to
+     * quit the game. :(
+     *
+     * @param clientId
+     */
     removePlayer: function(clientId) {
         if (this.game !== undefined) {
             // Look up the player.
@@ -179,7 +194,14 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Called to rotate a specific player's spaceship.
+    /**
+     * Called to rotate a specific player's spaceship. Called by the GameManager when it is informed of a rotation
+     * change for a specific player.
+     *
+     * @param clientId
+     * @param direction
+     * @param strength
+     */
     onRotate: function(clientId, direction, strength) {
         // Map the 0 to 20 range strength value to a 150 to (150+300=450) range angular velocity value for the game.
         var velocity = ((strength * 300) / 20) + 150;
@@ -202,7 +224,13 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Called to enable thrust on a specific player's spaceship.
+    /**
+     * Called to enable thrust on a specific player's spaceship. Called by the GameManager when it is informed of a
+     * thrust event for a specific player.
+     *
+     * @param clientId
+     * @param thrustEnabled
+     */
     onThrust: function onThrust(clientId, thrustEnabled) {
         // Look up the player.
         var currentPlayer = this.players[clientId];
@@ -223,7 +251,13 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Called to enable firing on a specific player's spaceship.
+    /**
+     * Called to enable firing on a specific player's spaceship. Called by the GameManager when it is informed of a
+     * fire event for a specific player.
+     *
+     * @param clientId
+     * @param fireEnabled
+     */
     onFire: function(clientId, fireEnabled) {
         // Look up the player.
         var currentPlayer = this.players[clientId];
@@ -243,13 +277,175 @@ BasicGame.Game.prototype = {
         }
     },
 
-    // Called to set the game's sound on or off.
-    onMute: function(mute) {
-        this.isMuted = mute;
-    },
-
     /******************************************************************************************************************
      * Private functions
+     */
+
+    /**
+     * Sets up the background based on the configuration. For performance reasons, the background is not drawn on the
+     * canvas but instead the canvas is set as transparent and the background is drawn on the DOM.
+     */
+    setupBackground: function () {
+        // Default to no background
+        var bgImage = "none";
+        var bgRepeat = "no-repeat";
+
+        // If background is enabled...
+        if (this.isBackground) {
+            bgImage = "url(assets/starfield.png)";
+            bgRepeat = "repeat";
+        }
+
+        // Update the body
+        $("body").css("background-image", bgImage);
+        $("body").css("background-repeat", bgRepeat);
+    },
+
+    /**
+     * Sets up the system.
+     */
+    setupSystem: function () {
+        // Setup some general utilities
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.time.events.loop(1000, this.updateTimer, this);
+    },
+
+    /**
+     * Sets up the players based on the players that have joined up to this moment in time.
+     */
+    setupPlayers: function () {
+        for (var i in GameManager.slots) {
+            var slot = GameManager.slots[i];
+
+            // Initialize the slot's score label
+            $('#player'+slot.position).css('color', slot.hexColor);
+            $('#player'+slot.position).text('');
+
+            // If the slot is taken, create a player for that slot.
+            if (!slot.available) {
+                this.addPlayer(slot.position, slot.clientId, slot.name, slot.color, slot.colorCode, slot.hexColor);
+            }
+
+        }
+    },
+
+    /**
+     * Sets up the alien's spaceship.
+     */
+    setupAlien: function () {
+        // If the alien is not enabled then return.
+        if (!this.isAlien) {
+            return;
+        }
+
+        // Setup the computer controlled ship
+        this.alien = this.game.add.sprite(0, 0, 'ufo');
+        this.alien.hexColor = '#000000';
+
+        var randX = this.rnd.integerInRange(20, this.game.width - 20);
+        var randY = this.rnd.integerInRange(20, this.game.height - 20);
+        var randAngle = this.rnd.integerInRange(0, 360);
+
+        this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
+        this.alien.anchor.setTo(0.5);
+        this.physics.enable(this.alien, Phaser.Physics.ARCADE);
+        this.alien.rotation = randAngle;
+        this.alien.body.rotation = randAngle;
+        this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
+        this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
+
+        this.alien.bulletSpeed = BasicGame.ALIEN_BULLET_SPEED;
+        this.alien.bulletRange = BasicGame.ALIEN_FIRE_RANGE;
+        this.alien.bulletDelay = BasicGame.ALIEN_FIRE_DELAY;
+
+        this.alien.bullets = this.add.group();
+        this.alien.bullets.enableBody = true;
+        this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        this.alien.bulletTime = 0;
+
+        this.alien.bullets.createMultiple(BasicGame.ALIEN_BULLET_MAXNUM, 'bullets');
+        this.alien.bullets.setAll('anchor.x', 0.5);
+        this.alien.bullets.setAll('anchor.y', 0.5);
+    },
+
+    /**
+     * Sets up the audio. For performance reasons, we defaulted audio off in the game.
+     */
+    setupAudio: function () {
+        // If the game is muted, return.
+        if (this.isMuted) {
+            return;
+        }
+
+        // Setup audio
+        this.sfx = this.game.add.audio("sfx");
+        this.sfx.allowMultiple = true;
+
+        this.sfx.addMarker('alien death', 1, 1.0);
+        this.sfx.addMarker('boss hit', 3, 0.5);
+        this.sfx.addMarker('escape', 4, 3.2);
+        this.sfx.addMarker('meow', 8, 0.5);
+        this.sfx.addMarker('numkey', 9, 0.1);
+        this.sfx.addMarker('ping', 10, 1.0);
+        this.sfx.addMarker('death', 12, 4.2);
+        this.sfx.addMarker('shot', 17, 1.0);
+        this.sfx.addMarker('squit', 19, 0.3);
+    },
+
+    /**
+     * Sets up the game text. For performance reasons, the game text is not written on the canvas, but the canvas is set
+     * as transparent and the text is written on the DOM.
+     */
+    setupText: function () {
+        // Set up the countdown text
+        $('#countdown').css('color', "#cccccc");
+        $('#countdown').css('font-size', "36px");
+        $('#countdown').text('');
+
+        // Initialize the countdown text with the starting value
+        if (this.isGameText) {
+            var minutes = Math.floor(this.secondsLeft/60);
+            var seconds = this.secondsLeft - minutes * 60;
+            if(seconds < 10) {
+                seconds = '0'+seconds;
+            }
+            $('#countdown').text(minutes+":"+seconds);
+        }
+
+        // Initialize objects
+        this.scores = { };
+        this.names = { };
+    },
+
+    /**
+     * Called during the update cycle to to update the player status and respawn if necessary
+     */
+    playerLifecycle: function () {
+        for (var id in this.players) {
+            var currentPlayer = this.players[id];
+
+            // player is dead, determine if we should respawn at this time.
+            if (!currentPlayer.alive) {
+                // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
+                // enforcing a rule that players get an opportunity to respawn every 16th cycle.
+                if ((this.ticks % 16 == 0) && (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY)) {
+                    this.resetPlayer(currentPlayer);
+                    // Notify the GameManager that the player is back in so that it can notify the client.
+                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
+                }
+            }
+            // player is alive
+            else {
+                this.updatePlayer(currentPlayer);
+            }
+        }
+    },
+
+    /**
+     * Called during the update cycle to update a player based on the game state and the state of the controls (thrust,
+     * fire, and rotate).
+     *
+     * @param currentPlayer
      */
     updatePlayer: function (currentPlayer) {
         // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
@@ -316,173 +512,8 @@ BasicGame.Game.prototype = {
         }
     },
 
-    updateAlien: function() {
-        // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
-        // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
-        // 4th or 8th cycle if in aggressive mode. Aggressive mode sacrifices responsiveness for performance.
-        var updateCycle = this.isAggressiveUpdateCycle ? (this.ticks % 8) : (this.ticks % 4);
-        if (updateCycle != (this.isAggressiveUpdateCycle ? 7 : 3)) {
-            return;
-        }
-
-        if(this.alien) {
-            // Since the alien ship does not rotate, once it reaches max speed we don't need to call the acceleration
-            // from rotation function anymore.
-            if (this.alien.body.speed < BasicGame.ALIEN_MAX_SPEED) {
-                this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
-                                                                  this.alien.body.acceleration);
-            }
-            this.fire(this.alien);
-            this.screenWrap(this.alien);
-            this.alien.bullets.forEachExists(this.screenWrap, this);
-        }
-    },
-
-    setupBackground: function () {
-        // Default to no background
-        var bgImage = "none";
-        var bgRepeat = "no-repeat";
-
-        // If background is enabled...
-        if (this.isBackground) {
-            bgImage = "url(assets/starfield.png)";
-            bgRepeat = "repeat";
-        }
-
-        // Update the body
-        $("body").css("background-image", bgImage);
-        $("body").css("background-repeat", bgRepeat);
-    },
-
-    setupSystem: function () {
-        // Here I setup some general utilities
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.game.time.events.loop(1000, this.updateTimer, this);
-    },
-
-    setupPlayers: function () {
-        for (var i in GameManager.slots) {
-            var slot = GameManager.slots[i];
-
-            // Initialize the slot's score label
-            $('#player'+slot.position).css('color', slot.hexColor);
-            $('#player'+slot.position).text('');
-
-            // If the slot is taken, create a player for that slot.
-            if (!slot.available) {
-                this.addPlayer(slot.position, slot.clientId, slot.name, slot.color, slot.colorCode, slot.hexColor);
-            }
-
-        }
-    },
-
-    setupAlien: function () {
-        // If the alien is not enabled then return.
-        if (!this.isAlien) {
-            return;
-        }
-
-        // Here I setup the computer controlled ship
-        this.alien = this.game.add.sprite(0, 0, 'ufo');
-        this.alien.hexColor = '#000000';
-
-        var randX = this.rnd.integerInRange(20, this.game.width - 20);
-        var randY = this.rnd.integerInRange(20, this.game.height - 20);
-        var randAngle = this.rnd.integerInRange(0, 360);
-
-        this.alien.reset(randX, randY, BasicGame.ALIEN_HP);
-        this.alien.anchor.setTo(0.5);
-        this.physics.enable(this.alien, Phaser.Physics.ARCADE);
-        this.alien.rotation = randAngle;
-        this.alien.body.rotation = randAngle;
-        this.alien.body.drag.set(BasicGame.ALIEN_DRAG);
-        this.alien.body.maxVelocity.set(BasicGame.ALIEN_MAX_SPEED);
-
-        this.alien.bulletSpeed = BasicGame.ALIEN_BULLET_SPEED;
-        this.alien.bulletRange = BasicGame.ALIEN_FIRE_RANGE;
-        this.alien.bulletDelay = BasicGame.ALIEN_FIRE_DELAY;
-
-        this.alien.bullets = this.add.group();
-        this.alien.bullets.enableBody = true;
-        this.alien.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        this.alien.bulletTime = 0;
-
-        this.alien.bullets.createMultiple(BasicGame.ALIEN_BULLET_MAXNUM, 'bullets');
-        this.alien.bullets.setAll('anchor.x', 0.5);
-        this.alien.bullets.setAll('anchor.y', 0.5);
-    },
-
-    setupAudio: function () {
-        // If the game is muted, return.
-        if (this.isMuted) {
-            return;
-        }
-
-        // Here I setup audio
-        this.sfx = this.game.add.audio("sfx");
-        this.sfx.allowMultiple = true;
-
-        this.sfx.addMarker('alien death', 1, 1.0);
-        this.sfx.addMarker('boss hit', 3, 0.5);
-        this.sfx.addMarker('escape', 4, 3.2);
-        this.sfx.addMarker('meow', 8, 0.5);
-        this.sfx.addMarker('numkey', 9, 0.1);
-        this.sfx.addMarker('ping', 10, 1.0);
-        this.sfx.addMarker('death', 12, 4.2);
-        this.sfx.addMarker('shot', 17, 1.0);
-        this.sfx.addMarker('squit', 19, 0.3);
-    },
-
-
-    setupText: function () {
-        // Set up the countdown text
-        $('#countdown').css('color', "#cccccc");
-        $('#countdown').css('font-size', "36px");
-        $('#countdown').text('');
-
-        // Initialize the countdown text with the starting value
-        if (this.isGameText) {
-            var minutes = Math.floor(this.secondsLeft/60);
-            var seconds = this.secondsLeft - minutes * 60;
-            if(seconds < 10) {
-                seconds = '0'+seconds;
-            }
-            $('#countdown').text(minutes+":"+seconds);
-        }
-
-        // Initialize objects
-        this.scores = { };
-        this.names = { };
-    },
-
     /**
-     * Checks the player status and respawn if necessary
-     *
-     */
-    playerLifecycle: function () {
-        for (var id in this.players) {
-            var currentPlayer = this.players[id];
-
-            // player is dead, determine if we should respawn at this time.
-            if (!currentPlayer.alive) {
-                // To maintain a high frames-per-second we need to distribute the work across update cycles. Here we are
-                // enforcing a rule that players get an opportunity to respawn every 16th cycle.
-                if ((this.ticks % 16 == 0) && (this.game.time.now - currentPlayer.tod > BasicGame.PLAYER_RESPAWN_DELAY)) {
-                    this.resetPlayer(currentPlayer);
-                    // Notify the GameManager that the player is back in so that it can notify the client.
-                    GameManager.onPlayerOut(currentPlayer.id, 0); // 0 seconds remaining
-                }
-            }
-            // player is alive
-            else {
-                this.updatePlayer(currentPlayer);
-            }
-        }
-    },
-
-    /**
-     * Checks the alien status and respawn if necessary
-     *
+     * Called during the update cycle to update the alien status and respawn if necessary
      */
     alienLifecycle: function () {
         // If the alien is disabled or does not exist, return.
@@ -505,9 +536,33 @@ BasicGame.Game.prototype = {
     },
 
     /**
-     * Keeps track of the game countdown timer and handles last-10-seconds alert
-     * with a sound, red color and increased size.
-     *
+     * Called during the update cycle to update the alien's spaceship based on the game state.
+     */
+    updateAlien: function() {
+        // If this is not the alien's turn to update then return. To maintain a high frames-per-second we need to
+        // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
+        // 4th or 8th cycle if in aggressive mode. Aggressive mode sacrifices responsiveness for performance.
+        var updateCycle = this.isAggressiveUpdateCycle ? (this.ticks % 8) : (this.ticks % 4);
+        if (updateCycle != (this.isAggressiveUpdateCycle ? 7 : 3)) {
+            return;
+        }
+
+        if(this.alien) {
+            // Since the alien ship does not rotate, once it reaches max speed we don't need to call the acceleration
+            // from rotation function anymore.
+            if (this.alien.body.speed < BasicGame.ALIEN_MAX_SPEED) {
+                this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
+                    this.alien.body.acceleration);
+            }
+            this.fire(this.alien);
+            this.screenWrap(this.alien);
+            this.alien.bullets.forEachExists(this.screenWrap, this);
+        }
+    },
+
+    /**
+     * Keeps track of the game countdown timer and handles last-10-seconds alert with a sound, red color and increased
+     * size.
      */
     updateTimer: function updateTimer() {
         // Decrement the countdown
@@ -545,9 +600,10 @@ BasicGame.Game.prototype = {
         }
     },
 
-    /*
+    /**
      * shows a bullet and set it on it's path based on its parent
      *
+     * @param origin
      */
     fire: function(origin) {
         if ((origin.fireCount > 0) || (this.game.time.now > origin.bulletTime)) {
@@ -584,9 +640,11 @@ BasicGame.Game.prototype = {
         }
     },
 
-    /*
+    /**
      * handle the collision between a bullet and a target
      *
+     * @param target
+     * @param bullet
      */
     hit: function(target, bullet) {
         if(!this.isMuted) {
@@ -653,9 +711,11 @@ BasicGame.Game.prototype = {
         bullet.kill();
     },
 
-    /*
+    /**
      * handle the collision between a two objects
      *
+     * @param obj1
+     * @param obj2
      */
     collide: function(obj1, obj2) {
         // If either object is not alive ignore the collision.
@@ -688,6 +748,12 @@ BasicGame.Game.prototype = {
         }
     },
 
+    /**
+     * Temporarily removes the player from the game after hitting the alien ship or by a bullet.
+     *
+     * @param player
+     * @param leftCollision
+     */
     playerOut: function (player, leftCollision) {
         // Deduct points from players on hit
         this.scores[player.id] -= BasicGame.PLAYER_HIT_DEDUCT;
@@ -766,9 +832,10 @@ BasicGame.Game.prototype = {
         }
     },
 
-    /*
+    /**
      * Wraps sprites from one edge to the opposite
      *
+     * @param sprite
      */
     screenWrap: function(sprite) {
         if(sprite.x < 0) {
@@ -786,8 +853,9 @@ BasicGame.Game.prototype = {
     },
 
     /**
-     *  Resets a player ship to a random position in the screen with the starting health points
+     * Resets a player ship to a random position in the screen with the starting health points
      *
+     * @param player
      */
     resetPlayer: function (player){
         var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
@@ -799,8 +867,7 @@ BasicGame.Game.prototype = {
     },
 
     /**
-     *  Resets an alien ship to a random position in the screen, facing a random  with the starting health points
-     *
+     * Resets an alien ship to a random position in the screen, facing a random  with the starting health points
      */
     resetAlien: function (){
         var randX = this.rnd.integerInRange(this.shipDimens, this.game.width - (this.shipDimens*2));
@@ -818,6 +885,7 @@ BasicGame.Game.prototype = {
      * Ends the current game and releases resources before moving on to the game over or main menu state depending on
      * whether or not the game has just ended.
      *
+     * @param gameEnded
      */
     quitGame: function (gameEnded) {
 
