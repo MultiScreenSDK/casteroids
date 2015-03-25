@@ -59,7 +59,8 @@
         android:id="@+id/color_label"
         android:layout_below="@+id/name_text"
         android:layout_alignLeft="@+id/name_label"
-        android:layout_alignStart="@+id/name_label" />
+        android:layout_alignStart="@+id/name_label"
+        android:layout_marginTop="30dp"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -122,6 +123,7 @@
         android:layout_toStartOf="@+id/name_label"
         android:layout_marginRight="40dp"
         android:layout_marginEnd="40dp"
+        android:layout_marginTop="50dp"
         android:paddingLeft="16dp"
         android:paddingTop="16dp"
         android:paddingRight="16dp"
