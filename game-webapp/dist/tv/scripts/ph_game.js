@@ -105,7 +105,6 @@ BasicGame.Game.prototype = {
 
     // Add a player to the game.
     addPlayer: function(position, clientId, name, color, colorCode, hexColor) {
-        console.log("game.addPlayer " + position);
         if (this.game !== undefined) {
             // Initialize the new player
             this.players[clientId] = this.game.add.sprite(0, 0, color);
@@ -175,7 +174,7 @@ BasicGame.Game.prototype = {
         }
 
         if($.isEmptyObject(this.players)) {
-            console.log("quitting since everyone left");
+            // quitting since everyone left
             this.quitGame(false);
         }
     },
@@ -271,7 +270,6 @@ BasicGame.Game.prototype = {
                 this.game.physics.arcade.accelerationFromRotation(currentPlayer.rotation, BasicGame.PLAYER_ACC_SPEED,
                     currentPlayer.body.acceleration);
             } else {
-                // TODO fix null body
                 currentPlayer.body.acceleration.set(0);
             }
 
@@ -323,13 +321,17 @@ BasicGame.Game.prototype = {
         // distribute the work across update cycles. Here we are enforcing a rule that the alien gets updated every
         // 4th or 8th cycle if in aggressive mode. Aggressive mode sacrifices responsiveness for performance.
         var updateCycle = this.isAggressiveUpdateCycle ? (this.ticks % 8) : (this.ticks % 4);
-        if (updateCycle == (this.isAggressiveUpdateCycle ? 7 : 3)) {
+        if (updateCycle != (this.isAggressiveUpdateCycle ? 7 : 3)) {
             return;
         }
 
         if(this.alien) {
-            this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
-                                                              this.alien.body.acceleration);
+            // Since the alien ship does not rotate, once it reaches max speed we don't need to call the acceleration
+            // from rotation function anymore.
+            if (this.alien.body.speed < BasicGame.ALIEN_MAX_SPEED) {
+                this.game.physics.arcade.accelerationFromRotation(this.alien.body.rotation, BasicGame.ALIEN_MAX_SPEED,
+                                                                  this.alien.body.acceleration);
+            }
             this.fire(this.alien);
             this.screenWrap(this.alien);
             this.alien.bullets.forEachExists(this.screenWrap, this);
@@ -661,10 +663,6 @@ BasicGame.Game.prototype = {
             return;
         }
 
-        console.log("collide");
-        console.log(obj1);
-        console.log(obj2);
-
         // If obj1 is a player, process as a player out.
         if(obj1 !== this.alien) {
             this.playerOut(obj1, true);
@@ -753,7 +751,6 @@ BasicGame.Game.prototype = {
             }
             this.pointsPrompt1 = this.add.text( x-40, y, sign + points,
                                               { font: '20px Wallpoet', fill: hexColor, align: 'center'});
-            // TODO: Commented out because tinting causes performance issues.
             this.pointsPrompt1.anchor.setTo(0.5, 0.5);
             this.pointsExpire1 = this.time.now + 800;
         }
@@ -764,7 +761,6 @@ BasicGame.Game.prototype = {
             }
             this.pointsPrompt2 = this.add.text( x+48, y, sign + points,
                                                 { font: '25px Arial', fill: hexColor, align: 'center'});
-            // TODO: Commented out because tinting causes performance issues.
             this.pointsPrompt2.anchor.setTo(0.5, 0.5);
             this.pointsExpire2 = this.time.now + 800;
         }
