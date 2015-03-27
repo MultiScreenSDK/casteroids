@@ -274,7 +274,7 @@ public class MainActivity extends Activity implements ConnectivityListener, Mess
     }
 
     private void displayProgressIndicator() {
-        progressDialog = new ProgressDialog(MainActivity.this, R.style.CustomAppDialog);
+        progressDialog = new ProgressDialog(MainActivity.this);
         TextView title = new TextView(this);
         title.setText(R.string.title_connecting);
         title.setTextColor(getResources().getColor(R.color.dialogs_text_blue));
