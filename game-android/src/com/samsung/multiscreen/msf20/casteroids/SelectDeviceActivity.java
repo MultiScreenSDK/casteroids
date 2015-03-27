@@ -192,7 +192,7 @@ public class SelectDeviceActivity extends Activity implements ConnectivityListen
                 labelView.setTypeface(customTypeface);
                 serialView.setTypeface(customTypeface);
                 Service current = getItem(position);
-                labelView.setText((current.getType() != null? "[" + current.getType() + "] ": "") + current.getName());
+                labelView.setText(current.getName());
                 //serialView.setText(current.getId());
             }
             return itemView;
