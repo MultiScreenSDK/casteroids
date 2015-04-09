@@ -67,7 +67,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
     /** References to buttons on the screen */
     private Button playButton, color1Button, color2Button, color3Button, color4Button;
 
-    /** */
+    /** Reference to the options button */
     private ImageButton gameOptionsButton;
 
     /** References to the labels */
@@ -142,7 +142,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         //Get references to the buttons
         playButton = (Button) findViewById(R.id.play_button);
 
-        // Initialize the how to play button
+        // Initialize the buttons
         gameOptionsButton = (ImageButton) findViewById(R.id.game_options_button);
         color1Button = (Button) findViewById(R.id.color1_button);
         color2Button = (Button) findViewById(R.id.color2_button);
@@ -182,6 +182,8 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         animator.setInterpolator(new LinearInterpolator());
         animator.setDuration(15000);
 
+        //Attn: un-Check this if you want to debug the game options
+         gameOptionsButton.setVisibility(View.INVISIBLE);
 
         //set the stroke color on the ship drawable
         setShipColor(shipView, 0x1affffff);
@@ -496,7 +498,7 @@ public class PlayerInfoActivity extends Activity implements ConnectivityListener
         Intent intent = new Intent();
         intent.putExtra("color", data.getColor().getColorInt());
         intent.setClass(this, GameControllerActivity.class);
-        startActivity(intent); /** , ActivityOptionsCompat.makeSceneTransitionAnimation(this, shipView, "shipView").toBundle()); */
+        startActivity(intent);
 
         // Even though these get unregistered when this activity is paused, that doesn't happen right away and we need 
         // to make sure we don't process any more events at this point especially the SLOT_UPDATE event caused by this 

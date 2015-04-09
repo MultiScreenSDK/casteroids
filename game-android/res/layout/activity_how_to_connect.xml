@@ -14,14 +14,5 @@
             android:id="@+id/how_to_connect_title_text"
             android:text="@string/how_to_connect_title"
             android:textColor="@color/grey_white_1000"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:id="@+id/how_to_connect_help_text"
-            android:text="@string/how_to_connect_text"
-            android:textColor="@color/grey_white_1000"
-            android:textSize="11dp"/>
     </LinearLayout>
 </ScrollView>

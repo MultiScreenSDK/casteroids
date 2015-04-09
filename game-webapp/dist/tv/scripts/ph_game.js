@@ -14,7 +14,7 @@ BasicGame.Game = function (game) {
     this.isBackground = true;
     this.isCollisionsDetection = true;
     this.isAggressiveUpdateCycle = true;
-    this.isFPSdebug = true;
+    this.isFPSdebug = false;
     this.isShortGame = false;
 };
 

@@ -38,10 +38,8 @@ public class HowToConnectActivity extends Activity {
         setContentView(R.layout.activity_how_to_connect);
 
         TextView titleTextView = (TextView) findViewById(R.id.how_to_connect_title_text);
-        TextView supportedTextView = (TextView) findViewById(R.id.how_to_connect_help_text);
 
         customTypeface = ((GameApplication) getApplication()).getCustomTypeface();
         titleTextView.setTypeface(customTypeface);
-        supportedTextView.setTypeface(customTypeface);
     }
 }
