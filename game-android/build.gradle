@@ -10,7 +10,7 @@ apply plugin: 'android'
 
 dependencies {
     compile 'com.android.support:support-v4:21.0.3'
-    compile files('libs/android-msf-api-2.0.13.jar')
+    compile files('libs/android-msf-api-2.0.16.jar')
 }
 
 android {
