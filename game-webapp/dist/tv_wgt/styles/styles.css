@@ -1,0 +1,62 @@
+/**
+ * Body
+ */
+
+body {
+	background: #000000;
+    color: #ffffff;
+	padding: 0px;
+	margin: 0px;
+    font-family: 'Wallpoet', cursive;
+}
+
+/**
+ * Countdown
+ */
+
+#countdown {
+    font-size: 36px;
+    text-align: center;
+    line-height: 50px;
+
+    /* Make sure the div does not impact the layout of the game canvas */
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 0;
+
+    /* Display under the game canvas */
+    z-index: -100;
+}
+
+/**
+ * Scores
+ */
+
+.row {
+    font-size: 32px;
+    margin-right: -20px;
+    height: auto;
+    overflow: auto;
+
+    /* Make sure the div does not impact the layout of the game canvas */
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 50px;
+
+    /* Display under the game canvas */
+    z-index: -110;
+}
+
+.col {
+    float: left;
+    width: 25%;
+    position: relative;
+}
+
+.last {
+    float: right;
+    width: 25%;
+    position: relative;
+}
